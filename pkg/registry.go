@@ -11,7 +11,19 @@ type serviceRegistry struct {
 	registrations    map[reflect.Type]types.ServiceRegistration
 }
 
-func (s *serviceRegistry) Register(activatorFunc any, configuration ...types.ServiceConfigurationFunc) error {
+func RegisterTransient(registry types.ServiceRegistry, activatorFunc any) error {
+	return registry.Register(activatorFunc, types.LifetimeTransient)
+}
+
+func RegisterScoped(registry types.ServiceRegistry, activatorFunc any) error {
+	return registry.Register(activatorFunc, types.LifetimeScoped)
+}
+
+func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error {
+	return registry.Register(activatorFunc, types.LifetimeSingleton)
+}
+
+func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.LifetimeScope) error {
 
 	value := reflect.ValueOf(activatorFunc)
 
@@ -23,10 +35,7 @@ func (s *serviceRegistry) Register(activatorFunc any, configuration ...types.Ser
 	serviceType := info.ReturnType()
 	requiredTypes := info.ParameterTypes()
 
-	registration := newServiceRegistration(serviceType, value, requiredTypes...)
-	for _, config := range configuration {
-		config(registration)
-	}
+	registration := newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...)
 
 	registration.id = s.identifierSource.Next()
 	s.registrations[serviceType] = registration

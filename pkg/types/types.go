@@ -7,14 +7,14 @@ import (
 
 type FunctionInfo interface {
 	Name() string
-	ReturnType() reflect.Type
 	ParameterTypes() []reflect.Type
+	ReturnType() reflect.Type
 }
 
 type ServiceRegistry interface {
 	BuildResolver() Resolver
-	Register(activatorFunc any, configuration ...ServiceConfigurationFunc) error
 	IsRegistered(serviceType reflect.Type) bool
+	Register(activatorFunc any, scope LifetimeScope) error
 }
 
 type ServiceRegistryAccessor interface {
@@ -24,12 +24,13 @@ type ServiceRegistryAccessor interface {
 
 type ServiceRegistration interface {
 	Id() uint64
-	ServiceType() reflect.Type
-	RequiredServiceTypes() []reflect.Type
 	InvokeActivator(params ...interface{}) (interface{}, error)
+	RequiredServiceTypes() []reflect.Type
+	ServiceType() reflect.Type
+	LifetimeScope() LifetimeScope
 }
 
-type ServiceConfigurationFunc func(r ServiceRegistration)
+type RegistrationConfigurationFunc func(r ServiceRegistration)
 
 type Resolver interface {
 	Resolve(ctx context.Context, serviceType reflect.Type) (interface{}, error)
@@ -37,10 +38,20 @@ type Resolver interface {
 
 type DependencyInfo interface {
 	AddRequiredServiceInfo(child DependencyInfo)
-	RequiredServiceTypes() []reflect.Type
-	RequiredServices() ([]interface{}, error)
 	CreateInstance() (interface{}, error)
 	HasInstance() bool
 	Instance() interface{}
+	Registration() ServiceRegistration
+	RequiredServiceTypes() []reflect.Type
+	RequiredServices() ([]interface{}, error)
 	ServiceTypeName() string
+	SetInstance(instance interface{}) error
 }
+
+type LifetimeScope uint
+
+const (
+	LifetimeTransient LifetimeScope = iota
+	LifetimeScoped
+	LifetimeSingleton
+)

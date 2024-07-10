@@ -1,6 +1,7 @@
 package types
 
 import (
+	"errors"
 	"reflect"
 	"sync"
 )
@@ -15,6 +16,14 @@ type dependencyInfo struct {
 
 var _ DependencyInfo = &dependencyInfo{}
 
+const (
+	ErrorInstanceAlreadySet = "instance already set"
+)
+
+var (
+	ErrInstanceAlreadySet = errors.New(ErrorInstanceAlreadySet)
+)
+
 func NewDependencyInfo(registration ServiceRegistration, instance interface{}, consumer DependencyInfo) DependencyInfo {
 	return &dependencyInfo{
 		registration: registration,
@@ -23,6 +32,10 @@ func NewDependencyInfo(registration ServiceRegistration, instance interface{}, c
 		consumer:     consumer,
 		m:            &sync.RWMutex{},
 	}
+}
+
+func (d *dependencyInfo) Registration() ServiceRegistration {
+	return d.registration
 }
 
 func (d *dependencyInfo) AddRequiredServiceInfo(child DependencyInfo) {
@@ -46,8 +59,6 @@ func (d *dependencyInfo) RequiredServices() ([]interface{}, error) {
 }
 
 func (d *dependencyInfo) CreateInstance() (interface{}, error) {
-	d.m.RLock()
-	defer d.m.RUnlock()
 	if d.instance != nil {
 		return d.instance, nil
 	}
@@ -58,6 +69,16 @@ func (d *dependencyInfo) CreateInstance() (interface{}, error) {
 	}
 	d.instance = instance
 	return d.instance, nil
+}
+
+func (d *dependencyInfo) SetInstance(instance interface{}) error {
+	d.m.Lock()
+	defer d.m.Unlock()
+	if d.instance != nil {
+		return errors.New(ErrorInstanceAlreadySet)
+	}
+	d.instance = instance
+	return nil
 }
 
 func (d *dependencyInfo) HasInstance() bool {

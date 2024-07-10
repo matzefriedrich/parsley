@@ -8,14 +8,14 @@ import (
 )
 
 type resolver struct {
-	registry  types.ServiceRegistryAccessor
-	instances map[uint64]interface{}
+	registry        types.ServiceRegistryAccessor
+	globalInstances *internal.InstanceBag
 }
 
 func NewResolver(registry types.ServiceRegistryAccessor) types.Resolver {
 	return &resolver{
-		registry:  registry,
-		instances: make(map[uint64]interface{}),
+		registry:        registry,
+		globalInstances: internal.NewGlobalInstanceBag(),
 	}
 }
 
@@ -27,7 +27,7 @@ func (r *resolver) Resolve(ctx context.Context, serviceType reflect.Type) (inter
 	}
 
 	makeDependencyInfo := func(sr types.ServiceRegistration, consumer types.DependencyInfo) types.DependencyInfo {
-		instance, _ := r.TryResolveInstance(ctx, registration)
+		instance, _ := r.globalInstances.TryResolveInstance(ctx, registration)
 		return types.NewDependencyInfo(sr, instance, consumer)
 	}
 
@@ -53,35 +53,27 @@ func (r *resolver) Resolve(ctx context.Context, serviceType reflect.Type) (inter
 		}
 	}
 
+	instances := internal.NewInstancesBag(r.globalInstances, types.LifetimeTransient)
+
 	for resolverStack.Any() {
+
 		next := resolverStack.Pop()
-		_, err := next.CreateInstance()
+		nextRegistration := next.Registration()
+		instance, ok := instances.TryResolveInstance(ctx, nextRegistration)
+		if ok {
+			_ = next.SetInstance(instance)
+			continue
+		}
+
+		instance, err := next.CreateInstance()
 		if err != nil {
 			return nil, types.NewResolverError(types.ErrorCannotResolveService, types.WithCause(err), types.ForServiceType(next.ServiceTypeName()))
 		}
-		// TODO: check instance lifetime; if configred per scope, or singleton, we need to keep the instance (currently everything is transient)
-	}
 
-	// TODO:
-	// * detect circular dependency; abort if any of the parameters matches the requested type
-	// * if a registered service is a function, it is a factory; call it to resolve the service
-	// * evaluate the lifetime of service registration; if singleton register it depending on its scope
-	//		* means: per-context, transient (no registration), singleton (global)
+		instances.KeepInstance(ctx, nextRegistration, instance)
+	}
 
 	return root.Instance(), nil
-}
-
-func (r *resolver) TryResolveInstance(ctx context.Context, registration types.ServiceRegistration) (interface{}, bool) {
-	id := registration.Id()
-	instance, found := r.instances[id]
-	if found {
-		f := func() interface{} {
-			return instance
-		}
-		return f, true
-	}
-	// TODO: try to find the instance on the context
-	return nil, false
 }
 
 var _ types.Resolver = &resolver{}
