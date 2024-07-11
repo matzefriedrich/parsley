@@ -9,6 +9,7 @@ const (
 	ErrorActivatorFunctionsMustReturnAnInterface = "activator functions must return an interfaces"
 	ErrorCircularDependencyDetected              = "circular dependency detected"
 	ErrorCannotBuildDependencyGraph              = "failed to build dependency graph"
+	ErrorInstanceCannotBeNil                     = "instance cannot be nil"
 )
 
 var (
@@ -16,6 +17,7 @@ var (
 	ErrActivatorFunctionsMustReturnAnInterface = errors.New(ErrorCannotResolveService)
 	ErrCannotBuildDependencyGraph              = errors.New(ErrorCannotBuildDependencyGraph)
 	ErrCircularDependencyDetected              = errors.New(ErrorCircularDependencyDetected)
+	ErrInstanceCannotBeNil                     = errors.New(ErrorInstanceCannotBeNil)
 )
 
 type ResolverError struct {

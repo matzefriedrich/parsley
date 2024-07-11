@@ -23,6 +23,20 @@ func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error 
 	return registry.Register(activatorFunc, types.LifetimeSingleton)
 }
 
+func RegisterInstance[T any](registry types.ServiceRegistry, instance T) error {
+	if internal.IsNil(instance) {
+		return types.NewRegistryError(types.ErrorInstanceCannotBeNil)
+	}
+	t := reflect.TypeOf((*T)(nil)).Elem()
+	if t.Kind() != reflect.Interface {
+		return types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	}
+	instanceFunc := func() T {
+		return instance
+	}
+	return registry.Register(instanceFunc, types.LifetimeSingleton)
+}
+
 func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.LifetimeScope) error {
 
 	value := reflect.ValueOf(activatorFunc)
