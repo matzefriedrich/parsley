@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"errors"
 	"github.com/matzefriedrich/parsley/internal"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"reflect"
@@ -35,7 +34,7 @@ func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.Lifeti
 
 	serviceType := info.ReturnType()
 	if serviceType.Kind() != reflect.Interface {
-		return errors.New(types.ErrorActivatorFunctionsMustReturnAnInterface)
+		return types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
 	}
 
 	requiredTypes := info.ParameterTypes()
