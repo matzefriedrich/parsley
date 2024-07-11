@@ -34,6 +34,10 @@ func NewDependencyInfo(registration ServiceRegistration, instance interface{}, c
 	}
 }
 
+func (d *dependencyInfo) Consumer() DependencyInfo {
+	return d.consumer
+}
+
 func (d *dependencyInfo) Registration() ServiceRegistration {
 	return d.registration
 }

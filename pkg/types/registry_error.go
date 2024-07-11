@@ -11,24 +11,26 @@ var (
 )
 
 type registryError struct {
-	FuncError
+	ParsleyError
 	serviceTypeName string
 }
 
-var _ FunqErrorWithServiceTypeName = &registryError{}
+var _ ParsleyErrorWithServiceTypeName = &registryError{}
 
 func (r *registryError) ServiceTypeName(name string) {
 	r.serviceTypeName = name
 }
 
-var _ FunqErrorWithServiceTypeName = &registryError{}
+var _ ParsleyErrorWithServiceTypeName = &registryError{}
 
-func NewRegistryError(msg string, initializers ...FuncErrorFunc) error {
+func NewRegistryError(msg string, initializers ...ParsleyErrorFunc) error {
 	err := &registryError{
-		FuncError: FuncError{
+		ParsleyError: ParsleyError{
 			msg: msg,
-		}}
+		},
+	}
 	for _, f := range initializers {
+		f(&err.ParsleyError)
 		f(err)
 	}
 	return err
