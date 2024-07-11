@@ -144,7 +144,6 @@ func Test_Registry_RegisterInstance_registers_object(t *testing.T) {
 	assert.True(t, ok)
 	assert.NotNil(t, actual)
 	assert.Equal(t, reflect.ValueOf(instance).Pointer(), reflect.ValueOf(actual).Pointer())
-
 }
 
 type Foo interface {

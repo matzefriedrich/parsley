@@ -96,7 +96,9 @@ func NewServiceRegistry() types.ServiceRegistry {
 }
 
 func (s *serviceRegistry) BuildResolver() types.Resolver {
-	return NewResolver(s)
+	r := NewResolver(s)
+	_ = RegisterInstance(s, r)
+	return r
 }
 
 var _ types.ServiceRegistry = &serviceRegistry{}

@@ -12,6 +12,19 @@ type resolver struct {
 	globalInstances *internal.InstanceBag
 }
 
+func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context) (T, error) {
+	var nilInstance T
+	t := reflect.TypeOf((*T)(nil)).Elem()
+	if t.Kind() != reflect.Interface {
+		return nilInstance, types.NewResolverError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	}
+	resolve, err := resolver.Resolve(ctx, types.ServiceType[T]())
+	if err != nil {
+		return nilInstance, err
+	}
+	return resolve.(T), err
+}
+
 func NewResolver(registry types.ServiceRegistryAccessor) types.Resolver {
 	return &resolver{
 		registry:        registry,

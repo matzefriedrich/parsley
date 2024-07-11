@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Service registrations can be bundled in a `ModuleFunc` to register related types as a unit
 * Service registry accepts object instances as singleton service registrations
+* Adds the `ResolveRequiredService[T]` convenience function that resolves and safe-casts objects
+* Registers resolver instance with the registry so that the `Resolver` object can be injected into factory and constructor methods
 
 ## v0.2.0 - 2024-07-11
 
