@@ -6,6 +6,30 @@ Parsley is an easy-to-use reflection-based dependency injection package that fit
 
 This dependency injection package may become your favorite ingredient for your Go applications. It is like the nifty green herb that fits well in various dishes across different cuisines. It not only adds to the taste, but it also charms the eye. In terms of wiring dependencies, it helps to keep things clean and organized. The parsley library is inspired by other dependency injection libraries I have used, which I always miss when working on Go projects.
 
+## Features
+
+- ✔️ Register types via constructor functions
+- ✔️ Resolve objects by interface
+  - ✔️ Constructor injection
+  - ⏳ Injection via field initialization (requires annotation)
+  - ❌ Injection via setter methods
+- ✔️ Register types with a certain lifetime
+  - ✔️ Singleton
+  - ✔️ Scoped (requires a certain context `NewScopedContext(context.Background))`; use `RegisterScoped`)
+  - ✔️ Transient
+- ✔️ Resolve objects on-demand
+  - ⏳ Allow consumption of `Resolver` in favor of custom factories
+  - ⏳ Validate registered services; fail early during application startup if missing registrations are encountered
+- ⏳ Support multiple service registrations for the same interface
+  - ⏳ Register named services (mutiple services), resolve via `func(key string) any`
+  - ⏳ Resolve list of service
+- ⏳ Support sub-scopes
+  - ⏳ Automatic clean-up
+
+
+✔️ Already available | ❌ Not supported | ⏳ On schedule to be developed
+
+
 ## Usage
 
 ````sh
