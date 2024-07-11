@@ -33,6 +33,10 @@ func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.Lifeti
 	}
 
 	serviceType := info.ReturnType()
+	if serviceType.Kind() != reflect.Interface {
+		return types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	}
+
 	requiredTypes := info.ParameterTypes()
 
 	registration := newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...)

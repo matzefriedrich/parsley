@@ -1,6 +1,10 @@
 # parsley
 
-This dependency injection package may become your app's favorite ingredient, like parsley, a herb that fits well in various dishes across different cuisines globally. The parsley library is inspired by other dependency injection libraries I have used, which I always miss when working on Go projects.
+## What is Parsley?
+
+Parsley is an easy-to-use reflection-based dependency injection package that fits into any Go application.
+
+This dependency injection package may become your favorite ingredient for your Go applications. It is like the nifty green herb that fits well in various dishes across different cuisines. It not only adds to the taste, but it also charms the eye. In terms of wiring dependencies, it helps to keep things clean and organized. The parsley library is inspired by other dependency injection libraries I have used, which I always miss when working on Go projects.
 
 ## Usage
 

@@ -39,6 +39,7 @@ type Resolver interface {
 type DependencyInfo interface {
 	AddRequiredServiceInfo(child DependencyInfo)
 	CreateInstance() (interface{}, error)
+	Consumer() DependencyInfo
 	HasInstance() bool
 	Instance() interface{}
 	Registration() ServiceRegistration
