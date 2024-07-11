@@ -4,10 +4,12 @@ import "errors"
 
 const (
 	ErrorRequiresFunctionValue = "the given value is not function"
+	ErrorCannotRegisterModule  = "failed to register module"
 )
 
 var (
 	ErrRequiresFunctionValue = errors.New(ErrorRequiresFunctionValue)
+	ErrCannotRegisterModule  = errors.New(ErrorCannotRegisterModule)
 )
 
 type registryError struct {

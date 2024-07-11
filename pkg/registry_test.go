@@ -2,9 +2,10 @@ package pkg
 
 import (
 	"context"
-	"github.com/matzefriedrich/parsley/internal"
 	"reflect"
 	"testing"
+
+	"github.com/matzefriedrich/parsley/internal"
 
 	"github.com/matzefriedrich/parsley/pkg/types"
 
@@ -32,6 +33,7 @@ func Test_Registry_BuildResolver_resolve_type_with_dependencies(t *testing.T) {
 
 	// Arrange
 	sut := NewServiceRegistry()
+
 	// Act
 	_ = RegisterTransient(sut, NewFoo)
 	_ = RegisterTransient(sut, NewFooConsumer)
@@ -51,6 +53,7 @@ func Test_Registry_BuildResolver_resolve_scoped_from_same_context_must_be_return
 
 	// Arrange
 	sut := NewServiceRegistry()
+
 	// Act
 	_ = RegisterSingleton(sut, NewFoo)
 	_ = RegisterScoped(sut, NewFooConsumer)
@@ -74,6 +77,7 @@ func Test_Registry_BuildResolver_resolve_scoped_from_different_context_must_be_r
 
 	// Arrange
 	sut := NewServiceRegistry()
+
 	// Act
 	_ = RegisterSingleton(sut, NewFoo)
 	_ = RegisterScoped(sut, NewFooConsumer)
@@ -92,6 +96,28 @@ func Test_Registry_BuildResolver_resolve_scoped_from_different_context_must_be_r
 	assert.True(t, ok)
 	assert.NotNil(t, actual)
 	assert.NotEqual(t, reflect.ValueOf(consumer1).Pointer(), reflect.ValueOf(consumer2).Pointer())
+}
+
+func Test_Registry_RegisterModule_registers_collection_of_services(t *testing.T) {
+
+	// Arrange
+	sut := NewServiceRegistry()
+
+	// Act
+	fooModule := func(r types.ServiceRegistry) error {
+		_ = RegisterSingleton(r, NewFoo)
+		_ = RegisterScoped(r, NewFooConsumer)
+		return nil
+	}
+
+	_ = sut.RegisterModule(fooModule)
+
+	fooRegistered := sut.IsRegistered(types.ServiceType[Foo]())
+	fooConsumerRegistered := sut.IsRegistered(types.ServiceType[FooConsumer]())
+
+	// Assert
+	assert.True(t, fooRegistered)
+	assert.True(t, fooConsumerRegistered)
 }
 
 type Foo interface {

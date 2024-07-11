@@ -15,7 +15,10 @@ type ServiceRegistry interface {
 	BuildResolver() Resolver
 	IsRegistered(serviceType reflect.Type) bool
 	Register(activatorFunc any, scope LifetimeScope) error
+	RegisterModule(modules ...ModuleFunc) error
 }
+
+type ModuleFunc func(registry ServiceRegistry) error
 
 type ServiceRegistryAccessor interface {
 	ServiceRegistry

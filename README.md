@@ -17,6 +17,7 @@ This dependency injection package may become your favorite ingredient for your G
   - ✔️ Singleton
   - ✔️ Scoped (requires a certain context `NewScopedContext(context.Background))`; use `RegisterScoped`)
   - ✔️ Transient
+- ✔️ Bundle type registrations as modules to register them via `RegisterModule` as a unit
 - ✔️ Resolve objects on-demand
   - ⏳ Allow consumption of `Resolver` in favor of custom factories
   - ⏳ Validate registered services; fail early during application startup if missing registrations are encountered
