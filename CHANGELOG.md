@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Service registrations can be bundled in a `ModuleFunc` to register related types as a unit
-
+* Service registry accepts object instances as singleton service registrations
 
 ## v0.2.0 - 2024-07-11
 
