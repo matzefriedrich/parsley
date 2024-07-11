@@ -47,6 +47,16 @@ func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.Lifeti
 	return nil
 }
 
+func (s *serviceRegistry) RegisterModule(modules ...types.ModuleFunc) error {
+	for _, m := range modules {
+		err := m(s)
+		if err != nil {
+			return types.NewRegistryError(types.ErrorCannotRegisterModule, types.WithCause(err))
+		}
+	}
+	return nil
+}
+
 func (s *serviceRegistry) IsRegistered(serviceType reflect.Type) bool {
 	_, found := s.registrations[serviceType]
 	return found
