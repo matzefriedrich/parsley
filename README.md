@@ -15,6 +15,7 @@ This dependency injection package may become your favorite ingredient for your G
   - ❌ Injection via setter methods
 - ✔️ Register types with a certain lifetime
   - ✔️ Singleton
+  - ✔️ Register objects as singletons; use `RegisterInstance[T]` whereby `T` must be an interface type
   - ✔️ Scoped (requires a certain context `NewScopedContext(context.Background))`; use `RegisterScoped`)
   - ✔️ Transient
 - ✔️ Bundle type registrations as modules to register them via `RegisterModule` as a unit

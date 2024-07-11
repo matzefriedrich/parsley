@@ -120,6 +120,33 @@ func Test_Registry_RegisterModule_registers_collection_of_services(t *testing.T)
 	assert.True(t, fooConsumerRegistered)
 }
 
+func Test_Registry_RegisterInstance_registers_object(t *testing.T) {
+
+	// Arrange
+	sut := NewServiceRegistry()
+
+	instance := NewFoo()
+
+	// Act
+	_ = RegisterInstance(sut, instance)
+
+	fooRegistered := sut.IsRegistered(types.ServiceType[Foo]())
+
+	r := sut.BuildResolver()
+
+	// Arrange
+	assert.True(t, fooRegistered)
+
+	resolved, _ := r.Resolve(context.Background(), types.ServiceType[Foo]())
+	assert.NotNil(t, resolved)
+
+	actual, ok := resolved.(Foo)
+	assert.True(t, ok)
+	assert.NotNil(t, actual)
+	assert.Equal(t, reflect.ValueOf(instance).Pointer(), reflect.ValueOf(actual).Pointer())
+
+}
+
 type Foo interface {
 	Bar()
 }
