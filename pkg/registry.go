@@ -24,7 +24,7 @@ func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error 
 }
 
 func RegisterInstance[T any](registry types.ServiceRegistry, instance T) error {
-	if instance == nil {
+	if internal.IsNil(instance) {
 		return types.NewRegistryError(types.ErrorInstanceCannotBeNil)
 	}
 	t := reflect.TypeOf((*T)(nil)).Elem()
