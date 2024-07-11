@@ -24,38 +24,27 @@ func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error 
 }
 
 func RegisterInstance[T any](registry types.ServiceRegistry, instance T) error {
-	if internal.IsNil(instance) {
-		return types.NewRegistryError(types.ErrorInstanceCannotBeNil)
-	}
-	t := reflect.TypeOf((*T)(nil)).Elem()
-	if t.Kind() != reflect.Interface {
-		return types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
-	}
-	instanceFunc := func() T {
-		return instance
+	instanceFunc, err := CreateServiceActivatorFrom[T](instance)
+	if err != nil {
+		return err
 	}
 	return registry.Register(instanceFunc, types.LifetimeSingleton)
 }
 
 func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.LifetimeScope) error {
 
-	value := reflect.ValueOf(activatorFunc)
-
-	info, err := reflectFunctionInfoFrom(value)
+	registration, err := CreateServiceRegistration(activatorFunc, lifetimeScope)
 	if err != nil {
-		return types.NewRegistryError(types.ErrorRequiresFunctionValue, types.WithCause(err))
+		return err
 	}
 
-	serviceType := info.ReturnType()
-	if serviceType.Kind() != reflect.Interface {
-		return types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	id := s.identifierSource.Next()
+	setupErr := registration.SetId(id)
+	if setupErr != nil {
+		return types.NewRegistryError("failed to set up type registration", types.WithCause(setupErr))
 	}
 
-	requiredTypes := info.ParameterTypes()
-
-	registration := newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...)
-
-	registration.id = s.identifierSource.Next()
+	serviceType := registration.ServiceType()
 	s.registrations[serviceType] = registration
 
 	return nil
@@ -91,6 +80,25 @@ func NewServiceRegistry() types.ServiceRegistry {
 	registrations := make(map[reflect.Type]types.ServiceRegistration)
 	return &serviceRegistry{
 		identifierSource: internal.NewServiceId(0),
+		registrations:    registrations,
+	}
+}
+
+func (s *serviceRegistry) CreateLinkedRegistry() types.ServiceRegistry {
+	registrations := make(map[reflect.Type]types.ServiceRegistration)
+	return &serviceRegistry{
+		identifierSource: s.identifierSource,
+		registrations:    registrations,
+	}
+}
+
+func (s *serviceRegistry) CreateScope() types.ServiceRegistry {
+	registrations := make(map[reflect.Type]types.ServiceRegistration)
+	for serviceType, registration := range s.registrations {
+		registrations[serviceType] = registration
+	}
+	return &serviceRegistry{
+		identifierSource: s.identifierSource,
 		registrations:    registrations,
 	}
 }
