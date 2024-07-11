@@ -13,6 +13,7 @@ This dependency injection package may become your favorite ingredient for your G
   - ✔️ Constructor injection
   - ⏳ Injection via field initialization (requires annotation)
   - ❌ Injection via setter methods
+  - ✔️ Convenience function to resolve and safe-cast objects: `ResolveRequiredService[T]`
 - ✔️ Register types with a certain lifetime
   - ✔️ Singleton
   - ✔️ Register objects as singletons; use `RegisterInstance[T]` whereby `T` must be an interface type
@@ -20,8 +21,9 @@ This dependency injection package may become your favorite ingredient for your G
   - ✔️ Transient
 - ✔️ Bundle type registrations as modules to register them via `RegisterModule` as a unit
 - ✔️ Resolve objects on-demand
-  - ⏳ Allow consumption of `Resolver` in favor of custom factories
+  - ✔️ Allow consumption of `Resolver` in favor of custom factories
   - ⏳ Validate registered services; fail early during application startup if missing registrations are encountered
+  - ⏳ Provide parameters for non-registered types and data
 - ⏳ Support multiple service registrations for the same interface
   - ⏳ Register named services (mutiple services), resolve via `func(key string) any`
   - ⏳ Resolve list of service
