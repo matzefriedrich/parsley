@@ -23,7 +23,7 @@ This dependency injection package may become your favorite ingredient for your G
 - ✔️ Resolve objects on-demand
   - ✔️ Allow consumption of `Resolver` in favor of custom factories
   - ⏳ Validate registered services; fail early during application startup if missing registrations are encountered
-  - ⏳ Provide parameters for non-registered types and data
+  - ✔️ Provide instances for non-registered types, use `ResolveWithOptions[T]` insted of `Resolve[T]`
 - ⏳ Support multiple service registrations for the same interface
   - ⏳ Register named services (mutiple services), resolve via `func(key string) any`
   - ⏳ Resolve list of service
