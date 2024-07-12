@@ -26,6 +26,8 @@ Though dependency injection is less prevalent in Golang (compared to other langu
 - ✔️ Bundle type registrations as modules to register them via `RegisterModule` as a unit
 - ✔️ Resolve objects on-demand
   - ✔️ Allow consumption of `Resolver` in favor of custom factories
+  - ⏳ Lazy loading objects by injecting dependencies as `Lazy[T]`
+  - ⏳ Register factory functions, for instance: `func(s string) T` where `s` must be provided by the consumer when resolving the dependency
   - ⏳ Validate registered services; fail early during application startup if missing registrations are encountered
   - ✔️ Provide instances for non-registered types, use `ResolveWithOptions[T]` insted of `Resolve[T]`
 - ⏳ Support multiple service registrations for the same interface
