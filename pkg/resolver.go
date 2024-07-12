@@ -15,8 +15,11 @@ type resolver struct {
 func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context) (T, error) {
 	var nilInstance T
 	t := reflect.TypeOf((*T)(nil)).Elem()
-	if t.Kind() != reflect.Interface {
-		return nilInstance, types.NewResolverError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	switch t.Kind() {
+	case reflect.Func:
+	case reflect.Interface:
+	default:
+		return nilInstance, types.NewResolverError(types.ErrorActivatorFunctionInvalidReturnType)
 	}
 	resolve, err := resolver.Resolve(ctx, types.ServiceType[T]())
 	if err != nil {

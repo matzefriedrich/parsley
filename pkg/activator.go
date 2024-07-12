@@ -11,8 +11,11 @@ func CreateServiceActivatorFrom[T any](instance T) (func() T, error) {
 		return nil, types.NewRegistryError(types.ErrorInstanceCannotBeNil)
 	}
 	t := reflect.TypeOf((*T)(nil)).Elem()
-	if t.Kind() != reflect.Interface {
-		return nil, types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	switch t.Kind() {
+	case reflect.Func:
+	case reflect.Interface:
+	default:
+		return nil, types.NewRegistryError(types.ErrorActivatorFunctionInvalidReturnType)
 	}
 	instanceFunc := func() T {
 		return instance

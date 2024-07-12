@@ -93,13 +93,15 @@ func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeSc
 	}
 
 	serviceType := info.ReturnType()
-	if serviceType.Kind() != reflect.Interface {
-		return nil, types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	switch serviceType.Kind() {
+	case reflect.Func:
+		return newServiceRegistration(serviceType, lifetimeScope, value), nil
+	case reflect.Interface:
+		requiredTypes := info.ParameterTypes()
+		return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil
+	default:
+		return nil, types.NewRegistryError(types.ErrorActivatorFunctionInvalidReturnType)
 	}
-
-	requiredTypes := info.ParameterTypes()
-
-	return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil
 }
 
 func newServiceRegistration(serviceType reflect.Type, scope types.LifetimeScope, activatorFunc reflect.Value, parameters ...reflect.Type) *serviceRegistration {
