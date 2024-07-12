@@ -11,6 +11,7 @@ const (
 	ErrorCannotBuildDependencyGraph              = "failed to build dependency graph"
 	ErrorInstanceCannotBeNil                     = "instance cannot be nil"
 	ErrorServiceTypeMustBeInterface              = "service type must be an interface"
+	ErrorCannotRegisterTypeWithResolverOptions   = "cannot register type with resolver options"
 )
 
 var (
@@ -20,6 +21,7 @@ var (
 	ErrCircularDependencyDetected              = errors.New(ErrorCircularDependencyDetected)
 	ErrInstanceCannotBeNil                     = errors.New(ErrorInstanceCannotBeNil)
 	ErrServiceTypeMustBeInterface              = errors.New(ErrorServiceTypeMustBeInterface)
+	ErrCannotRegisterTypeWithResolverOptions   = errors.New(ErrorCannotRegisterTypeWithResolverOptions)
 )
 
 type ResolverError struct {

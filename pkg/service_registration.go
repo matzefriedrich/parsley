@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"errors"
 	"fmt"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"reflect"
@@ -47,6 +48,14 @@ func (s *serviceRegistration) Id() uint64 {
 	return s.id
 }
 
+func (s *serviceRegistration) SetId(id uint64) error {
+	if s.id != 0 {
+		return errors.New("the id cannot be changed once set")
+	}
+	s.id = id
+	return nil
+}
+
 func (s *serviceRegistration) LifetimeScope() types.LifetimeScope {
 	return s.lifetimeScope
 }
@@ -75,6 +84,24 @@ func (s *serviceRegistration) String() string {
 	return buffer.String()
 }
 
+func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeScope) (types.ServiceRegistrationSetup, error) {
+	value := reflect.ValueOf(activatorFunc)
+
+	info, err := reflectFunctionInfoFrom(value)
+	if err != nil {
+		return nil, types.NewRegistryError(types.ErrorRequiresFunctionValue, types.WithCause(err))
+	}
+
+	serviceType := info.ReturnType()
+	if serviceType.Kind() != reflect.Interface {
+		return nil, types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	}
+
+	requiredTypes := info.ParameterTypes()
+
+	return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil
+}
+
 func newServiceRegistration(serviceType reflect.Type, scope types.LifetimeScope, activatorFunc reflect.Value, parameters ...reflect.Type) *serviceRegistration {
 	parameterTypeInfos := make([]typeInfo, len(parameters))
 	for i, p := range parameters {
@@ -89,3 +116,4 @@ func newServiceRegistration(serviceType reflect.Type, scope types.LifetimeScope,
 }
 
 var _ types.ServiceRegistration = &serviceRegistration{}
+var _ types.ServiceRegistrationSetup = &serviceRegistration{}

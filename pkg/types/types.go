@@ -12,7 +12,10 @@ type FunctionInfo interface {
 }
 
 type ServiceRegistry interface {
+	ServiceRegistryAccessor
 	BuildResolver() Resolver
+	CreateLinkedRegistry() ServiceRegistry
+	CreateScope() ServiceRegistry
 	IsRegistered(serviceType reflect.Type) bool
 	Register(activatorFunc any, scope LifetimeScope) error
 	RegisterModule(modules ...ModuleFunc) error
@@ -21,7 +24,6 @@ type ServiceRegistry interface {
 type ModuleFunc func(registry ServiceRegistry) error
 
 type ServiceRegistryAccessor interface {
-	ServiceRegistry
 	TryGetServiceRegistration(serviceType reflect.Type) (ServiceRegistration, bool)
 }
 
@@ -33,10 +35,18 @@ type ServiceRegistration interface {
 	LifetimeScope() LifetimeScope
 }
 
+type ServiceRegistrationSetup interface {
+	ServiceRegistration
+	SetId(id uint64) error
+}
+
 type RegistrationConfigurationFunc func(r ServiceRegistration)
+
+type ResolverOptionsFunc func(registry ServiceRegistry) error
 
 type Resolver interface {
 	Resolve(ctx context.Context, serviceType reflect.Type) (interface{}, error)
+	ResolveWithOptions(ctx context.Context, serviceType reflect.Type, options ...ResolverOptionsFunc) (interface{}, error)
 }
 
 type DependencyInfo interface {

@@ -8,7 +8,7 @@ import (
 )
 
 type resolver struct {
-	registry        types.ServiceRegistryAccessor
+	registry        types.ServiceRegistry
 	globalInstances *internal.InstanceBag
 }
 
@@ -25,7 +25,7 @@ func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context)
 	return resolve.(T), err
 }
 
-func NewResolver(registry types.ServiceRegistryAccessor) types.Resolver {
+func NewResolver(registry types.ServiceRegistry) types.Resolver {
 	return &resolver{
 		registry:        registry,
 		globalInstances: internal.NewGlobalInstanceBag(),
@@ -50,9 +50,30 @@ func detectCircularDependency(sr types.ServiceRegistration, consumer types.Depen
 	return nil
 }
 
-func (r *resolver) Resolve(ctx context.Context, serviceType reflect.Type) (interface{}, error) {
+func (r *resolver) createResolverRegistryAccessor(resolverOptions ...types.ResolverOptionsFunc) (types.ServiceRegistryAccessor, error) {
+	if len(resolverOptions) > 0 {
+		transientRegistry := r.registry.CreateLinkedRegistry()
+		err := applyResolverOptions(transientRegistry, resolverOptions...)
+		if err != nil {
+			return nil, err
+		}
+		return NewMultiRegistryAccessor(r.registry, transientRegistry), nil
+	}
+	return r.registry, nil
+}
 
-	registration, found := r.registry.TryGetServiceRegistration(serviceType)
+func (r *resolver) Resolve(ctx context.Context, serviceType reflect.Type) (interface{}, error) {
+	return r.ResolveWithOptions(ctx, serviceType)
+}
+
+func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType reflect.Type, resolverOptions ...types.ResolverOptionsFunc) (interface{}, error) {
+
+	registry, registryErr := r.createResolverRegistryAccessor(resolverOptions...)
+	if registryErr != nil {
+		return nil, types.NewResolverError("failed to create resolver service registry", types.WithCause(registryErr))
+	}
+
+	registration, found := registry.TryGetServiceRegistration(serviceType)
 	if !found {
 		return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(serviceType.Name()))
 	}
@@ -75,7 +96,7 @@ func (r *resolver) Resolve(ctx context.Context, serviceType reflect.Type) (inter
 		resolverStack.Push(next)
 		requiredServices := next.RequiredServiceTypes()
 		for _, requiredService := range requiredServices {
-			requiredServiceRegistration, isRegistered := r.registry.TryGetServiceRegistration(requiredService)
+			requiredServiceRegistration, isRegistered := registry.TryGetServiceRegistration(requiredService)
 			if isRegistered == false {
 				return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(requiredService.Name()))
 			}
