@@ -18,7 +18,7 @@ func WithInstance[T any](instance T) types.ResolverOptionsFunc {
 	return func(registry types.ServiceRegistry) error {
 		err := RegisterInstance[T](registry, instance)
 		if err != nil {
-			return types.NewRegistryError("cannot register type with resolver options", types.WithCause(err))
+			return types.NewRegistryError(types.ErrorCannotRegisterTypeWithResolverOptions, types.WithCause(err))
 		}
 		return nil
 	}
