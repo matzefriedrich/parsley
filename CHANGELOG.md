@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2024-07-11
+## v0.3.0 - 2024-07-12
 
 ### Added
 
@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Service registry accepts object instances as singleton service registrations
 * Adds the `ResolveRequiredService[T]` convenience function that resolves and safe-casts objects
 * Registers resolver instance with the registry so that the `Resolver` object can be injected into factory and constructor methods
+* The resolver can now accept instances of non-registered types via the `ResolveWithOptions[T]` method
+* `ServiceRegistry` has new methods for creating linked and scoped registry objects (which share the same `ServiceIdSequence`). Scoped registries inherit all parent service registrations, while linked registries are empty. See `CreateLinkedRegistry` and `CreateScope` methods.
+  
+### Changed
+
+* A `ServiceRegistryAccessor` is no longer a `ServiceRegisty`, it is the other way around
+* The creation of service registrations and type activators has been refactored; see `activator.go` and `service_registration.go` modules
+* Multiple registries can be grouped with `NewMultiRegistryAccessor` to simplify the lookup of service registrations from linked registries. The resolver uses this accessor type to merge registered service types with object instances for unregistered types.
+* 
 
 ## v0.2.0 - 2024-07-11
 
