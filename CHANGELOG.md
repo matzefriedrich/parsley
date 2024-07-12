@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 
+
+
+
 ## v0.3.0 - 2024-07-12
 
 ### Added
@@ -21,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * A `ServiceRegistryAccessor` is no longer a `ServiceRegisty`, it is the other way around
 * The creation of service registrations and type activators has been refactored; see `activator.go` and `service_registration.go` modules
 * Multiple registries can be grouped with `NewMultiRegistryAccessor` to simplify the lookup of service registrations from linked registries. The resolver uses this accessor type to merge registered service types with object instances for unregistered types.
-* 
+
 
 ## v0.2.0 - 2024-07-11
 

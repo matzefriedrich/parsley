@@ -1,10 +1,14 @@
-# parsley
-
 ## What is Parsley?
 
 Parsley is an easy-to-use reflection-based dependency injection package that fits into any Go application.
 
 This dependency injection package may become your favorite ingredient for your Go applications. It is like the nifty green herb that fits well in various dishes across different cuisines. It not only adds to the taste, but it also charms the eye. In terms of wiring dependencies, it helps to keep things clean and organized. The parsley library is inspired by other dependency injection libraries I have used, which I always miss when working on Go projects.
+
+
+## Why dependency injection for Golang?
+
+Though dependency injection is less prevalent in Golang (compared to other languages), sometimes the burden of increased complexity by adopting a DI framework may be n-times less than the complexity of building larger projects without such a framework. The concept of indirection is usually given anyway in larger projects, so what is left to be done by a dependency injection framework is bridging the gap between dependency configuration and service activation. What you gain on top is automated lifetime behavior, to name one. So why not automate it?
+
 
 ## Features
 
