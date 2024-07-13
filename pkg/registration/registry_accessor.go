@@ -1,4 +1,4 @@
-package pkg
+package registration
 
 import (
 	"github.com/matzefriedrich/parsley/pkg/types"

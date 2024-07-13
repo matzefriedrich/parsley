@@ -13,7 +13,6 @@ type FunctionInfo interface {
 
 type ServiceRegistry interface {
 	ServiceRegistryAccessor
-	BuildResolver() Resolver
 	CreateLinkedRegistry() ServiceRegistry
 	CreateScope() ServiceRegistry
 	IsRegistered(serviceType reflect.Type) bool

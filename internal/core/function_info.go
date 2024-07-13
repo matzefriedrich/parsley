@@ -1,4 +1,4 @@
-package pkg
+package core
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ type functionInfo struct {
 
 var _ types.FunctionInfo = &functionInfo{}
 
-func reflectFunctionInfoFrom(value reflect.Value) (types.FunctionInfo, error) {
+func ReflectFunctionInfoFrom(value reflect.Value) (types.FunctionInfo, error) {
 	funcType := value.Type()
 	if funcType.Kind() != reflect.Func {
 		return nil, errors.New("not a function")

@@ -1,8 +1,9 @@
-package pkg
+package registration
 
 import (
 	"errors"
 	"fmt"
+	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"reflect"
 	"strings"
@@ -87,19 +88,21 @@ func (s *serviceRegistration) String() string {
 func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeScope) (types.ServiceRegistrationSetup, error) {
 	value := reflect.ValueOf(activatorFunc)
 
-	info, err := reflectFunctionInfoFrom(value)
+	info, err := core.ReflectFunctionInfoFrom(value)
 	if err != nil {
 		return nil, types.NewRegistryError(types.ErrorRequiresFunctionValue, types.WithCause(err))
 	}
 
 	serviceType := info.ReturnType()
-	if serviceType.Kind() != reflect.Interface {
-		return nil, types.NewRegistryError(types.ErrorActivatorFunctionsMustReturnAnInterface)
+	switch serviceType.Kind() {
+	case reflect.Func:
+		return newServiceRegistration(serviceType, lifetimeScope, value), nil
+	case reflect.Interface:
+		requiredTypes := info.ParameterTypes()
+		return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil
+	default:
+		return nil, types.NewRegistryError(types.ErrorActivatorFunctionInvalidReturnType)
 	}
-
-	requiredTypes := info.ParameterTypes()
-
-	return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil
 }
 
 func newServiceRegistration(serviceType reflect.Type, scope types.LifetimeScope, activatorFunc reflect.Value, parameters ...reflect.Type) *serviceRegistration {

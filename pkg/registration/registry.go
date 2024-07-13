@@ -1,13 +1,13 @@
-package pkg
+package registration
 
 import (
-	"github.com/matzefriedrich/parsley/internal"
+	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"reflect"
 )
 
 type serviceRegistry struct {
-	identifierSource internal.ServiceIdSequence
+	identifierSource core.ServiceIdSequence
 	registrations    map[reflect.Type]types.ServiceRegistration
 }
 
@@ -21,14 +21,6 @@ func RegisterScoped(registry types.ServiceRegistry, activatorFunc any) error {
 
 func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error {
 	return registry.Register(activatorFunc, types.LifetimeSingleton)
-}
-
-func RegisterInstance[T any](registry types.ServiceRegistry, instance T) error {
-	instanceFunc, err := CreateServiceActivatorFrom[T](instance)
-	if err != nil {
-		return err
-	}
-	return registry.Register(instanceFunc, types.LifetimeSingleton)
 }
 
 func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.LifetimeScope) error {
@@ -79,7 +71,7 @@ func (s *serviceRegistry) TryGetServiceRegistration(serviceType reflect.Type) (t
 func NewServiceRegistry() types.ServiceRegistry {
 	registrations := make(map[reflect.Type]types.ServiceRegistration)
 	return &serviceRegistry{
-		identifierSource: internal.NewServiceId(0),
+		identifierSource: core.NewServiceId(0),
 		registrations:    registrations,
 	}
 }
@@ -101,12 +93,6 @@ func (s *serviceRegistry) CreateScope() types.ServiceRegistry {
 		identifierSource: s.identifierSource,
 		registrations:    registrations,
 	}
-}
-
-func (s *serviceRegistry) BuildResolver() types.Resolver {
-	r := NewResolver(s)
-	_ = RegisterInstance(s, r)
-	return r
 }
 
 var _ types.ServiceRegistry = &serviceRegistry{}
