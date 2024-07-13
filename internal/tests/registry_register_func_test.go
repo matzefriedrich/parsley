@@ -1,7 +1,9 @@
-package pkg
+package tests
 
 import (
 	"context"
+	"github.com/matzefriedrich/parsley/pkg/registration"
+	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,20 +11,20 @@ import (
 func Test_Registry_Register_func(t *testing.T) {
 
 	// Arrange
-	sut := NewServiceRegistry()
+	sut := registration.NewServiceRegistry()
 
-	_ = RegisterTransient(sut, NewPersonFactory)
-	_ = RegisterTransient(sut, NewUserController)
+	_ = registration.RegisterTransient(sut, NewPersonFactory)
+	_ = registration.RegisterTransient(sut, NewUserController)
 
-	r := sut.BuildResolver()
+	r := resolving.NewResolver(sut)
 
 	const userId = "123"
 
 	// Act
-	controller, _ := ResolveRequiredService[UserController](r, context.Background())
+	controller, _ := resolving.ResolveRequiredService[UserController](r, context.Background())
 	model := controller.GetUserInfo(userId)
 
-	userServiceFactory, _ := ResolveRequiredService[func(string) (UserService, error)](r, context.Background())
+	userServiceFactory, _ := resolving.ResolveRequiredService[func(string) (UserService, error)](r, context.Background())
 	service, factoryErr := userServiceFactory(userId)
 
 	// Assert
@@ -41,7 +43,7 @@ func (f *userService) UserId() string {
 	return f.id
 }
 
-type UserModel struct {
+type userModel struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
@@ -54,9 +56,9 @@ type userController struct {
 	userServiceFactory func(name string) (UserService, error)
 }
 
-func (f *userController) GetUserInfo(userId string) UserModel {
+func (f *userController) GetUserInfo(userId string) userModel {
 	userService, _ := f.userServiceFactory(userId)
-	return UserModel{
+	return userModel{
 		Id:   userId,
 		Name: userService.UserName(),
 	}
@@ -68,7 +70,7 @@ type UserService interface {
 }
 
 type UserController interface {
-	GetUserInfo(userId string) UserModel
+	GetUserInfo(userId string) userModel
 }
 
 func NewPersonFactory() func(string) (UserService, error) {

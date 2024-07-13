@@ -1,6 +1,7 @@
-package internal
+package tests
 
 import (
+	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -8,7 +9,7 @@ import (
 func Test_ServiceIdSequence_Next_produces_incr_values(t *testing.T) {
 
 	// Arrange
-	sut := NewServiceId(0)
+	sut := core.NewServiceId(0)
 	collectedIdentifiers := make([]uint64, 0)
 
 	// Act

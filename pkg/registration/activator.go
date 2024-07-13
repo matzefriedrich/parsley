@@ -1,4 +1,4 @@
-package pkg
+package registration
 
 import (
 	"github.com/matzefriedrich/parsley/internal"
@@ -21,4 +21,12 @@ func CreateServiceActivatorFrom[T any](instance T) (func() T, error) {
 		return instance
 	}
 	return instanceFunc, nil
+}
+
+func RegisterInstance[T any](registry types.ServiceRegistry, instance T) error {
+	instanceFunc, err := CreateServiceActivatorFrom[T](instance)
+	if err != nil {
+		return err
+	}
+	return registry.Register(instanceFunc, types.LifetimeSingleton)
 }

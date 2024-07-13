@@ -1,11 +1,12 @@
-package pkg
+package tests
 
 import (
 	"context"
+	"github.com/matzefriedrich/parsley/internal/core"
+	"github.com/matzefriedrich/parsley/pkg/registration"
+	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"reflect"
 	"testing"
-
-	"github.com/matzefriedrich/parsley/internal"
 
 	"github.com/matzefriedrich/parsley/pkg/types"
 
@@ -15,14 +16,14 @@ import (
 func Test_ServiceRegistry_register_types(t *testing.T) {
 
 	// Arrange
-	sut := NewServiceRegistry()
+	sut := registration.NewServiceRegistry()
 
 	// Act
-	_ = RegisterSingleton(sut, NewFoo)
-	_ = RegisterTransient(sut, NewFooConsumer)
+	_ = registration.RegisterSingleton(sut, NewFoo)
+	_ = registration.RegisterTransient(sut, NewFooConsumer)
 
-	fooRegistered := sut.IsRegistered(types.ServiceType[Foo]())
-	fooConsumerRegistered := sut.IsRegistered(types.ServiceType[FooConsumer]())
+	fooRegistered := sut.IsRegistered(registration.ServiceType[Foo]())
+	fooConsumerRegistered := sut.IsRegistered(registration.ServiceType[FooConsumer]())
 
 	// Assert
 	assert.True(t, fooRegistered)
@@ -32,16 +33,16 @@ func Test_ServiceRegistry_register_types(t *testing.T) {
 func Test_Registry_BuildResolver_resolve_type_with_dependencies(t *testing.T) {
 
 	// Arrange
-	sut := NewServiceRegistry()
+	sut := registration.NewServiceRegistry()
 
 	// Act
-	_ = RegisterTransient(sut, NewFoo)
-	_ = RegisterTransient(sut, NewFooConsumer)
+	_ = registration.RegisterTransient(sut, NewFoo)
+	_ = registration.RegisterTransient(sut, NewFooConsumer)
 
 	// Assert
-	r := sut.BuildResolver()
-	parsleyContext := internal.NewScopedContext(context.Background())
-	resolved, _ := r.Resolve(parsleyContext, types.ServiceType[FooConsumer]())
+	r := resolving.NewResolver(sut)
+	parsleyContext := core.NewScopedContext(context.Background())
+	resolved, _ := r.Resolve(parsleyContext, registration.ServiceType[FooConsumer]())
 	assert.NotNil(t, resolved)
 
 	actual, ok := resolved.(FooConsumer)
@@ -52,19 +53,19 @@ func Test_Registry_BuildResolver_resolve_type_with_dependencies(t *testing.T) {
 func Test_Registry_BuildResolver_resolve_scoped_from_same_context_must_be_return_same_instance(t *testing.T) {
 
 	// Arrange
-	sut := NewServiceRegistry()
+	sut := registration.NewServiceRegistry()
 
 	// Act
-	_ = RegisterSingleton(sut, NewFoo)
-	_ = RegisterScoped(sut, NewFooConsumer)
+	_ = registration.RegisterSingleton(sut, NewFoo)
+	_ = registration.RegisterScoped(sut, NewFooConsumer)
 
 	// Assert
-	r := sut.BuildResolver()
-	parsleyContext := internal.NewScopedContext(context.Background())
-	consumer1, _ := r.Resolve(parsleyContext, types.ServiceType[FooConsumer]())
+	r := resolving.NewResolver(sut)
+	parsleyContext := core.NewScopedContext(context.Background())
+	consumer1, _ := r.Resolve(parsleyContext, registration.ServiceType[FooConsumer]())
 	assert.NotNil(t, consumer1)
 
-	consumer2, _ := r.Resolve(parsleyContext, types.ServiceType[FooConsumer]())
+	consumer2, _ := r.Resolve(parsleyContext, registration.ServiceType[FooConsumer]())
 	assert.NotNil(t, consumer2)
 
 	actual, ok := consumer1.(FooConsumer)
@@ -76,20 +77,21 @@ func Test_Registry_BuildResolver_resolve_scoped_from_same_context_must_be_return
 func Test_Registry_BuildResolver_resolve_scoped_from_different_context_must_be_return_different_instance(t *testing.T) {
 
 	// Arrange
-	sut := NewServiceRegistry()
+	sut := registration.NewServiceRegistry()
 
 	// Act
-	_ = RegisterSingleton(sut, NewFoo)
-	_ = RegisterScoped(sut, NewFooConsumer)
+	_ = registration.RegisterSingleton(sut, NewFoo)
+	_ = registration.RegisterScoped(sut, NewFooConsumer)
 
 	// Assert
-	r := sut.BuildResolver()
-	parsleyContext1 := internal.NewScopedContext(context.Background())
-	consumer1, _ := r.Resolve(parsleyContext1, types.ServiceType[FooConsumer]())
+	r := resolving.NewResolver(sut)
+
+	parsleyContext1 := core.NewScopedContext(context.Background())
+	consumer1, _ := r.Resolve(parsleyContext1, registration.ServiceType[FooConsumer]())
 	assert.NotNil(t, consumer1)
 
-	parsleyContext2 := internal.NewScopedContext(context.Background())
-	consumer2, _ := r.Resolve(parsleyContext2, types.ServiceType[FooConsumer]())
+	parsleyContext2 := core.NewScopedContext(context.Background())
+	consumer2, _ := r.Resolve(parsleyContext2, registration.ServiceType[FooConsumer]())
 	assert.NotNil(t, consumer2)
 
 	actual, ok := consumer1.(FooConsumer)
@@ -101,19 +103,19 @@ func Test_Registry_BuildResolver_resolve_scoped_from_different_context_must_be_r
 func Test_Registry_RegisterModule_registers_collection_of_services(t *testing.T) {
 
 	// Arrange
-	sut := NewServiceRegistry()
+	sut := registration.NewServiceRegistry()
 
 	// Act
 	fooModule := func(r types.ServiceRegistry) error {
-		_ = RegisterSingleton(r, NewFoo)
-		_ = RegisterScoped(r, NewFooConsumer)
+		_ = registration.RegisterSingleton(r, NewFoo)
+		_ = registration.RegisterScoped(r, NewFooConsumer)
 		return nil
 	}
 
 	_ = sut.RegisterModule(fooModule)
 
-	fooRegistered := sut.IsRegistered(types.ServiceType[Foo]())
-	fooConsumerRegistered := sut.IsRegistered(types.ServiceType[FooConsumer]())
+	fooRegistered := sut.IsRegistered(registration.ServiceType[Foo]())
+	fooConsumerRegistered := sut.IsRegistered(registration.ServiceType[FooConsumer]())
 
 	// Assert
 	assert.True(t, fooRegistered)
@@ -123,21 +125,21 @@ func Test_Registry_RegisterModule_registers_collection_of_services(t *testing.T)
 func Test_Registry_RegisterInstance_registers_object(t *testing.T) {
 
 	// Arrange
-	sut := NewServiceRegistry()
+	sut := registration.NewServiceRegistry()
 
 	instance := NewFoo()
 
 	// Act
-	_ = RegisterInstance(sut, instance)
+	_ = registration.RegisterInstance(sut, instance)
 
-	fooRegistered := sut.IsRegistered(types.ServiceType[Foo]())
+	fooRegistered := sut.IsRegistered(registration.ServiceType[Foo]())
 
-	r := sut.BuildResolver()
+	r := resolving.NewResolver(sut)
 
 	// Arrange
 	assert.True(t, fooRegistered)
 
-	resolved, _ := r.Resolve(context.Background(), types.ServiceType[Foo]())
+	resolved, _ := r.Resolve(context.Background(), registration.ServiceType[Foo]())
 	assert.NotNil(t, resolved)
 
 	actual, ok := resolved.(Foo)

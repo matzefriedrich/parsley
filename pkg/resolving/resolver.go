@@ -1,15 +1,17 @@
-package pkg
+package resolving
 
 import (
 	"context"
 	"github.com/matzefriedrich/parsley/internal"
+	"github.com/matzefriedrich/parsley/internal/core"
+	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"reflect"
 )
 
 type resolver struct {
 	registry        types.ServiceRegistry
-	globalInstances *internal.InstanceBag
+	globalInstances *core.InstanceBag
 }
 
 func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context) (T, error) {
@@ -21,7 +23,7 @@ func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context)
 	default:
 		return nilInstance, types.NewResolverError(types.ErrorActivatorFunctionInvalidReturnType)
 	}
-	resolve, err := resolver.Resolve(ctx, types.ServiceType[T]())
+	resolve, err := resolver.Resolve(ctx, registration.ServiceType[T]())
 	if err != nil {
 		return nilInstance, err
 	}
@@ -29,10 +31,12 @@ func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context)
 }
 
 func NewResolver(registry types.ServiceRegistry) types.Resolver {
-	return &resolver{
+	r := &resolver{
 		registry:        registry,
-		globalInstances: internal.NewGlobalInstanceBag(),
+		globalInstances: core.NewGlobalInstanceBag(),
 	}
+	_ = registration.RegisterInstance[types.Resolver](registry, r)
+	return r
 }
 
 func detectCircularDependency(sr types.ServiceRegistration, consumer types.DependencyInfo) error {
@@ -60,7 +64,7 @@ func (r *resolver) createResolverRegistryAccessor(resolverOptions ...types.Resol
 		if err != nil {
 			return nil, err
 		}
-		return NewMultiRegistryAccessor(r.registry, transientRegistry), nil
+		return registration.NewMultiRegistryAccessor(r.registry, transientRegistry), nil
 	}
 	return r.registry, nil
 }
@@ -76,23 +80,23 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType reflect.T
 		return nil, types.NewResolverError("failed to create resolver service registry", types.WithCause(registryErr))
 	}
 
-	registration, found := registry.TryGetServiceRegistration(serviceType)
+	serviceRegistration, found := registry.TryGetServiceRegistration(serviceType)
 	if !found {
 		return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(serviceType.Name()))
 	}
 
 	makeDependencyInfo := func(sr types.ServiceRegistration, consumer types.DependencyInfo) (types.DependencyInfo, error) {
-		instance, _ := r.globalInstances.TryResolveInstance(ctx, registration)
+		instance, _ := r.globalInstances.TryResolveInstance(ctx, serviceRegistration)
 		err := detectCircularDependency(sr, consumer)
 		if err != nil {
 			return nil, err
 		}
-		return types.NewDependencyInfo(sr, instance, consumer), nil
+		return registration.NewDependencyInfo(sr, instance, consumer), nil
 	}
 
 	resolverStack := internal.MakeStack[types.DependencyInfo]()
 
-	root, _ := makeDependencyInfo(registration, nil)
+	root, _ := makeDependencyInfo(serviceRegistration, nil)
 	stack := internal.MakeStack[types.DependencyInfo](root)
 	for stack.Any() {
 		next := stack.Pop()
@@ -115,7 +119,7 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType reflect.T
 		}
 	}
 
-	instances := internal.NewInstancesBag(r.globalInstances, types.LifetimeTransient)
+	instances := core.NewInstancesBag(r.globalInstances, types.LifetimeTransient)
 
 	for resolverStack.Any() {
 

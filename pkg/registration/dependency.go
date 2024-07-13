@@ -1,48 +1,40 @@
-package types
+package registration
 
 import (
-	"errors"
+	"github.com/matzefriedrich/parsley/pkg/types"
 	"reflect"
 	"sync"
 )
 
 type dependencyInfo struct {
-	registration ServiceRegistration
+	registration types.ServiceRegistration
 	instance     interface{}
-	children     []DependencyInfo
-	consumer     DependencyInfo
+	children     []types.DependencyInfo
+	consumer     types.DependencyInfo
 	m            *sync.RWMutex
 }
 
-var _ DependencyInfo = &dependencyInfo{}
+var _ types.DependencyInfo = &dependencyInfo{}
 
-const (
-	ErrorInstanceAlreadySet = "instance already set"
-)
-
-var (
-	ErrInstanceAlreadySet = errors.New(ErrorInstanceAlreadySet)
-)
-
-func NewDependencyInfo(registration ServiceRegistration, instance interface{}, consumer DependencyInfo) DependencyInfo {
+func NewDependencyInfo(registration types.ServiceRegistration, instance interface{}, consumer types.DependencyInfo) types.DependencyInfo {
 	return &dependencyInfo{
 		registration: registration,
 		instance:     instance,
-		children:     make([]DependencyInfo, 0),
+		children:     make([]types.DependencyInfo, 0),
 		consumer:     consumer,
 		m:            &sync.RWMutex{},
 	}
 }
 
-func (d *dependencyInfo) Consumer() DependencyInfo {
+func (d *dependencyInfo) Consumer() types.DependencyInfo {
 	return d.consumer
 }
 
-func (d *dependencyInfo) Registration() ServiceRegistration {
+func (d *dependencyInfo) Registration() types.ServiceRegistration {
 	return d.registration
 }
 
-func (d *dependencyInfo) AddRequiredServiceInfo(child DependencyInfo) {
+func (d *dependencyInfo) AddRequiredServiceInfo(child types.DependencyInfo) {
 	d.m.Lock()
 	defer d.m.Unlock()
 	d.children = append(d.children, child)
@@ -79,7 +71,7 @@ func (d *dependencyInfo) SetInstance(instance interface{}) error {
 	d.m.Lock()
 	defer d.m.Unlock()
 	if d.instance != nil {
-		return errors.New(ErrorInstanceAlreadySet)
+		return types.NewDependencyError(types.ErrorInstanceAlreadySet)
 	}
 	d.instance = instance
 	return nil
