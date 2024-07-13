@@ -2,18 +2,19 @@ package tests
 
 import (
 	"context"
+	"reflect"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
-	"reflect"
-	"testing"
 
 	"github.com/matzefriedrich/parsley/pkg/types"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ServiceRegistry_register_types(t *testing.T) {
+func Test_ServiceRegistry_register_types_with_different_lifetime_behavior(t *testing.T) {
 
 	// Arrange
 	sut := registration.NewServiceRegistry()
@@ -30,7 +31,7 @@ func Test_ServiceRegistry_register_types(t *testing.T) {
 	assert.True(t, fooConsumerRegistered)
 }
 
-func Test_Registry_BuildResolver_resolve_type_with_dependencies(t *testing.T) {
+func Test_Registry_NewResolver_resolve_type_with_dependencies(t *testing.T) {
 
 	// Arrange
 	sut := registration.NewServiceRegistry()
@@ -50,7 +51,7 @@ func Test_Registry_BuildResolver_resolve_type_with_dependencies(t *testing.T) {
 	assert.NotNil(t, actual)
 }
 
-func Test_Registry_BuildResolver_resolve_scoped_from_same_context_must_be_return_same_instance(t *testing.T) {
+func Test_Registry_NewResolver_resolve_scoped_from_same_context_must_be_return_same_instance(t *testing.T) {
 
 	// Arrange
 	sut := registration.NewServiceRegistry()
@@ -74,7 +75,7 @@ func Test_Registry_BuildResolver_resolve_scoped_from_same_context_must_be_return
 	assert.Equal(t, reflect.ValueOf(consumer1).Pointer(), reflect.ValueOf(consumer2).Pointer())
 }
 
-func Test_Registry_BuildResolver_resolve_scoped_from_different_context_must_be_return_different_instance(t *testing.T) {
+func Test_Registry_NewResolver_resolve_scoped_from_different_context_must_be_return_different_instance(t *testing.T) {
 
 	// Arrange
 	sut := registration.NewServiceRegistry()
@@ -122,7 +123,7 @@ func Test_Registry_RegisterModule_registers_collection_of_services(t *testing.T)
 	assert.True(t, fooConsumerRegistered)
 }
 
-func Test_Registry_RegisterInstance_registers_object(t *testing.T) {
+func Test_Registry_RegisterInstance_registers_singleton_service_from_object(t *testing.T) {
 
 	// Arrange
 	sut := registration.NewServiceRegistry()

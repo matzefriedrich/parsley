@@ -2,13 +2,14 @@ package tests
 
 import (
 	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func Test_Registry_Register_func(t *testing.T) {
+func Test_Registry_RegisterTransient_registers_factory_function_to_resolve_dynamic_dependency_at_runtime(t *testing.T) {
 
 	// Arrange
 	sut := registration.NewServiceRegistry()
