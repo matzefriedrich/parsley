@@ -8,7 +8,7 @@ import (
 
 type serviceRegistry struct {
 	identifierSource core.ServiceIdSequence
-	registrations    map[reflect.Type]types.ServiceRegistration
+	registrations    map[reflect.Type]types.ServiceRegistrationList
 }
 
 func RegisterTransient(registry types.ServiceRegistry, activatorFunc any) error {
@@ -23,6 +23,16 @@ func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error 
 	return registry.Register(activatorFunc, types.LifetimeSingleton)
 }
 
+func (s *serviceRegistry) addOrUpdateServiceRegistrationListFor(serviceType reflect.Type) types.ServiceRegistrationList {
+	list, exists := s.registrations[serviceType]
+	if exists {
+		return list
+	}
+	list = NewServiceRegistrationList(s.identifierSource)
+	s.registrations[serviceType] = list
+	return list
+}
+
 func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.LifetimeScope) error {
 
 	registration, err := CreateServiceRegistration(activatorFunc, lifetimeScope)
@@ -30,14 +40,12 @@ func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.Lifeti
 		return err
 	}
 
-	id := s.identifierSource.Next()
-	setupErr := registration.SetId(id)
-	if setupErr != nil {
-		return types.NewRegistryError("failed to set up type registration", types.WithCause(setupErr))
-	}
-
 	serviceType := registration.ServiceType()
-	s.registrations[serviceType] = registration
+	list := s.addOrUpdateServiceRegistrationListFor(serviceType)
+	addRegistrationErr := list.AddRegistration(registration)
+	if addRegistrationErr != nil {
+		return types.NewRegistryError("failed to register type", types.WithCause(addRegistrationErr))
+	}
 
 	return nil
 }
@@ -57,19 +65,31 @@ func (s *serviceRegistry) IsRegistered(serviceType reflect.Type) bool {
 	return found
 }
 
-func (s *serviceRegistry) TryGetServiceRegistration(serviceType reflect.Type) (types.ServiceRegistration, bool) {
+func (s *serviceRegistry) TryGetServiceRegistrations(serviceType reflect.Type) (types.ServiceRegistrationList, bool) {
 	if s.IsRegistered(serviceType) == false {
 		return nil, false
 	}
-	registration, found := s.registrations[serviceType]
-	if found {
-		return registration, true
+	list, found := s.registrations[serviceType]
+	if found && list.IsEmpty() == false {
+		return list, true
+	}
+	return nil, false
+}
+
+func (s *serviceRegistry) TryGetSingleServiceRegistration(serviceType reflect.Type) (types.ServiceRegistration, bool) {
+	list, found := s.TryGetServiceRegistrations(serviceType)
+	if found && list.IsEmpty() == false {
+		registrations := list.Registrations()
+		const exactlyOne = 1
+		if len(registrations) == exactlyOne {
+			return registrations[0], true
+		}
 	}
 	return nil, false
 }
 
 func NewServiceRegistry() types.ServiceRegistry {
-	registrations := make(map[reflect.Type]types.ServiceRegistration)
+	registrations := make(map[reflect.Type]types.ServiceRegistrationList)
 	return &serviceRegistry{
 		identifierSource: core.NewServiceId(0),
 		registrations:    registrations,
@@ -77,7 +97,7 @@ func NewServiceRegistry() types.ServiceRegistry {
 }
 
 func (s *serviceRegistry) CreateLinkedRegistry() types.ServiceRegistry {
-	registrations := make(map[reflect.Type]types.ServiceRegistration)
+	registrations := make(map[reflect.Type]types.ServiceRegistrationList)
 	return &serviceRegistry{
 		identifierSource: s.identifierSource,
 		registrations:    registrations,
@@ -85,7 +105,7 @@ func (s *serviceRegistry) CreateLinkedRegistry() types.ServiceRegistry {
 }
 
 func (s *serviceRegistry) CreateScope() types.ServiceRegistry {
-	registrations := make(map[reflect.Type]types.ServiceRegistration)
+	registrations := make(map[reflect.Type]types.ServiceRegistrationList)
 	for serviceType, registration := range s.registrations {
 		registrations[serviceType] = registration
 	}

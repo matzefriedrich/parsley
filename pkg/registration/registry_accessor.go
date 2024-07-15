@@ -9,9 +9,19 @@ type multiRegistryAccessor struct {
 	registries []types.ServiceRegistryAccessor
 }
 
-func (m *multiRegistryAccessor) TryGetServiceRegistration(serviceType reflect.Type) (types.ServiceRegistration, bool) {
+func (m *multiRegistryAccessor) TryGetSingleServiceRegistration(serviceType reflect.Type) (types.ServiceRegistration, bool) {
 	for _, registry := range m.registries {
-		registration, ok := registry.TryGetServiceRegistration(serviceType)
+		registration, ok := registry.TryGetSingleServiceRegistration(serviceType)
+		if ok {
+			return registration, ok
+		}
+	}
+	return nil, false
+}
+
+func (m *multiRegistryAccessor) TryGetServiceRegistrations(serviceType reflect.Type) (types.ServiceRegistrationList, bool) {
+	for _, registry := range m.registries {
+		registration, ok := registry.TryGetServiceRegistrations(serviceType)
 		if ok {
 			return registration, ok
 		}

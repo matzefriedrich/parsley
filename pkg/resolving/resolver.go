@@ -14,20 +14,38 @@ type resolver struct {
 	globalInstances *core.InstanceBag
 }
 
-func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context) (T, error) {
-	var nilInstance T
+func ResolveRequiredServices[T any](resolver types.Resolver, ctx context.Context) ([]T, error) {
 	t := reflect.TypeOf((*T)(nil)).Elem()
 	switch t.Kind() {
 	case reflect.Func:
 	case reflect.Interface:
 	default:
-		return nilInstance, types.NewResolverError(types.ErrorActivatorFunctionInvalidReturnType)
+		return []T{}, types.NewResolverError(types.ErrorActivatorFunctionInvalidReturnType)
 	}
-	resolve, err := resolver.Resolve(ctx, registration.ServiceType[T]())
+	resolvedInstances, err := resolver.Resolve(ctx, registration.ServiceType[T]())
+	if err != nil {
+		return []T{}, err
+	}
+
+	result := make([]T, 0, len(resolvedInstances))
+	for _, instance := range resolvedInstances {
+		result = append(result, instance.(T))
+	}
+	return result, err
+}
+
+func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context) (T, error) {
+	var nilInstance T
+	services, err := ResolveRequiredServices[T](resolver, ctx)
 	if err != nil {
 		return nilInstance, err
 	}
-	return resolve.(T), err
+	if len(services) == 1 {
+		return services[0], nil
+	} else if len(services) > 1 {
+		return nilInstance, types.NewResolverError(types.ErrorAmbiguousServiceInstancesResolved)
+	}
+	return nilInstance, types.NewResolverError(types.ErrorCannotResolveService)
 }
 
 func NewResolver(registry types.ServiceRegistry) types.Resolver {
@@ -69,77 +87,84 @@ func (r *resolver) createResolverRegistryAccessor(resolverOptions ...types.Resol
 	return r.registry, nil
 }
 
-func (r *resolver) Resolve(ctx context.Context, serviceType reflect.Type) (interface{}, error) {
+func (r *resolver) Resolve(ctx context.Context, serviceType reflect.Type) ([]interface{}, error) {
 	return r.ResolveWithOptions(ctx, serviceType)
 }
 
-func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType reflect.Type, resolverOptions ...types.ResolverOptionsFunc) (interface{}, error) {
+func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType reflect.Type, resolverOptions ...types.ResolverOptionsFunc) ([]interface{}, error) {
 
 	registry, registryErr := r.createResolverRegistryAccessor(resolverOptions...)
 	if registryErr != nil {
 		return nil, types.NewResolverError("failed to create resolver service registry", types.WithCause(registryErr))
 	}
 
-	serviceRegistration, found := registry.TryGetServiceRegistration(serviceType)
+	serviceRegistrationList, found := registry.TryGetServiceRegistrations(serviceType)
 	if !found {
 		return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(serviceType.Name()))
 	}
 
-	makeDependencyInfo := func(sr types.ServiceRegistration, consumer types.DependencyInfo) (types.DependencyInfo, error) {
-		instance, _ := r.globalInstances.TryResolveInstance(ctx, serviceRegistration)
-		err := detectCircularDependency(sr, consumer)
-		if err != nil {
-			return nil, err
-		}
-		return registration.NewDependencyInfo(sr, instance, consumer), nil
-	}
+	resolvedInstances := make([]interface{}, 0)
 
-	resolverStack := internal.MakeStack[types.DependencyInfo]()
+	for _, serviceRegistration := range serviceRegistrationList.Registrations() {
 
-	root, _ := makeDependencyInfo(serviceRegistration, nil)
-	stack := internal.MakeStack[types.DependencyInfo](root)
-	for stack.Any() {
-		next := stack.Pop()
-		resolverStack.Push(next)
-		requiredServices := next.RequiredServiceTypes()
-		for _, requiredService := range requiredServices {
-			requiredServiceRegistration, isRegistered := registry.TryGetServiceRegistration(requiredService)
-			if isRegistered == false {
-				return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(requiredService.Name()))
-			}
-			child, err := makeDependencyInfo(requiredServiceRegistration, next)
+		makeDependencyInfo := func(sr types.ServiceRegistration, consumer types.DependencyInfo) (types.DependencyInfo, error) {
+			instance, _ := r.globalInstances.TryResolveInstance(ctx, serviceRegistration)
+			err := detectCircularDependency(sr, consumer)
 			if err != nil {
-				return nil, types.NewResolverError(types.ErrorCannotBuildDependencyGraph, types.WithCause(err), types.ForServiceType(requiredService.Name()))
+				return nil, err
 			}
-			if child.HasInstance() { // skip traversal, if instance is already present
+			return registration.NewDependencyInfo(sr, instance, consumer), nil
+		}
+
+		resolverStack := internal.MakeStack[types.DependencyInfo]()
+
+		root, _ := makeDependencyInfo(serviceRegistration, nil)
+		stack := internal.MakeStack[types.DependencyInfo](root)
+		for stack.Any() {
+			next := stack.Pop()
+			resolverStack.Push(next)
+			requiredServices := next.RequiredServiceTypes()
+			for _, requiredService := range requiredServices {
+				requiredServiceRegistration, isRegistered := registry.TryGetSingleServiceRegistration(requiredService)
+				if isRegistered == false {
+					return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(requiredService.Name()))
+				}
+				child, err := makeDependencyInfo(requiredServiceRegistration, next)
+				if err != nil {
+					return nil, types.NewResolverError(types.ErrorCannotBuildDependencyGraph, types.WithCause(err), types.ForServiceType(requiredService.Name()))
+				}
+				if child.HasInstance() { // skip traversal, if instance is already present
+					continue
+				}
+				next.AddRequiredServiceInfo(child)
+				stack.Push(child)
+			}
+		}
+
+		instances := core.NewInstancesBag(r.globalInstances, types.LifetimeTransient)
+
+		for resolverStack.Any() {
+
+			next := resolverStack.Pop()
+			nextRegistration := next.Registration()
+			instance, ok := instances.TryResolveInstance(ctx, nextRegistration)
+			if ok {
+				_ = next.SetInstance(instance)
 				continue
 			}
-			next.AddRequiredServiceInfo(child)
-			stack.Push(child)
+
+			instance, err := next.CreateInstance()
+			if err != nil {
+				return nil, types.NewResolverError(types.ErrorCannotResolveService, types.WithCause(err), types.ForServiceType(next.ServiceTypeName()))
+			}
+
+			instances.KeepInstance(ctx, nextRegistration, instance)
 		}
+
+		resolvedInstances = append(resolvedInstances, root.Instance())
 	}
 
-	instances := core.NewInstancesBag(r.globalInstances, types.LifetimeTransient)
-
-	for resolverStack.Any() {
-
-		next := resolverStack.Pop()
-		nextRegistration := next.Registration()
-		instance, ok := instances.TryResolveInstance(ctx, nextRegistration)
-		if ok {
-			_ = next.SetInstance(instance)
-			continue
-		}
-
-		instance, err := next.CreateInstance()
-		if err != nil {
-			return nil, types.NewResolverError(types.ErrorCannotResolveService, types.WithCause(err), types.ForServiceType(next.ServiceTypeName()))
-		}
-
-		instances.KeepInstance(ctx, nextRegistration, instance)
-	}
-
-	return root.Instance(), nil
+	return resolvedInstances, nil
 }
 
 var _ types.Resolver = &resolver{}

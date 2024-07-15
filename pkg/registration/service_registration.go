@@ -57,6 +57,11 @@ func (s *serviceRegistration) SetId(id uint64) error {
 	return nil
 }
 
+func (s *serviceRegistration) IsSame(other types.ServiceRegistration) bool {
+	sr, ok := other.(*serviceRegistration)
+	return ok && s.activatorFunc.Pointer() == sr.activatorFunc.Pointer()
+}
+
 func (s *serviceRegistration) LifetimeScope() types.LifetimeScope {
 	return s.lifetimeScope
 }

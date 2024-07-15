@@ -6,6 +6,7 @@ const (
 	ErrorServiceTypeNotRegistered              = "service type is not registered"
 	ErrorRequiredServiceNotRegistered          = "required service type is not registered"
 	ErrorCannotResolveService                  = "cannot resolve service"
+	ErrorAmbiguousServiceInstancesResolved     = "the resolve operation resulted in multiple service instances"
 	ErrorActivatorFunctionInvalidReturnType    = "activator function has an invalid return type"
 	ErrorCircularDependencyDetected            = "circular dependency detected"
 	ErrorCannotBuildDependencyGraph            = "failed to build dependency graph"

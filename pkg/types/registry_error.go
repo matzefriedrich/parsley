@@ -3,13 +3,16 @@ package types
 import "errors"
 
 const (
-	ErrorRequiresFunctionValue = "the given value is not function"
-	ErrorCannotRegisterModule  = "failed to register module"
+	ErrorRequiresFunctionValue               = "the given value is not function"
+	ErrorCannotRegisterModule                = "failed to register module"
+	ErrorTypeAlreadyRegistered               = "type already registered"
+	ErrorServiceAlreadyLinkedWithAnotherList = "service already linked with another list"
 )
 
 var (
 	ErrRequiresFunctionValue = errors.New(ErrorRequiresFunctionValue)
 	ErrCannotRegisterModule  = errors.New(ErrorCannotRegisterModule)
+	ErrTypeAlreadyRegistered = errors.New(ErrorTypeAlreadyRegistered)
 )
 
 type registryError struct {

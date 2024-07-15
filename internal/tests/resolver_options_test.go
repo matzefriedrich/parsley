@@ -21,7 +21,10 @@ func Test_Resolver_ResolveWithOptions_inject_unregistered_service_instance(t *te
 	r := resolving.NewResolver(sut)
 
 	parsleyContext := core.NewScopedContext(context.Background())
-	consumer1, _ := r.ResolveWithOptions(parsleyContext, registration.ServiceType[FooConsumer](), resolving.WithInstance[Foo](NewFoo()))
+	consumers, _ := r.ResolveWithOptions(parsleyContext, registration.ServiceType[FooConsumer](), resolving.WithInstance[Foo](NewFoo()))
+	assert.Equal(t, 1, len(consumers))
+
+	consumer1 := consumers[0]
 	assert.NotNil(t, consumer1)
 
 	actual, ok := consumer1.(FooConsumer)
