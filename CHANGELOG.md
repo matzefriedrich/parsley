@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## v0.5.0 - 2024-07-16
+
+### Added
+
+* The service registry now accepts multiple registrations for the same interface (changes internal data structures to keep track of registrations; see `ServiceRegistrationList`).
+* Adds the `ResolveRequiredServices[T]` convenience function to resolve all service instances; `ResolveRequiredService[T]` can resolve a single service but will return an error if service registrations are ambiguous.
+
+### Changed
+
+* Extends the resolver to handle multiple service registrations per interface type. The resolver returns resolved objects as a list. 
+
+
 ## v0.4.0 - 2024-07-13
 
 ### Added
