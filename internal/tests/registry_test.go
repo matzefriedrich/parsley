@@ -43,7 +43,7 @@ func Test_Registry_NewResolver_resolve_type_with_dependencies(t *testing.T) {
 	// Assert
 	r := resolving.NewResolver(sut)
 	parsleyContext := core.NewScopedContext(context.Background())
-	resolved, _ := r.Resolve(parsleyContext, registration.ServiceType[FooConsumer]())
+	resolved, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext)
 	assert.NotNil(t, resolved)
 
 	actual, ok := resolved.(FooConsumer)
@@ -63,10 +63,10 @@ func Test_Registry_NewResolver_resolve_scoped_from_same_context_must_be_return_s
 	// Assert
 	r := resolving.NewResolver(sut)
 	parsleyContext := core.NewScopedContext(context.Background())
-	consumer1, _ := r.Resolve(parsleyContext, registration.ServiceType[FooConsumer]())
+	consumer1, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext)
 	assert.NotNil(t, consumer1)
 
-	consumer2, _ := r.Resolve(parsleyContext, registration.ServiceType[FooConsumer]())
+	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext)
 	assert.NotNil(t, consumer2)
 
 	actual, ok := consumer1.(FooConsumer)
@@ -88,11 +88,12 @@ func Test_Registry_NewResolver_resolve_scoped_from_different_context_must_be_ret
 	r := resolving.NewResolver(sut)
 
 	parsleyContext1 := core.NewScopedContext(context.Background())
-	consumer1, _ := r.Resolve(parsleyContext1, registration.ServiceType[FooConsumer]())
+	consumer1, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext1)
+
 	assert.NotNil(t, consumer1)
 
 	parsleyContext2 := core.NewScopedContext(context.Background())
-	consumer2, _ := r.Resolve(parsleyContext2, registration.ServiceType[FooConsumer]())
+	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext2)
 	assert.NotNil(t, consumer2)
 
 	actual, ok := consumer1.(FooConsumer)
@@ -140,7 +141,7 @@ func Test_Registry_RegisterInstance_registers_singleton_service_from_object(t *t
 	// Arrange
 	assert.True(t, fooRegistered)
 
-	resolved, _ := r.Resolve(context.Background(), registration.ServiceType[Foo]())
+	resolved, _ := resolving.ResolveRequiredService[Foo](r, context.Background())
 	assert.NotNil(t, resolved)
 
 	actual, ok := resolved.(Foo)
