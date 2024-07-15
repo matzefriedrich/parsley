@@ -30,9 +30,9 @@ Though dependency injection is less prevalent in Golang (compared to other langu
   - ✔️ Register factory functions to create instances of services based on input parameters provided at runtime
   - ⏳ Validate registered services; fail early during application startup if missing registrations are encountered
   - ✔️ Provide instances for non-registered types, use `ResolveWithOptions[T]` insted of `Resolve[T]`
-- ⏳ Support multiple service registrations for the same interface
+- ✔️ Support multiple service registrations for the same interface
   - ⏳ Register named services (mutiple services), resolve via `func(key string) any`
-  - ⏳ Resolve list of service
+  - ✔️ Resolve services as list (default)
 - ⏳ Support sub-scopes
   - ⏳ Automatic clean-up
 
