@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -19,7 +18,7 @@ func Test_Resolver_ResolveRequiredService_factory_function_receives_current_reso
 
 	r := resolving.NewResolver(sut)
 
-	ctx := core.NewScopedContext(context.Background())
+	ctx := resolving.NewScopedContext(context.Background())
 
 	// Act
 	serviceFactory, _ := resolving.ResolveRequiredService[FactoryService](r, ctx)

@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 
@@ -42,7 +41,7 @@ func Test_Registry_NewResolver_resolve_type_with_dependencies(t *testing.T) {
 
 	// Assert
 	r := resolving.NewResolver(sut)
-	parsleyContext := core.NewScopedContext(context.Background())
+	parsleyContext := resolving.NewScopedContext(context.Background())
 	resolved, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext)
 	assert.NotNil(t, resolved)
 
@@ -62,7 +61,7 @@ func Test_Registry_NewResolver_resolve_scoped_from_same_context_must_be_return_s
 
 	// Assert
 	r := resolving.NewResolver(sut)
-	parsleyContext := core.NewScopedContext(context.Background())
+	parsleyContext := resolving.NewScopedContext(context.Background())
 	consumer1, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext)
 	assert.NotNil(t, consumer1)
 
@@ -87,12 +86,12 @@ func Test_Registry_NewResolver_resolve_scoped_from_different_context_must_be_ret
 	// Assert
 	r := resolving.NewResolver(sut)
 
-	parsleyContext1 := core.NewScopedContext(context.Background())
+	parsleyContext1 := resolving.NewScopedContext(context.Background())
 	consumer1, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext1)
 
 	assert.NotNil(t, consumer1)
 
-	parsleyContext2 := core.NewScopedContext(context.Background())
+	parsleyContext2 := resolving.NewScopedContext(context.Background())
 	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext2)
 	assert.NotNil(t, consumer2)
 

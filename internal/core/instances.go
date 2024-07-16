@@ -12,13 +12,8 @@ type InstanceBag struct {
 }
 
 const (
-	parsleyContext = "__parsley"
+	ParsleyContext = "__parsley"
 )
-
-func NewScopedContext(ctx context.Context) context.Context {
-	instances := make(map[uint64]interface{})
-	return context.WithValue(ctx, parsleyContext, instances)
-}
 
 // NewGlobalInstanceBag Creates a new InstanceBag object with global scope.
 func NewGlobalInstanceBag() *InstanceBag {
@@ -47,7 +42,7 @@ func (b *InstanceBag) TryResolveInstance(ctx context.Context, registration types
 	if found {
 		return instance, true
 	}
-	scopedInstances, hasParsleyContext := ctx.Value(parsleyContext).(map[uint64]interface{})
+	scopedInstances, hasParsleyContext := ctx.Value(ParsleyContext).(map[uint64]interface{})
 	if hasParsleyContext {
 		instance, found = scopedInstances[id]
 		if found {
@@ -69,7 +64,7 @@ func (b *InstanceBag) KeepInstance(ctx context.Context, registration types.Servi
 			}
 		}
 	case types.LifetimeScoped:
-		scopedInstances, hasParsleyContext := ctx.Value(parsleyContext).(map[uint64]interface{})
+		scopedInstances, hasParsleyContext := ctx.Value(ParsleyContext).(map[uint64]interface{})
 		if hasParsleyContext {
 			scopedInstances[id] = instance
 		}
