@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -19,7 +18,7 @@ func Test_Resolver_Resolve_returns_err_if_circular_dependency_detected(t *testin
 
 	r := resolving.NewResolver(registry)
 
-	scope := core.NewScopedContext(context.Background())
+	scope := resolving.NewScopedContext(context.Background())
 
 	// Act
 	_, err := r.Resolve(scope, registration.ServiceType[Foo0]())

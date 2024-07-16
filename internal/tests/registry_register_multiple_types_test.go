@@ -3,7 +3,6 @@ package tests
 import (
 	"context"
 	"errors"
-	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -115,7 +114,7 @@ func Test_Registry_register_multiple_types_mixed_lifetime_scopes_2(t *testing.T)
 	}
 
 	r := resolving.NewResolver(sut)
-	scope := core.NewScopedContext(context.Background())
+	scope := resolving.NewScopedContext(context.Background())
 	resolvedServices1, err := resolving.ResolveRequiredServices[multiFoo](r, scope)
 	resolvedServices2, _ := resolving.ResolveRequiredServices[multiFoo](r, scope)
 

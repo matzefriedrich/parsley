@@ -69,7 +69,7 @@ Once all service types are registered, a resolver service (the actual container)
 
 ````golang
 resolver := resolving.NewResolver(registry)
-scope := internal.NewScopedContext(context.Background())
+scope := resolving.NewScopedContext(context.Background())
 consumerInstance, _ := resolving.ResolveRequiredService[FooConsumer](resolver, scope)
 ````
 
