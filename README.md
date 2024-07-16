@@ -55,22 +55,22 @@ In parsley, constructor methods are the centerpiece that defines the mappings be
 
 ### Learn Parsley by example
 
-Parsley uses reflection to build a service registry and resolve objects at runtime. Use the `NewServiceRegistry` method to create a registry service that tracks service mapping and lifetime configuration. Use the `Register` method to register types via constructor methods.
+Parsley uses reflection to build a service registry and resolve objects at runtime. Use the `NewServiceRegistry` method to create a registry service that tracks service mapping and lifetime configuration. Use the `Register` method of the `ServiceRegistry` to register types via constructor methods.
+
+Since the `ServiceRegistry` is quite generic, it may feel more natural to use the registration helper methods `RegisterSingleton`, `RegisterScoped`, `RegisterTransient`, or `RegisterInstance` to register types and configure a lifetime behavior.
 
 ````golang
-registry := NewServiceRegistry()
-
-_ = RegisterSingleton(sut, NewFoo)
-_ = RegisterScoped(sut, NewFooConsumer)
+registry := registration.NewServiceRegistry()
+_ = registration.RegisterSingleton(registry, NewFoo)
+_ = registration.RegisterScoped(registry, NewFooConsumer)
 ````
 
-Once all service types are registered, a resolver service (the actual container) must be created using the registry's `BuildResolver` method. The resolver is responsible for creating object instances and managing their lifetime.
+Once all service types are registered, a resolver service (the actual container) must be created. The resolver creates object instances and manages their lifetime following the service configuration. Use the `NewResolver` method and pass the registry instance that holds the type registrations. 
 
 ````golang
-resolver := registry.BuildResolver()
+resolver := resolving.NewResolver(registry)
 scope := internal.NewScopedContext(context.Background())
-consumerInstance, _ := resolver.Resolve(scope, 
-    types.ServiceType[FooConsumer]())
+consumerInstance, _ := resolving.ResolveRequiredService[FooConsumer](resolver, scope)
 ````
 
 The types and methods involved in the example above, are defined as follows:
