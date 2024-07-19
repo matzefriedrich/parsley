@@ -31,7 +31,7 @@ Though dependency injection is less prevalent in Golang (compared to other langu
   - ⏳ Validate registered services; fail early during application startup if missing registrations are encountered
   - ✔️ Provide instances for non-registered types, use `ResolveWithOptions[T]` insted of `Resolve[T]`
 - ✔️ Support multiple service registrations for the same interface
-  - ⏳ Register named services (mutiple services), resolve via `func(key string) any`
+  - ✔️ Register named services (mutiple services), resolve via `func(key string) T`
   - ✔️ Resolve services as list (default)
 - ⏳ Support sub-scopes
   - ⏳ Automatic clean-up
