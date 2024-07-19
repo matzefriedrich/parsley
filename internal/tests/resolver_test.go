@@ -13,37 +13,37 @@ func Test_Resolver_Resolve_returns_err_if_circular_dependency_detected(t *testin
 
 	// Arrange
 	registry := registration.NewServiceRegistry()
-	_ = registration.RegisterTransient(registry, newFoo)
-	_ = registration.RegisterTransient(registry, newBar)
+	_ = registration.RegisterTransient(registry, newFooRequiringBar)
+	_ = registration.RegisterTransient(registry, newBarRequiringFoo)
 
 	r := resolving.NewResolver(registry)
 
 	scope := resolving.NewScopedContext(context.Background())
 
 	// Act
-	_, err := r.Resolve(scope, registration.ServiceType[Foo0]())
+	_, err := r.Resolve(scope, registration.ServiceType[fooBar]())
 
 	// Assert
 	assert.ErrorIs(t, err, types.ErrCircularDependencyDetected)
 	assert.ErrorIs(t, err, types.ErrCannotBuildDependencyGraph)
 }
 
-type foo0 struct {
-	bar Bar0
+type fooRequiresBar struct {
+	bar barFoo
 }
 
-type Foo0 interface{}
+type fooBar interface{}
 
-type bar0 struct {
-	foo Foo0
+type barRequiresFoo struct {
+	foo fooBar
 }
 
-type Bar0 interface{}
+type barFoo interface{}
 
-func newFoo(bar Bar0) Foo0 {
-	return &foo0{bar: bar}
+func newFooRequiringBar(bar barFoo) fooBar {
+	return &fooRequiresBar{bar: bar}
 }
 
-func newBar(foo Foo0) Bar0 {
-	return &bar0{foo: foo}
+func newBarRequiringFoo(foo fooBar) barFoo {
+	return &barRequiresFoo{foo: foo}
 }
