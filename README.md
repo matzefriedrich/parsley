@@ -13,7 +13,7 @@ Though dependency injection is less prevalent in Golang (compared to other langu
 ## Features
 
 - ✔️ Register types via constructor functions
-- ✔️ Resolve objects by interface
+- ✔️ Resolve objects by type (both interface and pointer type)
   - ✔️ Constructor injection
   - ⏳ Injection via field initialization (requires annotation)
   - ❌ Injection via setter methods
