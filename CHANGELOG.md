@@ -5,17 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.6.0] - 2024-07-26
 
 ### Added 
 
-* Adds the `Activate[T]` method which can resolve an instance from an unregistered activator func
-* Allows registration and activation of pointer types
+* Adds the `Activate[T]` method which can resolve an instance from an unregistered activator func.
+* Allows registration and activation of pointer types (to not enforce usage of interfaces as abstractions).
+* Adds the `RegisterNamed[T]` method to register services of the same interface and allow to resolve them by name.
 
 ### Changes
 
-* Renames the `ServiceType[T]` method to `MakeServiceType[T]`; adds service type representing the reflected type and typename
-* Replaces all usages of `reflect.Type` by `ServiceType` in all Parsley interfaces
+* Renames the `ServiceType[T]` method to `MakeServiceType[T]`; a service type represents now the reflected type and its name (which makes debugging and understanding service dependencies much easier).
+* Replaces all usages of `reflect.Type` by `ServiceType` in all Parsley interfaces.
+* Changes the `IsSame` method of the `ServiceRegistration` type; service registrations of type function are always treated as different service types.
+
+### Fixes
+
+* Fixes a bug in the `detectCircularDependency` function which could make the method get stuck in an infinite loop.
 
 
 ## v0.5.0 - 2024-07-16
