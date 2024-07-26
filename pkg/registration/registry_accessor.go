@@ -2,14 +2,13 @@ package registration
 
 import (
 	"github.com/matzefriedrich/parsley/pkg/types"
-	"reflect"
 )
 
 type multiRegistryAccessor struct {
 	registries []types.ServiceRegistryAccessor
 }
 
-func (m *multiRegistryAccessor) TryGetSingleServiceRegistration(serviceType reflect.Type) (types.ServiceRegistration, bool) {
+func (m *multiRegistryAccessor) TryGetSingleServiceRegistration(serviceType types.ServiceType) (types.ServiceRegistration, bool) {
 	for _, registry := range m.registries {
 		registration, ok := registry.TryGetSingleServiceRegistration(serviceType)
 		if ok {
@@ -19,7 +18,7 @@ func (m *multiRegistryAccessor) TryGetSingleServiceRegistration(serviceType refl
 	return nil, false
 }
 
-func (m *multiRegistryAccessor) TryGetServiceRegistrations(serviceType reflect.Type) (types.ServiceRegistrationList, bool) {
+func (m *multiRegistryAccessor) TryGetServiceRegistrations(serviceType types.ServiceType) (types.ServiceRegistrationList, bool) {
 	for _, registry := range m.registries {
 		registration, ok := registry.TryGetServiceRegistrations(serviceType)
 		if ok {

@@ -2,20 +2,27 @@ package types
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 )
 
 type FunctionInfo interface {
+	fmt.Stringer
 	Name() string
-	ParameterTypes() []reflect.Type
-	ReturnType() reflect.Type
+	ParameterTypes() []ServiceType
+	ReturnType() ServiceType
+}
+
+type ServiceType interface {
+	Name() string
+	ReflectedType() reflect.Type
 }
 
 type ServiceRegistry interface {
 	ServiceRegistryAccessor
 	CreateLinkedRegistry() ServiceRegistry
 	CreateScope() ServiceRegistry
-	IsRegistered(serviceType reflect.Type) bool
+	IsRegistered(serviceType ServiceType) bool
 	Register(activatorFunc any, scope LifetimeScope) error
 	RegisterModule(modules ...ModuleFunc) error
 }
@@ -23,8 +30,8 @@ type ServiceRegistry interface {
 type ModuleFunc func(registry ServiceRegistry) error
 
 type ServiceRegistryAccessor interface {
-	TryGetServiceRegistrations(serviceType reflect.Type) (ServiceRegistrationList, bool)
-	TryGetSingleServiceRegistration(serviceType reflect.Type) (ServiceRegistration, bool)
+	TryGetServiceRegistrations(serviceType ServiceType) (ServiceRegistrationList, bool)
+	TryGetSingleServiceRegistration(serviceType ServiceType) (ServiceRegistration, bool)
 }
 
 type ServiceRegistration interface {
@@ -32,8 +39,8 @@ type ServiceRegistration interface {
 	InvokeActivator(params ...interface{}) (interface{}, error)
 	IsSame(other ServiceRegistration) bool
 	LifetimeScope() LifetimeScope
-	RequiredServiceTypes() []reflect.Type
-	ServiceType() reflect.Type
+	RequiredServiceTypes() []ServiceType
+	ServiceType() ServiceType
 }
 
 type ServiceRegistrationList interface {
@@ -53,8 +60,8 @@ type RegistrationConfigurationFunc func(r ServiceRegistration)
 type ResolverOptionsFunc func(registry ServiceRegistry) error
 
 type Resolver interface {
-	Resolve(ctx context.Context, serviceType reflect.Type) ([]interface{}, error)
-	ResolveWithOptions(ctx context.Context, serviceType reflect.Type, options ...ResolverOptionsFunc) ([]interface{}, error)
+	Resolve(ctx context.Context, serviceType ServiceType) ([]interface{}, error)
+	ResolveWithOptions(ctx context.Context, serviceType ServiceType, options ...ResolverOptionsFunc) ([]interface{}, error)
 }
 
 type DependencyInfo interface {
@@ -64,7 +71,7 @@ type DependencyInfo interface {
 	HasInstance() bool
 	Instance() interface{}
 	Registration() ServiceRegistration
-	RequiredServiceTypes() []reflect.Type
+	RequiredServiceTypes() []ServiceType
 	RequiredServices() ([]interface{}, error)
 	ServiceTypeName() string
 	SetInstance(instance interface{}) error

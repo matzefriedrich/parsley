@@ -23,13 +23,13 @@ func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error 
 	return registry.Register(activatorFunc, types.LifetimeSingleton)
 }
 
-func (s *serviceRegistry) addOrUpdateServiceRegistrationListFor(serviceType reflect.Type) types.ServiceRegistrationList {
-	list, exists := s.registrations[serviceType]
+func (s *serviceRegistry) addOrUpdateServiceRegistrationListFor(serviceType types.ServiceType) types.ServiceRegistrationList {
+	list, exists := s.registrations[serviceType.ReflectedType()]
 	if exists {
 		return list
 	}
 	list = NewServiceRegistrationList(s.identifierSource)
-	s.registrations[serviceType] = list
+	s.registrations[serviceType.ReflectedType()] = list
 	return list
 }
 
@@ -60,23 +60,23 @@ func (s *serviceRegistry) RegisterModule(modules ...types.ModuleFunc) error {
 	return nil
 }
 
-func (s *serviceRegistry) IsRegistered(serviceType reflect.Type) bool {
-	_, found := s.registrations[serviceType]
+func (s *serviceRegistry) IsRegistered(serviceType types.ServiceType) bool {
+	_, found := s.registrations[serviceType.ReflectedType()]
 	return found
 }
 
-func (s *serviceRegistry) TryGetServiceRegistrations(serviceType reflect.Type) (types.ServiceRegistrationList, bool) {
+func (s *serviceRegistry) TryGetServiceRegistrations(serviceType types.ServiceType) (types.ServiceRegistrationList, bool) {
 	if s.IsRegistered(serviceType) == false {
 		return nil, false
 	}
-	list, found := s.registrations[serviceType]
+	list, found := s.registrations[serviceType.ReflectedType()]
 	if found && list.IsEmpty() == false {
 		return list, true
 	}
 	return nil, false
 }
 
-func (s *serviceRegistry) TryGetSingleServiceRegistration(serviceType reflect.Type) (types.ServiceRegistration, bool) {
+func (s *serviceRegistry) TryGetSingleServiceRegistration(serviceType types.ServiceType) (types.ServiceRegistration, bool) {
 	list, found := s.TryGetServiceRegistrations(serviceType)
 	if found && list.IsEmpty() == false {
 		registrations := list.Registrations()

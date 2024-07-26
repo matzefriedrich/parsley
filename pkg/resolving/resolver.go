@@ -19,10 +19,11 @@ func ResolveRequiredServices[T any](resolver types.Resolver, ctx context.Context
 	switch t.Kind() {
 	case reflect.Func:
 	case reflect.Interface:
+	case reflect.Pointer:
 	default:
 		return []T{}, types.NewResolverError(types.ErrorActivatorFunctionInvalidReturnType)
 	}
-	resolvedInstances, err := resolver.Resolve(ctx, registration.ServiceType[T]())
+	resolvedInstances, err := resolver.Resolve(ctx, types.MakeServiceType[T]())
 	if err != nil {
 		return []T{}, err
 	}
@@ -87,11 +88,11 @@ func (r *resolver) createResolverRegistryAccessor(resolverOptions ...types.Resol
 	return r.registry, nil
 }
 
-func (r *resolver) Resolve(ctx context.Context, serviceType reflect.Type) ([]interface{}, error) {
+func (r *resolver) Resolve(ctx context.Context, serviceType types.ServiceType) ([]interface{}, error) {
 	return r.ResolveWithOptions(ctx, serviceType)
 }
 
-func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType reflect.Type, resolverOptions ...types.ResolverOptionsFunc) ([]interface{}, error) {
+func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.ServiceType, resolverOptions ...types.ResolverOptionsFunc) ([]interface{}, error) {
 
 	registry, registryErr := r.createResolverRegistryAccessor(resolverOptions...)
 	if registryErr != nil {
