@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 * Adds the `Activate[T]` method which can resolve an instance from an unregistered activator func
+* Allows registration and activation of pointer types
+
+### Changes
+
+* Renames the `ServiceType[T]` method to `MakeServiceType[T]`; adds service type representing the reflected type and typename
+* Replaces all usages of `reflect.Type` by `ServiceType` in all Parsley interfaces
 
 
 ## v0.5.0 - 2024-07-16

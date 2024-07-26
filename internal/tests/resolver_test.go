@@ -21,7 +21,7 @@ func Test_Resolver_Resolve_returns_err_if_circular_dependency_detected(t *testin
 	scope := resolving.NewScopedContext(context.Background())
 
 	// Act
-	_, err := r.Resolve(scope, registration.ServiceType[fooBar]())
+	_, err := r.Resolve(scope, types.MakeServiceType[fooBar]())
 
 	// Assert
 	assert.ErrorIs(t, err, types.ErrCircularDependencyDetected)

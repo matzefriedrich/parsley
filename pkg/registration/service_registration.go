@@ -18,11 +18,11 @@ type serviceRegistration struct {
 }
 
 type typeInfo struct {
-	t    reflect.Type
+	t    types.ServiceType
 	name string
 }
 
-func newTypeInfo(t reflect.Type) typeInfo {
+func newTypeInfo(t types.ServiceType) typeInfo {
 	return typeInfo{
 		t:    t,
 		name: t.Name(),
@@ -66,15 +66,15 @@ func (s *serviceRegistration) LifetimeScope() types.LifetimeScope {
 	return s.lifetimeScope
 }
 
-func (s *serviceRegistration) RequiredServiceTypes() []reflect.Type {
-	requiredTypes := make([]reflect.Type, len(s.parameters))
+func (s *serviceRegistration) RequiredServiceTypes() []types.ServiceType {
+	requiredTypes := make([]types.ServiceType, len(s.parameters))
 	for i, p := range s.parameters {
 		requiredTypes[i] = p.t
 	}
 	return requiredTypes
 }
 
-func (s *serviceRegistration) ServiceType() reflect.Type {
+func (s *serviceRegistration) ServiceType() types.ServiceType {
 	return s.serviceType.t
 }
 
@@ -99,9 +99,11 @@ func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeSc
 	}
 
 	serviceType := info.ReturnType()
-	switch serviceType.Kind() {
+	switch serviceType.ReflectedType().Kind() {
 	case reflect.Func:
 		return newServiceRegistration(serviceType, lifetimeScope, value), nil
+	case reflect.Pointer:
+		fallthrough
 	case reflect.Interface:
 		requiredTypes := info.ParameterTypes()
 		return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil
@@ -110,7 +112,7 @@ func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeSc
 	}
 }
 
-func newServiceRegistration(serviceType reflect.Type, scope types.LifetimeScope, activatorFunc reflect.Value, parameters ...reflect.Type) *serviceRegistration {
+func newServiceRegistration(serviceType types.ServiceType, scope types.LifetimeScope, activatorFunc reflect.Value, parameters ...types.ServiceType) *serviceRegistration {
 	parameterTypeInfos := make([]typeInfo, len(parameters))
 	for i, p := range parameters {
 		parameterTypeInfos[i] = newTypeInfo(p)

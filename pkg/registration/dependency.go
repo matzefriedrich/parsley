@@ -2,7 +2,6 @@ package registration
 
 import (
 	"github.com/matzefriedrich/parsley/pkg/types"
-	"reflect"
 	"sync"
 )
 
@@ -40,7 +39,7 @@ func (d *dependencyInfo) AddRequiredServiceInfo(child types.DependencyInfo) {
 	d.children = append(d.children, child)
 }
 
-func (d *dependencyInfo) RequiredServiceTypes() []reflect.Type {
+func (d *dependencyInfo) RequiredServiceTypes() []types.ServiceType {
 	return d.registration.RequiredServiceTypes()
 }
 

@@ -22,8 +22,8 @@ func Test_ServiceRegistry_register_types_with_different_lifetime_behavior(t *tes
 	_ = registration.RegisterSingleton(sut, NewFoo)
 	_ = registration.RegisterTransient(sut, NewFooConsumer)
 
-	fooRegistered := sut.IsRegistered(registration.ServiceType[Foo]())
-	fooConsumerRegistered := sut.IsRegistered(registration.ServiceType[FooConsumer]())
+	fooRegistered := sut.IsRegistered(types.MakeServiceType[Foo]())
+	fooConsumerRegistered := sut.IsRegistered(types.MakeServiceType[FooConsumer]())
 
 	// Assert
 	assert.True(t, fooRegistered)
@@ -115,8 +115,8 @@ func Test_Registry_RegisterModule_registers_collection_of_services(t *testing.T)
 
 	_ = sut.RegisterModule(fooModule)
 
-	fooRegistered := sut.IsRegistered(registration.ServiceType[Foo]())
-	fooConsumerRegistered := sut.IsRegistered(registration.ServiceType[FooConsumer]())
+	fooRegistered := sut.IsRegistered(types.MakeServiceType[Foo]())
+	fooConsumerRegistered := sut.IsRegistered(types.MakeServiceType[FooConsumer]())
 
 	// Assert
 	assert.True(t, fooRegistered)
@@ -133,7 +133,7 @@ func Test_Registry_RegisterInstance_registers_singleton_service_from_object(t *t
 	// Act
 	_ = registration.RegisterInstance(sut, instance)
 
-	fooRegistered := sut.IsRegistered(registration.ServiceType[Foo]())
+	fooRegistered := sut.IsRegistered(types.MakeServiceType[Foo]())
 
 	r := resolving.NewResolver(sut)
 
