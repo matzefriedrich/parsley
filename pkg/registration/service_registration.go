@@ -100,10 +100,10 @@ func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeSc
 
 	serviceType := info.ReturnType()
 	switch serviceType.ReflectedType().Kind() {
-	case reflect.Pointer:
-		fallthrough
 	case reflect.Func:
 		return newServiceRegistration(serviceType, lifetimeScope, value), nil
+	case reflect.Pointer:
+		fallthrough
 	case reflect.Interface:
 		requiredTypes := info.ParameterTypes()
 		return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil

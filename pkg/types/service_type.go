@@ -32,6 +32,8 @@ func ServiceTypeFrom(t reflect.Type) ServiceType {
 		name = t.Elem().String()
 	case reflect.Interface:
 		name = t.Name()
+	case reflect.Func:
+		name = t.String()
 	default:
 		panic("unsupported type: " + t.String())
 	}
