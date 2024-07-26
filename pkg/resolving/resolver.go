@@ -67,7 +67,7 @@ func detectCircularDependency(sr types.ServiceRegistration, consumer types.Depen
 			if next.Registration().Id() == sr.Id() {
 				return types.NewResolverError(types.ErrorCircularDependencyDetected, types.ForServiceType(next.ServiceTypeName()))
 			}
-			parent := consumer.Consumer()
+			parent := next.Consumer()
 			if parent != nil {
 				stack.Push(parent)
 			}

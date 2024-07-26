@@ -55,6 +55,11 @@ type ServiceRegistrationSetup interface {
 	SetId(id uint64) error
 }
 
+type NamedService[T any] interface {
+	Name() string
+	ActivatorFunc() any
+}
+
 type RegistrationConfigurationFunc func(r ServiceRegistration)
 
 type ResolverOptionsFunc func(registry ServiceRegistry) error
