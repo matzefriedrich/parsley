@@ -1,4 +1,4 @@
-package tests
+package registration
 
 import (
 	"context"
@@ -19,8 +19,8 @@ func Test_ServiceRegistry_register_types_with_different_lifetime_behavior(t *tes
 	sut := registration.NewServiceRegistry()
 
 	// Act
-	_ = registration.RegisterSingleton(sut, NewFoo)
-	_ = registration.RegisterTransient(sut, NewFooConsumer)
+	_ = registration.RegisterSingleton(sut, newFoo)
+	_ = registration.RegisterTransient(sut, newFooConsumer)
 
 	fooRegistered := sut.IsRegistered(types.MakeServiceType[Foo]())
 	fooConsumerRegistered := sut.IsRegistered(types.MakeServiceType[FooConsumer]())
@@ -36,8 +36,8 @@ func Test_Registry_NewResolver_resolve_type_with_dependencies(t *testing.T) {
 	sut := registration.NewServiceRegistry()
 
 	// Act
-	_ = registration.RegisterTransient(sut, NewFoo)
-	_ = registration.RegisterTransient(sut, NewFooConsumer)
+	_ = registration.RegisterTransient(sut, newFoo)
+	_ = registration.RegisterTransient(sut, newFooConsumer)
 
 	// Assert
 	r := resolving.NewResolver(sut)
@@ -56,8 +56,8 @@ func Test_Registry_NewResolver_resolve_scoped_from_same_context_must_be_return_s
 	sut := registration.NewServiceRegistry()
 
 	// Act
-	_ = registration.RegisterSingleton(sut, NewFoo)
-	_ = registration.RegisterScoped(sut, NewFooConsumer)
+	_ = registration.RegisterSingleton(sut, newFoo)
+	_ = registration.RegisterScoped(sut, newFooConsumer)
 
 	// Assert
 	r := resolving.NewResolver(sut)
@@ -80,8 +80,8 @@ func Test_Registry_NewResolver_resolve_scoped_from_different_context_must_be_ret
 	sut := registration.NewServiceRegistry()
 
 	// Act
-	_ = registration.RegisterSingleton(sut, NewFoo)
-	_ = registration.RegisterScoped(sut, NewFooConsumer)
+	_ = registration.RegisterSingleton(sut, newFoo)
+	_ = registration.RegisterScoped(sut, newFooConsumer)
 
 	// Assert
 	r := resolving.NewResolver(sut)
@@ -108,8 +108,8 @@ func Test_Registry_RegisterModule_registers_collection_of_services(t *testing.T)
 
 	// Act
 	fooModule := func(r types.ServiceRegistry) error {
-		_ = registration.RegisterSingleton(r, NewFoo)
-		_ = registration.RegisterScoped(r, NewFooConsumer)
+		_ = registration.RegisterSingleton(r, newFoo)
+		_ = registration.RegisterScoped(r, newFooConsumer)
 		return nil
 	}
 
@@ -128,7 +128,7 @@ func Test_Registry_RegisterInstance_registers_singleton_service_from_object(t *t
 	// Arrange
 	sut := registration.NewServiceRegistry()
 
-	instance := NewFoo()
+	instance := newFoo()
 
 	// Act
 	_ = registration.RegisterInstance(sut, instance)
@@ -157,7 +157,7 @@ type foo struct{}
 
 func (f *foo) Bar() {}
 
-func NewFoo() Foo {
+func newFoo() Foo {
 	return &foo{}
 }
 
@@ -173,7 +173,7 @@ func (fb *fooConsumer) FooBar() {
 	fb.foo.Bar()
 }
 
-func NewFooConsumer(foo Foo) FooConsumer {
+func newFooConsumer(foo Foo) FooConsumer {
 	return &fooConsumer{
 		foo: foo,
 	}

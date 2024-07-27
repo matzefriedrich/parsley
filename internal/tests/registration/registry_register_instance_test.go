@@ -1,4 +1,4 @@
-package tests
+package registration
 
 import (
 	"context"
@@ -13,7 +13,7 @@ func Test_Registry_RegisterInstance_accepts_pointer(t *testing.T) {
 	// Arrange
 	registry := registration.NewServiceRegistry()
 
-	options := NewOptions("value")
+	options := newOptions("value")
 
 	// Act
 	err := registration.RegisterInstance(registry, options)
@@ -31,9 +31,9 @@ func Test_Registry_RegisterInstance_resolve_object_with_pointer_dependency(t *te
 	// Arrange
 	registry := registration.NewServiceRegistry()
 
-	options := NewOptions("value")
+	options := newOptions("value")
 	_ = registration.RegisterInstance(registry, options)
-	_ = registration.RegisterTransient(registry, NewOptionsConsumer)
+	_ = registration.RegisterTransient(registry, newOptionsConsumer)
 
 	resolver := resolving.NewResolver(registry)
 
@@ -48,7 +48,7 @@ type someOptions struct {
 	value string
 }
 
-func NewOptions(value string) *someOptions {
+func newOptions(value string) *someOptions {
 	return &someOptions{value}
 }
 
@@ -56,7 +56,7 @@ type optionsConsumer struct {
 	options *someOptions
 }
 
-func NewOptionsConsumer(options *someOptions) *optionsConsumer {
+func newOptionsConsumer(options *someOptions) *optionsConsumer {
 	return &optionsConsumer{
 		options: options,
 	}

@@ -1,4 +1,4 @@
-package tests
+package registration
 
 import (
 	"context"
@@ -14,18 +14,18 @@ func Test_Registry_RegisterTransient_registers_factory_function_to_resolve_dynam
 	// Arrange
 	sut := registration.NewServiceRegistry()
 
-	_ = registration.RegisterTransient(sut, NewPersonFactory)
-	_ = registration.RegisterTransient(sut, NewUserController)
+	_ = registration.RegisterTransient(sut, newPersonFactory)
+	_ = registration.RegisterTransient(sut, newUserController)
 
 	r := resolving.NewResolver(sut)
 
 	const userId = "123"
 
 	// Act
-	controller, _ := resolving.ResolveRequiredService[UserController](r, context.Background())
+	controller, _ := resolving.ResolveRequiredService[userController](r, context.Background())
 	model := controller.GetUserInfo(userId)
 
-	userServiceFactory, _ := resolving.ResolveRequiredService[func(string) (UserService, error)](r, context.Background())
+	userServiceFactory, _ := resolving.ResolveRequiredService[func(string) (userService, error)](r, context.Background())
 	service, factoryErr := userServiceFactory(userId)
 
 	// Assert
@@ -36,11 +36,11 @@ func Test_Registry_RegisterTransient_registers_factory_function_to_resolve_dynam
 	assert.Equal(t, userId, service.UserId())
 }
 
-type userService struct {
+type idUserService struct {
 	id string
 }
 
-func (f *userService) UserId() string {
+func (f *idUserService) UserId() string {
 	return f.id
 }
 
@@ -49,15 +49,15 @@ type userModel struct {
 	Name string `json:"name"`
 }
 
-func (f *userService) UserName() string {
+func (f *idUserService) UserName() string {
 	return "" // retrieve username from data backend
 }
 
-type userController struct {
-	userServiceFactory func(name string) (UserService, error)
+type idUserController struct {
+	userServiceFactory func(name string) (userService, error)
 }
 
-func (f *userController) GetUserInfo(userId string) userModel {
+func (f *idUserController) GetUserInfo(userId string) userModel {
 	userService, _ := f.userServiceFactory(userId)
 	return userModel{
 		Id:   userId,
@@ -65,25 +65,25 @@ func (f *userController) GetUserInfo(userId string) userModel {
 	}
 }
 
-type UserService interface {
+type userService interface {
 	UserName() string
 	UserId() string
 }
 
-type UserController interface {
+type userController interface {
 	GetUserInfo(userId string) userModel
 }
 
-func NewPersonFactory() func(string) (UserService, error) {
-	return func(userId string) (UserService, error) {
-		return &userService{
+func newPersonFactory() func(string) (userService, error) {
+	return func(userId string) (userService, error) {
+		return &idUserService{
 			id: userId,
 		}, nil
 	}
 }
 
-func NewUserController(userServiceFactory func(string) (UserService, error)) UserController {
-	return &userController{
+func newUserController(userServiceFactory func(string) (userService, error)) userController {
+	return &idUserController{
 		userServiceFactory: userServiceFactory,
 	}
 }

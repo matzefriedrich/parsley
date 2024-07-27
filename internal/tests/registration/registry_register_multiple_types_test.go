@@ -1,4 +1,4 @@
-package tests
+package registration
 
 import (
 	"context"

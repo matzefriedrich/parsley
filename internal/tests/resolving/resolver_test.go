@@ -1,4 +1,4 @@
-package tests
+package resolving
 
 import (
 	"context"

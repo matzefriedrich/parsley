@@ -1,4 +1,4 @@
-package tests
+package core
 
 import (
 	"github.com/matzefriedrich/parsley/internal/core"
