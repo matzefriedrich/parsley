@@ -31,7 +31,7 @@ func ServiceTypeFrom(t reflect.Type) ServiceType {
 	case reflect.Ptr:
 		name = t.Elem().String()
 	case reflect.Interface:
-		name = t.Name()
+		name = t.String()
 	case reflect.Func:
 		name = t.String()
 	default:

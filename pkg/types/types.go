@@ -9,8 +9,14 @@ import (
 type FunctionInfo interface {
 	fmt.Stringer
 	Name() string
-	ParameterTypes() []ServiceType
+	Parameters() []FunctionParameterInfo
 	ReturnType() ServiceType
+	ParameterTypes() []ServiceType
+}
+
+type FunctionParameterInfo interface {
+	fmt.Stringer
+	Type() ServiceType
 }
 
 type ServiceType interface {
