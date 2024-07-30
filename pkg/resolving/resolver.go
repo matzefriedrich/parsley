@@ -83,7 +83,7 @@ func (r *resolver) createResolverRegistryAccessor(resolverOptions ...types.Resol
 		if err != nil {
 			return nil, err
 		}
-		return registration.NewMultiRegistryAccessor(r.registry, transientRegistry), nil
+		return registration.NewMultiRegistryAccessor(transientRegistry, r.registry), nil
 	}
 	return r.registry, nil
 }

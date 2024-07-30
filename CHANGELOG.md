@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.6.1] - 2024-07-30
+
+### Changes
+
+* Registers named services as transient services to resolve them also as a list of services (like services without a name). Changes the `createResolverRegistryAccessor` method so temporary registrations are selected first (and shadow permanent registrations). This behavior can also be leveraged in `ResolverOptionsFunc` to shadow other registrations when resolving instances via `ResolveWithOptions.`
+
+
 ## [v0.6.0] - 2024-07-26
 
 ### Added 

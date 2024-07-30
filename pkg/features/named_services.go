@@ -24,10 +24,11 @@ func RegisterNamed[T any](registry types.ServiceRegistry, services ...registrati
 	registrationErrors := make([]error, 0)
 
 	for _, service := range services {
-		name, serviceActivatorFunc, _ := service()
+		name, serviceActivatorFunc, scope := service()
 		if len(name) == 0 || serviceActivatorFunc == nil {
 			return types.NewRegistryError("invalid named service registration")
 		}
+		registry.Register(serviceActivatorFunc, scope)
 		namedActivator := newNamedServiceFactory[T](name, serviceActivatorFunc)
 		err := registration.RegisterInstance(registry, namedActivator)
 		if err != nil {
