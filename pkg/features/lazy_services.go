@@ -46,10 +46,8 @@ func RegisterLazy[T any](registry types.ServiceRegistry, activatorFunc func() T,
 	return nil
 }
 
-func newLazyServiceFactory[T any](activatorFunc func() T) func() Lazy[T] {
-	return func() Lazy[T] {
-		return &lazy[T]{
-			activatorFunc: activatorFunc,
-		}
+func newLazyServiceFactory[T any](activatorFunc func() T) Lazy[T] {
+	return &lazy[T]{
+		activatorFunc: activatorFunc,
 	}
 }

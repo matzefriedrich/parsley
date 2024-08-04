@@ -7,8 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.7.0] - 2024-08-05
 
-* Adds the `RegisterLazy[T]` method to register lazy service factories. Use the type `func() Lazy[T]` to consume a lazy service dependency and call the `Value() T` method on the lazy factory to request the actual service instance. The factory will create the service instance upon the first request, cache it, and return for any subsequent calls to the `Value` method.
-
+* Adds the `RegisterLazy[T]` method to register lazy service factories. Use the type `Lazy[T]` to consume a lazy service dependency and call the `Value() T` method on the lazy factory to request the actual service instance. The factory will create the service instance upon the first request, cache it, and return it for subsequent calls using the `Value` method.
 
 ## [v0.6.1] - 2024-07-30
 
