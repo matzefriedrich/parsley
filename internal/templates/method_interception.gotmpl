@@ -1,0 +1,37 @@
+package {{.PackageName}}
+
+import ({{range $i, $path := .Imports}}
+    "{{$path}}"
+{{end}})
+{{range $i, $interface := .Interfaces}}
+type {{$interface.Name}}ProxyImpl struct {
+    features.ProxyBase
+    target {{$interface.Name}}
+}
+
+type {{$interface.Name}}Proxy interface {
+    {{$interface.Name}}
+}
+
+func New{{$interface.Name}}ProxyImpl(target {{$interface.Name}}, interceptors []features.MethodInterceptor) {{$interface.Name}}Proxy {
+    return &{{$interface.Name}}ProxyImpl {
+        ProxyBase: features.NewProxyBase(target, interceptors),
+        target: target,
+    }
+}
+{{end}}{{range
+    $i, $interface := .Interfaces}}{{range $m, $method := .Methods}}
+func (__p *{{$interface.Name}}ProxyImpl) {{$method.Name}}({{$method.FormattedParameters}}) {
+    const methodName = "{{$method.Name}}"
+    parameters := map[string]interface{}{ {{range
+        $p, $parameter := .Parameters}}
+		"{{$parameter.Name}}": {{$parameter.Name}},
+{{end}}	}
+    __p.InvokeEnterMethodInterceptors(methodName, parameters)
+    __p.target.{{$method.Name}}({{$method.FormattedCallParameters}})
+    __p.InvokeExitMethodInterceptors(methodName, []interface{}{})
+}{{end}}
+{{end}}
+{{range
+    $i, $interface := .Interfaces}}var _ {{$interface.Name}} = &{{$interface.Name}}ProxyImpl{}
+{{end}}
