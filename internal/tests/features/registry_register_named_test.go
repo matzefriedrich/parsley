@@ -38,7 +38,7 @@ func Test_Registry_register_named_service_consume_factory(t *testing.T) {
 
 	// Arrange
 	registry := registration.NewServiceRegistry()
-	_ = registration.RegisterSingleton(registry, newController)
+	_ = registration.RegisterSingleton(registry, newControllerWithNamedServiceFactory)
 	_ = features.RegisterNamed[dataService](registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
@@ -47,7 +47,7 @@ func Test_Registry_register_named_service_consume_factory(t *testing.T) {
 	scopedContext := resolving.NewScopedContext(context.Background())
 
 	// Act
-	actual, err := resolving.ResolveRequiredService[*controller](resolver, scopedContext)
+	actual, err := resolving.ResolveRequiredService[*controllerWithNamedServices](resolver, scopedContext)
 
 	// Assert
 	assert.NoError(t, err)
@@ -83,44 +83,16 @@ func Test_Registry_register_named_service_resolve_as_list(t *testing.T) {
 	assert.Equal(t, "data from local service", local.FetchData())
 }
 
-type dataService interface {
-	FetchData() string
-}
 
-type remoteDataService struct {
-}
-
-func newRemoteDataService() dataService {
-	return &remoteDataService{}
-}
-
-func (r *remoteDataService) FetchData() string {
-	return "data from remote service"
-}
-
-var _ dataService = &remoteDataService{}
-
-type localDataService struct{}
-
-func newLocalDataService() dataService {
-	return &localDataService{}
-}
-
-func (l *localDataService) FetchData() string {
-	return "data from local service"
-}
-
-var _ dataService = &localDataService{}
-
-type controller struct {
+type controllerWithNamedServices struct {
 	remoteDataService dataService
 	localDataService  dataService
 }
 
-func newController(dataServiceFactory func(string) (dataService, error)) *controller {
+func newControllerWithNamedServiceFactory(dataServiceFactory func(string) (dataService, error)) *controllerWithNamedServices {
 	remote, _ := dataServiceFactory("remote")
 	local, _ := dataServiceFactory("local")
-	return &controller{
+	return &controllerWithNamedServices{
 		remoteDataService: remote,
 		localDataService:  local,
 	}
