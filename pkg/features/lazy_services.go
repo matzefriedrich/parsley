@@ -35,7 +35,7 @@ type Lazy[T any] interface {
 
 var _ Lazy[any] = &lazy[any]{}
 
-func RegisterLazy[T any](registry types.ServiceRegistry, activatorFunc func() T, scope types.LifetimeScope) error {
+func RegisterLazy[T any](registry types.ServiceRegistry, activatorFunc func() T, _ types.LifetimeScope) error {
 
 	lazyActivator := newLazyServiceFactory[T](activatorFunc)
 	err := registration.RegisterInstance(registry, lazyActivator)
