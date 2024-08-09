@@ -5,7 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.7.1] - 2024-08-10
+
+This version addresses issues with resolving and injecting services as lists.
+
+### Added
+
+* Adds the `RegisterList[T]` method to enable the resolver to inject lists of services. While resolving lists of a specific service type was already possible by the `ResolveRequiredServices[T]` method, the consumption of arrays in constructor functions requires an explicit registration. The list registration can be mixed with named service registrations.
+
+### Changes
+
+* Changes the key-type used to register and lookup service registrations (uses `ServiceKey` instead of `reflect.Type`). 
+
+* Adds `fmt.Stringer` implementations to registration types to improve the debugging experience. It also fixes the handling of types reflected from anonymous functions.
+
+* Extracts some registry and resolver errors.
+
+
 ## [v0.7.0] - 2024-08-05
+
+### Added
 
 * Adds the `RegisterLazy[T]` method to register lazy service factories. Use the type `Lazy[T]` to consume a lazy service dependency and call the `Value() T` method on the lazy factory to request the actual service instance. The factory will create the service instance upon the first request, cache it, and return it for subsequent calls using the `Value` method.
 

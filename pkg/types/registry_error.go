@@ -7,12 +7,14 @@ const (
 	ErrorCannotRegisterModule                = "failed to register module"
 	ErrorTypeAlreadyRegistered               = "type already registered"
 	ErrorServiceAlreadyLinkedWithAnotherList = "service already linked with another list"
+	ErrorFailedToRegisterType                = "failed to register type"
 )
 
 var (
 	ErrRequiresFunctionValue = errors.New(ErrorRequiresFunctionValue)
 	ErrCannotRegisterModule  = errors.New(ErrorCannotRegisterModule)
 	ErrTypeAlreadyRegistered = errors.New(ErrorTypeAlreadyRegistered)
+	ErrFailedToRegisterType  = errors.New(ErrorFailedToRegisterType)
 )
 
 type registryError struct {

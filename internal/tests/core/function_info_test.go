@@ -57,7 +57,7 @@ func Test_FunctionInfo_ReflectFunctionInfoFrom_local_function_returning_an_inter
 	expected := expectedFunctionInfo{
 		functionName:             expectedAnonymousFunctionName,
 		formattedSignatureString: fmt.Sprintf("%s() core.some", expectedAnonymousFunctionName),
-		returnTypeName:           "core.some",
+		returnTypeName:           "some",
 		numParameters:            0,
 	}
 
@@ -73,7 +73,7 @@ func Test_FunctionInfo_ReflectFunctionInfoFrom_named_function_returning_an_inter
 	expected := expectedFunctionInfo{
 		functionName:             expectedFunctionName,
 		formattedSignatureString: fmt.Sprintf("%s() core.some", expectedFunctionName),
-		returnTypeName:           "core.some",
+		returnTypeName:           "some",
 		numParameters:            0,
 	}
 
@@ -89,7 +89,7 @@ func Test_FunctionInfo_ReflectFunctionInfoFrom_named_function_with_parameters_re
 	expected := expectedFunctionInfo{
 		functionName:             expectedFunctionName,
 		formattedSignatureString: fmt.Sprintf("%s(interface {}) core.some", expectedFunctionName),
-		returnTypeName:           "core.some",
+		returnTypeName:           "some",
 		numParameters:            1,
 	}
 

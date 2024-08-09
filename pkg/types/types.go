@@ -19,9 +19,19 @@ type FunctionParameterInfo interface {
 	Type() ServiceType
 }
 
+type ServiceKey struct {
+	value string
+}
+
+func (s ServiceKey) String() string {
+	return s.value
+}
+
 type ServiceType interface {
 	Name() string
+	PackagePath() string
 	ReflectedType() reflect.Type
+	LookupKey() ServiceKey
 }
 
 type ServiceRegistry interface {

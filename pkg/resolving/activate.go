@@ -13,7 +13,7 @@ func Activate[T any](resolver types.Resolver, ctx context.Context, activatorFunc
 	lifetimeScope := types.LifetimeTransient
 	registration, registrationErr := registration.CreateServiceRegistration(activatorFunc, lifetimeScope)
 	if registrationErr != nil {
-		return nilInstance, types.NewResolverError("failed to create instance of unregistered type", types.WithCause(registrationErr))
+		return nilInstance, types.NewResolverError(types.ErrorCannotCreateInstanceOfUnregisteredType, types.WithCause(registrationErr))
 	}
 
 	serviceType := registration.ServiceType()

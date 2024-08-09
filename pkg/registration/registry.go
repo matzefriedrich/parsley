@@ -3,12 +3,11 @@ package registration
 import (
 	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/types"
-	"reflect"
 )
 
 type serviceRegistry struct {
 	identifierSource core.ServiceIdSequence
-	registrations    map[reflect.Type]types.ServiceRegistrationList
+	registrations    map[types.ServiceKey]types.ServiceRegistrationList
 }
 
 func RegisterTransient(registry types.ServiceRegistry, activatorFunc any) error {
@@ -24,12 +23,12 @@ func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error 
 }
 
 func (s *serviceRegistry) addOrUpdateServiceRegistrationListFor(serviceType types.ServiceType) types.ServiceRegistrationList {
-	list, exists := s.registrations[serviceType.ReflectedType()]
+	list, exists := s.registrations[serviceType.LookupKey()]
 	if exists {
 		return list
 	}
 	list = NewServiceRegistrationList(s.identifierSource)
-	s.registrations[serviceType.ReflectedType()] = list
+	s.registrations[serviceType.LookupKey()] = list
 	return list
 }
 
@@ -44,7 +43,7 @@ func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.Lifeti
 	list := s.addOrUpdateServiceRegistrationListFor(serviceType)
 	addRegistrationErr := list.AddRegistration(registration)
 	if addRegistrationErr != nil {
-		return types.NewRegistryError("failed to register type", types.WithCause(addRegistrationErr))
+		return types.NewRegistryError(types.ErrorFailedToRegisterType, types.WithCause(addRegistrationErr))
 	}
 
 	return nil
@@ -61,7 +60,7 @@ func (s *serviceRegistry) RegisterModule(modules ...types.ModuleFunc) error {
 }
 
 func (s *serviceRegistry) IsRegistered(serviceType types.ServiceType) bool {
-	_, found := s.registrations[serviceType.ReflectedType()]
+	_, found := s.registrations[serviceType.LookupKey()]
 	return found
 }
 
@@ -69,7 +68,7 @@ func (s *serviceRegistry) TryGetServiceRegistrations(serviceType types.ServiceTy
 	if s.IsRegistered(serviceType) == false {
 		return nil, false
 	}
-	list, found := s.registrations[serviceType.ReflectedType()]
+	list, found := s.registrations[serviceType.LookupKey()]
 	if found && list.IsEmpty() == false {
 		return list, true
 	}
@@ -89,7 +88,7 @@ func (s *serviceRegistry) TryGetSingleServiceRegistration(serviceType types.Serv
 }
 
 func NewServiceRegistry() types.ServiceRegistry {
-	registrations := make(map[reflect.Type]types.ServiceRegistrationList)
+	registrations := make(map[types.ServiceKey]types.ServiceRegistrationList)
 	return &serviceRegistry{
 		identifierSource: core.NewServiceId(0),
 		registrations:    registrations,
@@ -97,7 +96,7 @@ func NewServiceRegistry() types.ServiceRegistry {
 }
 
 func (s *serviceRegistry) CreateLinkedRegistry() types.ServiceRegistry {
-	registrations := make(map[reflect.Type]types.ServiceRegistrationList)
+	registrations := make(map[types.ServiceKey]types.ServiceRegistrationList)
 	return &serviceRegistry{
 		identifierSource: s.identifierSource,
 		registrations:    registrations,
@@ -105,7 +104,7 @@ func (s *serviceRegistry) CreateLinkedRegistry() types.ServiceRegistry {
 }
 
 func (s *serviceRegistry) CreateScope() types.ServiceRegistry {
-	registrations := make(map[reflect.Type]types.ServiceRegistrationList)
+	registrations := make(map[types.ServiceKey]types.ServiceRegistrationList)
 	for serviceType, registration := range s.registrations {
 		registrations[serviceType] = registration
 	}
