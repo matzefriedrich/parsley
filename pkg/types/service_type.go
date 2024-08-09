@@ -61,7 +61,13 @@ func ServiceTypeFrom(t reflect.Type) ServiceType {
 
 func newServiceType(t reflect.Type, elemType reflect.Type, isList bool) ServiceType {
 	packagePath := t.PkgPath()
+	if len(packagePath) == 0 {
+		packagePath = "anonymous"
+	}
 	name := elemType.Name()
+	if len(name) == 0 {
+		name = t.String()
+	}
 	key := fmt.Sprintf("%s.%s", packagePath, name)
 	if isList {
 		key = fmt.Sprintf("%s.%s[]", packagePath, name)
