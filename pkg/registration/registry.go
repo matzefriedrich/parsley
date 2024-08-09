@@ -44,7 +44,7 @@ func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.Lifeti
 	list := s.addOrUpdateServiceRegistrationListFor(serviceType)
 	addRegistrationErr := list.AddRegistration(registration)
 	if addRegistrationErr != nil {
-		return types.NewRegistryError("failed to register type", types.WithCause(addRegistrationErr))
+		return types.NewRegistryError(types.ErrorFailedToRegisterType, types.WithCause(addRegistrationErr))
 	}
 
 	return nil
