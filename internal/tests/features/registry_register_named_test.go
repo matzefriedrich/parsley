@@ -56,7 +56,7 @@ func Test_Registry_register_named_service_consume_factory(t *testing.T) {
 	assert.NotNil(t, actual.localDataService)
 }
 
-func Test_Registry_register_named_service_resolve_as_list(t *testing.T) {
+func Test_Registry_register_named_service_resolve_all_named_services(t *testing.T) {
 
 	// Arrange
 	registry := registration.NewServiceRegistry()
@@ -83,6 +83,27 @@ func Test_Registry_register_named_service_resolve_as_list(t *testing.T) {
 	assert.Equal(t, "data from local service", local.FetchData())
 }
 
+func Test_Registry_register_named_service_resolve_all_named_services_as_list(t *testing.T) {
+
+	// Arrange
+	registry := registration.NewServiceRegistry()
+	_ = features.RegisterNamed[dataService](registry,
+		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
+		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
+
+	features.RegisterList[dataService](registry, types.LifetimeTransient)
+
+	resolver := resolving.NewResolver(registry)
+	scopedContext := resolving.NewScopedContext(context.Background())
+
+	// Act
+	actual, err := resolving.ResolveRequiredService[[]dataService](resolver, scopedContext)
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+	assert.Equal(t, 2, len(actual))
+}
 
 type controllerWithNamedServices struct {
 	remoteDataService dataService
