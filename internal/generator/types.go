@@ -17,6 +17,7 @@ func (p Parameter) MatchesType(name string) bool {
 type Method struct {
 	Name       string
 	Parameters []Parameter
+	Results    []Parameter
 }
 
 func (m Method) FormattedParameters() string {
@@ -33,6 +34,25 @@ func (m Method) FormattedCallParameters() string {
 		formattedParameters[i] = fmt.Sprintf("%s", parameter.Name)
 	}
 	return strings.Join(formattedParameters, ", ")
+}
+
+func (m Method) FormattedResultParameters() string {
+	formattedResults := make([]string, len(m.Results))
+	for i, result := range m.Results {
+		formattedResults[i] = fmt.Sprintf("%s", result.Name)
+	}
+	return strings.Join(formattedResults, ", ")
+}
+
+func (m Method) FormattedResultTypes() string {
+	formattedResults := make([]string, len(m.Results))
+	for i, result := range m.Results {
+		formattedResults[i] = fmt.Sprintf("%s", result.TypeName)
+	}
+	if len(formattedResults) == 0 {
+		return ""
+	}
+	return "(" + strings.Join(formattedResults, ", ") + ")"
 }
 
 type Interface struct {

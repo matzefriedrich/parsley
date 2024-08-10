@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -57,9 +58,11 @@ func (b *TemplateModelBuilder) collectMethodsFor(interfaceType *ast.InterfaceTyp
 		if funcType, ok := method.Type.(*ast.FuncType); ok {
 			name := method.Names[0].Name
 			parameters := b.collectParametersFor(funcType)
+			results := b.collectResultFieldsFor(funcType)
 			interfaceModel.Methods = append(interfaceModel.Methods, Method{
 				Name:       name,
 				Parameters: parameters,
+				Results:    results,
 			})
 		}
 	}
@@ -74,6 +77,21 @@ func (b *TemplateModelBuilder) collectParametersFor(funcType *ast.FuncType) []Pa
 			parameters = append(parameters, Parameter{
 				Name:     paramName.Name,
 				TypeName: paramTypeIdentifier.Name,
+			})
+		}
+	}
+	return parameters
+}
+
+func (b *TemplateModelBuilder) collectResultFieldsFor(funcType *ast.FuncType) []Parameter {
+	parameters := make([]Parameter, 0)
+	for index, field := range funcType.Results.List {
+		fieldType := field.Type
+		fieldTypeIdentifier, ok := fieldType.(*ast.Ident)
+		if ok {
+			parameters = append(parameters, Parameter{
+				Name:     fmt.Sprintf("result%d", index),
+				TypeName: fieldTypeIdentifier.Name,
 			})
 		}
 	}

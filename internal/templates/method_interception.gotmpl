@@ -21,15 +21,20 @@ func New{{$interface.Name}}ProxyImpl(target {{$interface.Name}}, interceptors []
 }
 {{end}}{{range
     $i, $interface := .Interfaces}}{{range $m, $method := .Methods}}
-func (__p *{{$interface.Name}}ProxyImpl) {{$method.Name}}({{$method.FormattedParameters}}) {
+func (__p *{{$interface.Name}}ProxyImpl) {{$method.Name}}({{$method.FormattedParameters}}) {{$method.FormattedResultTypes}}{
     const methodName = "{{$method.Name}}"
     parameters := map[string]interface{}{ {{range
         $p, $parameter := .Parameters}}
 		"{{$parameter.Name}}": {{$parameter.Name}},
 {{end}}	}
-    __p.InvokeEnterMethodInterceptors(methodName, parameters)
-    __p.target.{{$method.Name}}({{$method.FormattedCallParameters}})
-    __p.InvokeExitMethodInterceptors(methodName, []interface{}{})
+	callContext := features.NewMethodCallContext(methodName, parameters)
+	__p.InvokeEnterMethodInterceptors(callContext)
+	defer func () {
+	    __p.InvokeExitMethodInterceptors(callContext)
+	    __p.InvokeMethodErrorInterceptors(callContext)
+	}()
+    {{$method.FormattedResultParameters}} := __p.target.{{$method.Name}}({{$method.FormattedCallParameters}})
+    return {{$method.FormattedResultParameters}}
 }{{end}}
 {{end}}
 {{range
