@@ -53,7 +53,6 @@ func (g *generateProxyCommand) Execute() {
 	defer f.Close()
 
 	gen.Generate(model, f)
-
 }
 
 var _ pkg.TypedCommand = &generateProxyCommand{}

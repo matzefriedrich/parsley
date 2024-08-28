@@ -31,15 +31,42 @@ func Test_Register_generated_proxy_type(t *testing.T) {
 
 }
 
+func Test_Register_generated_proxy_type_handles_error(t *testing.T) {
+
+	// Arrange
+	registry := registration.NewServiceRegistry()
+	registry.Register(newMethodCallInterceptor, types.LifetimeSingleton)
+	registry.Register(NewGreeterProxyImpl, types.LifetimeTransient)
+	registry.Register(newGreeter, types.LifetimeTransient)
+	features.RegisterList[features.MethodInterceptor](registry)
+
+	resolver := resolving.NewResolver(registry)
+	ctx := resolving.NewScopedContext(context.Background())
+
+	// Act
+	proxy, _ := resolving.ResolveRequiredService[GreeterProxy](resolver, ctx)
+	msg, _ := proxy.SayHello("Jane")
+	fmt.Println(msg)
+
+	// Assert
+
+}
+
 type methodCallInterceptor struct {
 }
 
-func (m methodCallInterceptor) Enter(_ any, methodName string, parameters map[string]interface{}) {
+func (m methodCallInterceptor) Enter(_ any, methodName string, parameters []features.ParameterInfo) {
 	fmt.Println("Enter method: ", methodName)
+	for _, parameterValue := range parameters {
+		fmt.Printf("\t%s\n", parameterValue)
+	}
 }
 
-func (m methodCallInterceptor) Exit(_ any, methodName string, returnValues []interface{}) {
+func (m methodCallInterceptor) Exit(_ any, methodName string, returnValues []features.ReturnValueInfo) {
 	fmt.Println("Exit method: ", methodName)
+	for _, value := range returnValues {
+		fmt.Printf("\tResult: %s\n", value)
+	}
 }
 
 func (m methodCallInterceptor) OnError(_ any, methodName string, err error) {
@@ -56,6 +83,9 @@ type greeter struct {
 }
 
 func (g greeter) SayHello(name string) (string, error) {
+	if name != "John" {
+		return "", fmt.Errorf("name is not John")
+	}
 	return "Hello " + name, nil
 }
 

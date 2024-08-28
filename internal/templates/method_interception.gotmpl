@@ -34,6 +34,7 @@ func (__p *{{$interface.Name}}ProxyImpl) {{$method.Name}}({{$method.FormattedPar
 	    __p.InvokeMethodErrorInterceptors(callContext)
 	}()
     {{$method.FormattedResultParameters}} := __p.target.{{$method.Name}}({{$method.FormattedCallParameters}})
+    callContext.AddResult({{$method.FormattedResultParameters}})
     return {{$method.FormattedResultParameters}}
 }{{end}}
 {{end}}

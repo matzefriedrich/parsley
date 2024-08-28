@@ -32,6 +32,7 @@ func (__p *GreeterProxyImpl) SayHello(name string) (string, error){
 	    __p.InvokeMethodErrorInterceptors(callContext)
 	}()
     result0, result1 := __p.target.SayHello(name)
+    callContext.AddResult(result0, result1)
     return result0, result1
 }
 
