@@ -4,4 +4,5 @@ package features
 
 type Greeter interface {
 	SayHello(name string) (string, error)
+	SayNothing()
 }

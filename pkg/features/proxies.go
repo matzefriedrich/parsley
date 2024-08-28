@@ -39,11 +39,6 @@ func (r ReturnValueInfo) String() string {
 	return fmt.Sprintf("{%v}", r.value)
 }
 
-// AddResult Appends the result values to the current MethodCallContext instance.
-func (c *MethodCallContext) AddResult(results ...any) {
-	c.returnValues = append(c.returnValues, results...)
-}
-
 func NewMethodCallContext(methodName string, parameters map[string]interface{}) *MethodCallContext {
 	return &MethodCallContext{
 		methodName:   methodName,
@@ -57,8 +52,9 @@ type ProxyBase struct {
 	interceptors []MethodInterceptor
 }
 
-func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext) {
-	for _, next := range callContext.returnValues {
+func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext, returnValues ...interface{}) {
+	for _, next := range returnValues {
+		callContext.returnValues = append(callContext.returnValues, next)
 		err, ok := next.(error)
 		if ok {
 			wrapped := &proxyError{err: err}

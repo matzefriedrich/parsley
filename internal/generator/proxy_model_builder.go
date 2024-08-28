@@ -85,6 +85,9 @@ func (b *TemplateModelBuilder) collectParametersFor(funcType *ast.FuncType) []Pa
 
 func (b *TemplateModelBuilder) collectResultFieldsFor(funcType *ast.FuncType) []Parameter {
 	parameters := make([]Parameter, 0)
+	if funcType.Results == nil {
+		return parameters
+	}
 	for index, field := range funcType.Results.List {
 		fieldType := field.Type
 		fieldTypeIdentifier, ok := fieldType.(*ast.Ident)

@@ -14,30 +14,33 @@ type {{$interface.Name}}Proxy interface {
 }
 
 func New{{$interface.Name}}ProxyImpl(target {{$interface.Name}}, interceptors []features.MethodInterceptor) {{$interface.Name}}Proxy {
-    return &{{$interface.Name}}ProxyImpl {
+    return &{{$interface.Name}}ProxyImpl{
         ProxyBase: features.NewProxyBase(target, interceptors),
-        target: target,
+        target:    target,
     }
 }
 {{end}}{{range
     $i, $interface := .Interfaces}}{{range $m, $method := .Methods}}
-func (__p *{{$interface.Name}}ProxyImpl) {{$method.Name}}({{$method.FormattedParameters}}) {{$method.FormattedResultTypes}}{
+func (p *{{$interface.Name}}ProxyImpl) {{$method.Name}}({{$method.FormattedParameters}}) {{$method.FormattedResultTypes}} {
+
     const methodName = "{{$method.Name}}"
     parameters := map[string]interface{}{ {{range
         $p, $parameter := .Parameters}}
 		"{{$parameter.Name}}": {{$parameter.Name}},
 {{end}}	}
+
 	callContext := features.NewMethodCallContext(methodName, parameters)
-	__p.InvokeEnterMethodInterceptors(callContext)
-	defer func () {
-	    __p.InvokeExitMethodInterceptors(callContext)
-	    __p.InvokeMethodErrorInterceptors(callContext)
+	p.InvokeEnterMethodInterceptors(callContext)
+	defer func() {
+	    p.InvokeExitMethodInterceptors(callContext)
 	}()
-    {{$method.FormattedResultParameters}} := __p.target.{{$method.Name}}({{$method.FormattedCallParameters}})
-    callContext.AddResult({{$method.FormattedResultParameters}})
-    return {{$method.FormattedResultParameters}}
-}{{end}}
-{{end}}
+    {{if $method.HasResults }}
+    {{$method.FormattedResultParameters}} := p.target.{{$method.Name}}({{$method.FormattedCallParameters}})
+    p.InvokeMethodErrorInterceptors(callContext, {{$method.FormattedResultParameters}})
+    return {{$method.FormattedResultParameters}}{{else}}
+    p.target.{{$method.Name}}({{$method.FormattedCallParameters}}){{end}}
+}
+{{end}}{{end}}
 {{range
     $i, $interface := .Interfaces}}var _ {{$interface.Name}} = &{{$interface.Name}}ProxyImpl{}
 {{end}}

@@ -20,6 +20,10 @@ type Method struct {
 	Results    []Parameter
 }
 
+func (m Method) HasResults() bool {
+	return len(m.Results) > 0
+}
+
 func (m Method) FormattedParameters() string {
 	formattedParameters := make([]string, len(m.Parameters))
 	for i, parameter := range m.Parameters {

@@ -14,26 +14,42 @@ type GreeterProxy interface {
 }
 
 func NewGreeterProxyImpl(target Greeter, interceptors []features.MethodInterceptor) GreeterProxy {
-    return &GreeterProxyImpl {
+    return &GreeterProxyImpl{
         ProxyBase: features.NewProxyBase(target, interceptors),
-        target: target,
+        target:    target,
     }
 }
 
-func (__p *GreeterProxyImpl) SayHello(name string) (string, error){
+func (p *GreeterProxyImpl) SayHello(name string) (string, error) {
+
     const methodName = "SayHello"
     parameters := map[string]interface{}{ 
 		"name": name,
 	}
+
 	callContext := features.NewMethodCallContext(methodName, parameters)
-	__p.InvokeEnterMethodInterceptors(callContext)
-	defer func () {
-	    __p.InvokeExitMethodInterceptors(callContext)
-	    __p.InvokeMethodErrorInterceptors(callContext)
+	p.InvokeEnterMethodInterceptors(callContext)
+	defer func() {
+	    p.InvokeExitMethodInterceptors(callContext)
 	}()
-    result0, result1 := __p.target.SayHello(name)
-    callContext.AddResult(result0, result1)
+    
+    result0, result1 := p.target.SayHello(name)
+    p.InvokeMethodErrorInterceptors(callContext, result0, result1)
     return result0, result1
+}
+
+func (p *GreeterProxyImpl) SayNothing()  {
+
+    const methodName = "SayNothing"
+    parameters := map[string]interface{}{ 	}
+
+	callContext := features.NewMethodCallContext(methodName, parameters)
+	p.InvokeEnterMethodInterceptors(callContext)
+	defer func() {
+	    p.InvokeExitMethodInterceptors(callContext)
+	}()
+    
+    p.target.SayNothing()
 }
 
 var _ Greeter = &GreeterProxyImpl{}
