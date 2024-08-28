@@ -68,6 +68,9 @@ func Test_Register_generated_proxy_type_handles_error(t *testing.T) {
 type johnGreeter struct {
 }
 
+func (g johnGreeter) SayNothing() {
+}
+
 func (g johnGreeter) SayHello(name string) (string, error) {
 	if name != "John" {
 		return "", fmt.Errorf("name is not John")

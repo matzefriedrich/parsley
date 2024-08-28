@@ -60,6 +60,9 @@ func newMethodCallInterceptor() features.MethodInterceptor {
 type greeter struct {
 }
 
+func (g greeter) SayNothing() {
+}
+
 func (g greeter) SayHello(name string) (string, error) {
 	return "Hello " + name, nil
 }
