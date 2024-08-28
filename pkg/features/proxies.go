@@ -61,8 +61,9 @@ func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext
 	for _, next := range callContext.returnValues {
 		err, ok := next.(error)
 		if ok {
+			wrapped := &proxyError{err: err}
 			for _, i := range p.interceptors {
-				i.OnError(p.target, callContext.methodName, err)
+				i.OnError(p.target, callContext.methodName, wrapped)
 			}
 		}
 	}
@@ -71,14 +72,7 @@ func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext
 func (p *ProxyBase) InvokeEnterMethodInterceptors(callContext *MethodCallContext) {
 	parameters := make([]ParameterInfo, 0, len(callContext.parameters))
 	for name, next := range callContext.parameters {
-		value := reflect.ValueOf(next)
-		var parameterType reflect.Type
-		switch value.Kind() {
-		case reflect.Invalid:
-			parameterType = nil
-		default:
-			parameterType = value.Type()
-		}
+		value, parameterType := reflectValueInfo(next)
 		p := ParameterInfo{
 			value:         value,
 			parameterType: parameterType,
@@ -94,17 +88,10 @@ func (p *ProxyBase) InvokeEnterMethodInterceptors(callContext *MethodCallContext
 func (p *ProxyBase) InvokeExitMethodInterceptors(callContext *MethodCallContext) {
 	returnValues := make([]ReturnValueInfo, 0, len(callContext.returnValues))
 	for _, next := range callContext.returnValues {
-		value := reflect.ValueOf(next)
-		var valueType reflect.Type
-		switch value.Kind() {
-		case reflect.Invalid:
-			valueType = nil
-		default:
-			valueType = value.Type()
-		}
+		value, returnType := reflectValueInfo(next)
 		returnValues = append(returnValues, ReturnValueInfo{
-			value:     next,
-			valueType: valueType,
+			value:     value,
+			valueType: returnType,
 		})
 	}
 	for _, i := range p.interceptors {
@@ -117,4 +104,32 @@ func NewProxyBase[T any](target T, interceptors []MethodInterceptor) ProxyBase {
 		target:       target,
 		interceptors: interceptors,
 	}
+}
+
+func reflectValueInfo(next interface{}) (reflect.Value, reflect.Type) {
+	value := reflect.ValueOf(next)
+	var parameterType reflect.Type
+	switch value.Kind() {
+	case reflect.Invalid:
+		parameterType = nil
+	default:
+		parameterType = value.Type()
+	}
+	return value, parameterType
+}
+
+type proxyError struct {
+	err error
+}
+
+func (e proxyError) Error() string {
+	return e.err.Error()
+}
+
+func (e proxyError) Unwrap() error {
+	return e.err
+}
+
+func (e proxyError) Is(err error) bool {
+	return e.err.Error() == err.Error()
 }

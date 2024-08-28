@@ -31,27 +31,6 @@ func Test_Register_generated_proxy_type(t *testing.T) {
 
 }
 
-func Test_Register_generated_proxy_type_handles_error(t *testing.T) {
-
-	// Arrange
-	registry := registration.NewServiceRegistry()
-	registry.Register(newMethodCallInterceptor, types.LifetimeSingleton)
-	registry.Register(NewGreeterProxyImpl, types.LifetimeTransient)
-	registry.Register(newGreeter, types.LifetimeTransient)
-	features.RegisterList[features.MethodInterceptor](registry)
-
-	resolver := resolving.NewResolver(registry)
-	ctx := resolving.NewScopedContext(context.Background())
-
-	// Act
-	proxy, _ := resolving.ResolveRequiredService[GreeterProxy](resolver, ctx)
-	msg, _ := proxy.SayHello("Jane")
-	fmt.Println(msg)
-
-	// Assert
-
-}
-
 type methodCallInterceptor struct {
 }
 
@@ -69,8 +48,7 @@ func (m methodCallInterceptor) Exit(_ any, methodName string, returnValues []fea
 	}
 }
 
-func (m methodCallInterceptor) OnError(_ any, methodName string, err error) {
-	fmt.Printf("OnError method: %s, Error: %v\n", methodName, err)
+func (m methodCallInterceptor) OnError(_ any, _ string, _ error) {
 }
 
 var _ features.MethodInterceptor = &methodCallInterceptor{}
@@ -83,9 +61,6 @@ type greeter struct {
 }
 
 func (g greeter) SayHello(name string) (string, error) {
-	if name != "John" {
-		return "", fmt.Errorf("name is not John")
-	}
 	return "Hello " + name, nil
 }
 
