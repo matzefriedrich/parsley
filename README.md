@@ -33,6 +33,9 @@ Though dependency injection is less prevalent in Golang (compared to other langu
 - ✔️ Support multiple service registrations for the same interface
   - ✔️ Register named services (mutiple services), resolve via `func(key string) T`
   - ✔️ Resolve services as list (default)
+- ✔️ Support for proxy types via code generation
+  - ✔️ Proxies can be consumed as drop-in replacements for target services
+  - ✔️ Proxies are extensible via `MethodInterceptor` services
 - ⏳ Support sub-scopes
   - ⏳ Automatic clean-up
 
@@ -46,6 +49,17 @@ Though dependency injection is less prevalent in Golang (compared to other langu
 $ go get github.com/matzefriedrich/parsley
 ````
 
+You can install the `parsley-cli` utility that provides commands to bootstrap dependency-injection-enabled projects. It can also generate boilerplate code for advanced dependency injection features like decorators and proxies. Use the following command to install the CLI:
+
+````sh
+$ go install github.com/matzefriedrich/parsley/cmd/parsley-cli
+````
+
+Once installed, the `init` command can be used to create a new Parsley application:
+
+````sh
+$ parsley-cli init
+````
 
 ## Dependency mapping configuration
 
