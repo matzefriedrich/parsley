@@ -3,12 +3,39 @@ package features
 import (
 	"fmt"
 	"reflect"
+	"sort"
 )
 
+type Interceptor interface {
+	Name() string
+	Position() int
+}
+
 type MethodInterceptor interface {
+	Interceptor
 	Enter(target any, methodName string, parameters []ParameterInfo)
 	Exit(target any, methodName string, returnValues []ReturnValueInfo)
 	OnError(target any, methodName string, err error)
+}
+
+type InterceptorBase struct {
+	name     string
+	position int
+}
+
+func (i InterceptorBase) Name() string {
+	return i.name
+}
+
+func (i InterceptorBase) Position() int {
+	return i.position
+}
+
+func NewInterceptorBase(name string, position int) InterceptorBase {
+	return InterceptorBase{
+		name:     name,
+		position: position,
+	}
 }
 
 type MethodCallContext struct {
@@ -96,9 +123,16 @@ func (p *ProxyBase) InvokeExitMethodInterceptors(callContext *MethodCallContext)
 }
 
 func NewProxyBase[T any](target T, interceptors []MethodInterceptor) ProxyBase {
+	sortedInterceptors := make([]MethodInterceptor, 0, len(interceptors))
+	for _, interceptor := range interceptors {
+		sortedInterceptors = append(sortedInterceptors, interceptor)
+	}
+	sort.Slice(sortedInterceptors, func(i, j int) bool {
+		return sortedInterceptors[i].Position() < sortedInterceptors[j].Position()
+	})
 	return ProxyBase{
 		target:       target,
-		interceptors: interceptors,
+		interceptors: sortedInterceptors,
 	}
 }
 

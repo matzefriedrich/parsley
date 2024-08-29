@@ -15,7 +15,7 @@ import (
 )
 
 type generateProxyCommand struct {
-	use abstractions.CommandName `flag:"proxy"`
+	use abstractions.CommandName `flag:"proxy" short:"GenerateProjectFiles generic proxy types for method call interception."`
 }
 
 func (g *generateProxyCommand) Execute() {
@@ -26,8 +26,8 @@ func (g *generateProxyCommand) Execute() {
 		return
 	}
 
-	gen := generator.NewGenericCodeGenerator(func() (string, error) {
-		return templates.MethodInterceptionTemplate, nil
+	gen := generator.NewGenericCodeGenerator(func(_ string) (string, error) {
+		return templates.ProxyTemplate, nil
 	})
 
 	builder, err := generator.NewTemplateModelBuilder(goFilePath)
@@ -52,7 +52,7 @@ func (g *generateProxyCommand) Execute() {
 	f, _ := os.OpenFile(targetFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	defer f.Close()
 
-	gen.Generate(model, f)
+	gen.Generate("proxy", model, f)
 }
 
 var _ pkg.TypedCommand = &generateProxyCommand{}

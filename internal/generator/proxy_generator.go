@@ -12,10 +12,10 @@ type generator struct {
 }
 
 type GenericCodeGenerator interface {
-	Generate(m *Model, writer io.Writer) error
+	Generate(templateName string, model any, writer io.Writer) error
 }
 
-type TemplateLoader func() (string, error)
+type TemplateLoader func(name string) (string, error)
 
 func NewGenericCodeGenerator(templateLoader TemplateLoader) GenericCodeGenerator {
 	return &generator{
@@ -23,14 +23,14 @@ func NewGenericCodeGenerator(templateLoader TemplateLoader) GenericCodeGenerator
 	}
 }
 
-func (g *generator) Generate(m *Model, writer io.Writer) error {
-	tmpl, err := g.templateLoader()
+func (g *generator) Generate(templateName string, templateModel any, writer io.Writer) error {
+	tmpl, err := g.templateLoader(templateName)
 	if err != nil {
 		return errors.Wrap(err, ErrorCannotGenerateProxies)
 	}
 
 	t := template.Must(template.New("").Parse(tmpl))
-	err = t.Execute(writer, m)
+	err = t.Execute(writer, templateModel)
 	if err != nil {
 		return errors.Wrap(err, ErrorCannotExecuteTemplate)
 	}

@@ -17,6 +17,7 @@ type errorCollector struct {
 }
 
 type methodErrorInterceptor struct {
+	features.InterceptorBase
 	collector *errorCollector
 }
 
@@ -25,7 +26,8 @@ var _ features.MethodInterceptor = &methodErrorInterceptor{}
 func newMethodErrorInterceptor(collector *errorCollector) func() features.MethodInterceptor {
 	return func() features.MethodInterceptor {
 		return &methodErrorInterceptor{
-			collector: collector,
+			InterceptorBase: features.NewInterceptorBase("error-interceptor", 0),
+			collector:       collector,
 		}
 	}
 }

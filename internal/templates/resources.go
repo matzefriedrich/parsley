@@ -1,6 +1,12 @@
 package templates
 
-import _ "embed"
+import (
+	"embed"
+	_ "embed"
+)
 
-//go:embed method_interception.gotmpl
-var MethodInterceptionTemplate string
+//go:embed generator/method_interception.gotmpl
+var ProxyTemplate string
+
+//go:embed bootstrap/*
+var BootstrapTemplates embed.FS

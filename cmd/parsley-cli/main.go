@@ -15,6 +15,9 @@ func main() {
 
 	app := charmer.NewCommandLineApplication("parsley-cli", description)
 
+	app.AddCommand(
+		commands.NewInitCommand())
+
 	app.AddGroupCommand(
 		commands.NewGenerateGroupCommand(),
 		func(w charmer.CommandSetup) {

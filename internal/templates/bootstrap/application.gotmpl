@@ -1,0 +1,26 @@
+{{- /*gotype: import "github.com/matzefriedrich/parsley/pkg/boostrap" */ -}}
+package main
+
+import (
+    "context"
+    "github.com/matzefriedrich/parsley/pkg/bootstrap"
+)
+
+type parsleyApplication struct {
+    greeter Greeter
+}
+
+var _ bootstrap.Application = &parsleyApplication{}
+
+// newApp Creates the main application service instance. This constructor function gets invoked by Parsley; add parameters for all required services.
+func newApp(greeter Greeter) bootstrap.Application {
+    return &parsleyApplication{
+        greeter: greeter,
+    }
+}
+
+// Run The entrypoint for the Parsley application.
+func (a *parsleyApplication) Run(_ context.Context) error {
+    a.greeter.SayHello("John", true)
+    return nil
+}
