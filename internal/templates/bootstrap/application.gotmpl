@@ -13,7 +13,7 @@ type parsleyApplication struct {
 var _ bootstrap.Application = &parsleyApplication{}
 
 // newApp Creates the main application service instance. This constructor function gets invoked by Parsley; add parameters for all required services.
-func newApp(greeter Greeter) bootstrap.Application {
+func NewApp(greeter Greeter) bootstrap.Application {
     return &parsleyApplication{
         greeter: greeter,
     }
