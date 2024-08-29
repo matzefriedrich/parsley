@@ -1,0 +1,19 @@
+package main
+
+import (
+    "context"
+	"github.com/matzefriedrich/parsley/pkg/bootstrap"
+    "github.com/matzefriedrich/parsley/pkg/registration"
+    "github.com/matzefriedrich/parsley/pkg/types"
+)
+
+func main() {
+    context := context.Background()
+    bootstrap.RunParsleyApplication(context, newApp, configureGreeter)
+}
+
+// configureGreeter A ModuleFunc registering the required Greeter services.
+func configureGreeter(registry types.ServiceRegistry) error {
+    registration.RegisterTransient(registry, NewGreeterFactory("Hi"))
+    return nil
+}

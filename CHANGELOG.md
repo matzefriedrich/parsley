@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.1] - 2024-08-29
+
+Parsley is extended by the `parsley-cli` utility application, which is the foundation for new library features that cannot be implemented on top of reflection. Support for proxy and/or decorator types is better integrated via a code generator approach.
+
+### Added
+
+* Adds the `parsley-cli` application that adds code generation capabilities. 
+* The `init` command bootstraps a new Parsley application (a `main.go` and an `application.go` file providing the bare minimum to kick-start a dependency injection-enabled app).
+* The `generate proxy` command generates extensible proxy types by `MethodInterceptor` objects, which can function as proxies or decorator objects.
+  
+
 ## [v0.7.1] - 2024-08-10
 
 This version addresses issues with resolving and injecting services as lists.
