@@ -21,6 +21,7 @@ func ResolveRequiredServices[T any](resolver types.Resolver, ctx context.Context
 	case reflect.Interface:
 	case reflect.Pointer:
 	case reflect.Slice:
+	case reflect.Struct:
 	default:
 		return []T{}, types.NewResolverError(types.ErrorActivatorFunctionInvalidReturnType)
 	}

@@ -53,6 +53,7 @@ func ServiceTypeFrom(t reflect.Type) ServiceType {
 	case reflect.Slice:
 		t = t.Elem()
 		isList = true
+	case reflect.Struct:
 	default:
 		panic("unsupported type: " + t.String())
 	}
