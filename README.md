@@ -1,13 +1,13 @@
 ## What is Parsley?
 
-Parsley is an easy-to-use reflection-based dependency injection package that fits into any Go application.
+Parsley is a powerful, easy-to-use reflection-based dependency injection package that integrates seamlessly into any Go application.
 
-This dependency injection package may become your favorite ingredient for your Go applications. It is like the nifty green herb that fits well in various dishes across different cuisines. It not only adds to the taste, but it also charms the eye. In terms of wiring dependencies, it helps to keep things clean and organized. The parsley library is inspired by other dependency injection libraries I have used, which I always miss when working on Go projects.
+Just like the versatile green herb it's named after, Parsley enhances the flavor of your codebase by keeping your dependencies clean, organized, and easy to manage. Whether you're working on a small project or a complex system, Parsley brings the convenience of automated dependency injection to Go, inspired by the best practices from other languages. With features like automated lifetime management, proxy generation, and method interception, Parsley is the ingredient that makes your Go applications more maintainable and scalable.
 
 
 ## Why dependency injection for Golang?
 
-Though dependency injection is less prevalent in Golang (compared to other languages), sometimes the burden of increased complexity by adopting a DI framework may be n-times less than the complexity of building larger projects without such a framework. The concept of indirection is usually given anyway in larger projects, so what is left to be done by a dependency injection framework is bridging the gap between dependency configuration and service activation. What you gain on top is automated lifetime behavior, to name one. So why not automate it?
+While dependency injection (DI) is less common in Golang compared to other languages, the complexity it introduces can often be outweighed by the benefits it brings, especially in larger projects. As projects grow, the need for indirection and modularity becomes inevitable, and a DI framework like Parsley can seamlessly bridge the gap between dependency management and service activation. Parsley goes beyond resolving dependencies—it automates key aspects such as lifetime management, proxy generation, and interception, reducing boilerplate and enhancing maintainability. With these powerful features, why not let Parsley handle the heavy lifting for you?
 
 
 ## Features
@@ -45,88 +45,106 @@ Though dependency injection is less prevalent in Golang (compared to other langu
 
 ## Usage
 
-````sh
-$ go get github.com/matzefriedrich/parsley
-````
+Getting started with Parsley is as simple as adding it to your project and letting it take care of your dependencies. Here’s how you can use Parsley to wire up a small example application.
 
-You can install the `parsley-cli` utility that provides commands to bootstrap dependency-injection-enabled projects. It can also generate boilerplate code for advanced dependency injection features like decorators and proxies. Use the following command to install the CLI:
+### Install Parsley
 
-````sh
-$ go install github.com/matzefriedrich/parsley/cmd/parsley-cli
-````
-
-Once installed, the `init` command can be used to create a new Parsley application:
+First, add Parsley to your project:
 
 ````sh
-$ parsley-cli init
+go get github.com/matzefriedrich/parsley
 ````
 
-## Dependency mapping configuration
+For more advanced features, you can install the `parsley-cli` utility:
 
-The dependency mapping configuration requires types, interfaces, and constructor methods—basically, the same things you need to wire dependencies manually. 
-
-In parsley, constructor methods are the centerpiece that defines the mappings between abstractions (interfaces) and implementation types; required services are expressed as function parameters. The return type of a constructor method specifies the abstraction, whereby the method itself is responsible for creating the actual object instance, thus acting as the glue between implementation- and interface types.
-
-### Learn Parsley by example
-
-Parsley uses reflection to build a service registry and resolve objects at runtime. Use the `NewServiceRegistry` method to create a registry service that tracks service mapping and lifetime configuration. Use the `Register` method of the `ServiceRegistry` to register types via constructor methods.
-
-Since the `ServiceRegistry` is quite generic, it may feel more natural to use the registration helper methods `RegisterSingleton`, `RegisterScoped`, `RegisterTransient`, or `RegisterInstance` to register types and configure a lifetime behavior.
-
-````golang
-registry := registration.NewServiceRegistry()
-_ = registration.RegisterSingleton(registry, NewFoo)
-_ = registration.RegisterScoped(registry, NewFooConsumer)
+````sh
+go install github.com/matzefriedrich/parsley/cmd/parsley-cli
 ````
 
-Once all service types are registered, a resolver service (the actual container) must be created. The resolver creates object instances and manages their lifetime following the service configuration. Use the `NewResolver` method and pass the registry instance that holds the type registrations. 
+### Creating a Parsley-powered "Hello-World" application
 
-````golang
-resolver := resolving.NewResolver(registry)
-scope := resolving.NewScopedContext(context.Background())
-consumerInstance, _ := resolving.ResolveRequiredService[FooConsumer](resolver, scope)
-````
+Imagine you're building a service that greets users and logs those greetings. Instead of manually wiring everything together, Parsley can handle the setup. Start by defining the interfaces for your services:
 
-The types and methods involved in the example above, are defined as follows:
-
-````golang
-type Foo interface {
-    Bar()
+````go
+// Greeter defines a service that greets users.
+type Greeter interface {
+    SayHello(name string) string
 }
 
-type FooConsumer interface {
-    FooBar()
+// Logger defines a service that logs messages.
+type Logger interface {
+    Log(message string)
 }
 ````
 
-Next, implementations for those services are defined as follows:
+Now, create the implementations for these interfaces:
 
-````golang
-type foo struct{}
-
-func (f *foo) Bar() {}
-
-type fooConsumer struct {
-    foo Foo
+````go
+type greeterServiceImpl struct {
+    logger LoggerService
 }
 
-func (c *fooConsumer) FooBar() {
-    c.foo.Bar()
+func (g *greeterServiceImpl) SayHello(name string) string {
+    greeting := "Hello, " + name + "!"
+    g.logger.Log("Generated greeting: " + greeting)
+    return greeting
+}
+
+type loggerServiceImpl struct{}
+
+func (l *loggerServiceImpl) Log(message string) {
+    fmt.Println("Log:", message)
+}
+````
+
+To wire everything together, define constructor functions:
+
+````go
+func NewGreetService(logger LoggerService) GreetService {
+    return &greetServiceImpl{logger: logger}
+}
+
+func NewLoggerService() LoggerService {
+    return &loggerServiceImpl{}
 }
 ````
 
-The `Foo` service does not have any dependencies. Thus, the `NewFoo` constructor function has no parameters. It returns a new instance of `foo`; the resolver is not interested in the actual implementation type of `Foo`.
+With Parsley, registering these services and resolving them is straightforward:
 
-In contrast, the constructor function of `FooConsumer` requires a `Foo` object. Parsley builds a dependency graph for requested services, resolves those services first (respecting configured lifetimes), and then calls constructor methods with all required parameters.
+````go
+func main() {
+    registry := registration.NewServiceRegistry()
 
-````golang
-func NewFoo() Foo {
-    return &foo{}
-}
+    // Register services with their lifetimes
+    registration.RegisterSingleton(registry, NewLoggerService)
+    registration.RegisterScoped(registry, NewGreetService)
 
-func NewFooConsumer(foo Foo) FooConsumer {
-    return &fooConsumer{
-        foo: foo,
-    }
+    // Create a resolver
+    resolver := resolving.NewResolver(registry)
+
+    // Resolve and use the Greeter service instance
+    scope := resolving.NewScopedContext(context.Background())
+    greeter, _ := resolving.ResolveRequiredService[Greeter](resolver, scope)
+
+    // Use the service
+    fmt.Println(greeter.SayHello("World"))
 }
 ````
+
+When you run this application, you’ll see that Parsley automatically handles the dependencies for you:
+
+````sh
+Log: Generated greeting: Hello, World!
+Hello, World!
+````
+
+### What Just Happened?
+
+In this example, you defined two services, `Greeter` and `Logger`. You then registered these services with Parsley, specifying that `Logger` should have a singleton lifetime while `Greeter` should be scoped. Parsley injected a `Logger` instance into the `Greeter` instance during creation, ensuring everything was wired up correctly.
+
+By using Parsley, you avoid the hassle of manual dependency wiring, keeping your code clean and focused on business logic. But that is not all - there are more features to explore: head over to the official docs at https://matzefriedrich.github.io/parsley-docs/ to find more usage examples.
+
+
+---
+
+Copyright 2024 - Matthias Friedrich
