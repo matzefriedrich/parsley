@@ -113,6 +113,8 @@ func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeSc
 		fallthrough
 	case reflect.Pointer:
 		fallthrough
+	case reflect.Struct:
+		fallthrough
 	case reflect.Interface:
 		requiredTypes := info.ParameterTypes()
 		return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil

@@ -15,6 +15,7 @@ func CreateServiceActivatorFrom[T any](instance T) (func() T, error) {
 	case reflect.Func:
 	case reflect.Interface:
 	case reflect.Pointer:
+	case reflect.Struct:
 	default:
 		return nil, types.NewRegistryError(types.ErrorActivatorFunctionInvalidReturnType)
 	}
