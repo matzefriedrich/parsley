@@ -4,32 +4,62 @@ import (
 	"github.com/pkg/errors"
 	"io"
 	"os"
+	"reflect"
 	"text/template"
 )
 
-type generator struct {
+type genericGenerator struct {
 	templateLoader TemplateLoader
+	funcMap        template.FuncMap
 }
 
 type GenericCodeGenerator interface {
+	AddTemplateFunc(functions ...TemplateFunction) error
 	Generate(templateName string, model any, writer io.Writer) error
 }
 
-type TemplateLoader func(name string) (string, error)
+var _ GenericCodeGenerator = (*genericGenerator)(nil)
 
 func NewGenericCodeGenerator(templateLoader TemplateLoader) GenericCodeGenerator {
-	return &generator{
+	g := &genericGenerator{
 		templateLoader: templateLoader,
+		funcMap:        template.FuncMap{},
 	}
+	return g
 }
 
-func (g *generator) Generate(templateName string, templateModel any, writer io.Writer) error {
+func (g *genericGenerator) AddTemplateFunc(functions ...TemplateFunction) error {
+
+	addFunc := func(name string, f any) error {
+
+		if len(name) == 0 {
+			return errors.New("function name cannot be empty")
+		}
+		reflected := reflect.ValueOf(f)
+		if reflected.Kind() != reflect.Func {
+			return errors.New("the given value is not a function")
+		}
+
+		g.funcMap[name] = f
+		return nil
+	}
+
+	for _, function := range functions {
+		if err := addFunc(function.Name, function.Function); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (g *genericGenerator) Generate(templateName string, templateModel any, writer io.Writer) error {
 	tmpl, err := g.templateLoader(templateName)
 	if err != nil {
 		return errors.Wrap(err, ErrorCannotGenerateProxies)
 	}
 
-	t := template.Must(template.New("").Parse(tmpl))
+	t := template.Must(template.New("").Funcs(g.funcMap).Parse(tmpl))
 	err = t.Execute(writer, templateModel)
 	if err != nil {
 		return errors.Wrap(err, ErrorCannotExecuteTemplate)
@@ -38,7 +68,7 @@ func (g *generator) Generate(templateName string, templateModel any, writer io.W
 	return nil
 }
 
-func (g *generator) LoadTemplateFromFile(templateFile string) (string, error) {
+func (g *genericGenerator) LoadTemplateFromFile(templateFile string) (string, error) {
 
 	if _, err := os.Stat(templateFile); errors.Is(err, os.ErrNotExist) {
 		return "", newGeneratorError(ErrorTemplateFileNotFound, WithCause(err))
@@ -55,4 +85,14 @@ func (g *generator) LoadTemplateFromFile(templateFile string) (string, error) {
 
 	bytes, _ := io.ReadAll(f)
 	return string(bytes), nil
+}
+
+func RegisterTemplateFunctions(g GenericCodeGenerator, functions ...func(generator GenericCodeGenerator) error) error {
+	for _, function := range functions {
+		err := function(g)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -18,9 +18,13 @@ type CodeFileGeneratorOptions struct {
 	kind                   string
 }
 
+type CodeFileGenerator interface {
+	GenerateCode() error
+}
+
 type CodeFileGeneratorOptionsFunc func(config *CodeFileGeneratorOptions)
 
-func NewCodeFileGenerator(kind string, config ...CodeFileGeneratorOptionsFunc) (*codeFileGenerator, error) {
+func NewCodeFileGenerator(kind string, config ...CodeFileGeneratorOptionsFunc) (CodeFileGenerator, error) {
 	options := CodeFileGeneratorOptions{
 		kind: kind,
 	}
@@ -33,26 +37,27 @@ func NewCodeFileGenerator(kind string, config ...CodeFileGeneratorOptionsFunc) (
 	return &codeFileGenerator{options: options}, nil
 }
 
-func (g *codeFileGenerator) GenerateCode() {
+func (g *codeFileGenerator) GenerateCode() error {
 
 	goFilePath, err := GetGoFilePath()
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	gen := NewGenericCodeGenerator(g.options.TemplateLoader)
+	err = RegisterTemplateFunctions(gen, RegisterTypeModelFunctions, RegisterNamingFunctions)
+	if err != nil {
+		return err
+	}
 
 	builder, err := NewTemplateModelBuilder(goFilePath)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	model, err := builder.Build()
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
 	if g.options.ConfigureModelCallback != nil {
@@ -69,4 +74,5 @@ func (g *codeFileGenerator) GenerateCode() {
 
 	gen.Generate(g.options.kind, model, f)
 
+	return nil
 }
