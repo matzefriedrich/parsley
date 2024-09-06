@@ -78,6 +78,8 @@ type Model struct {
 	Imports     []string
 }
 
+type ModelConfigurationFunc func(m *Model)
+
 func (m *Model) AddImport(s string) {
 	m.Imports = append(m.Imports, s)
 }
