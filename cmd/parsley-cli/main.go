@@ -22,6 +22,7 @@ func main() {
 		commands.NewGenerateGroupCommand(),
 		func(w charmer.CommandSetup) {
 			w.AddCommand(commands.NewGenerateProxyCommand())
+			w.AddCommand(commands.NewGenerateMocksCommand())
 		})
 
 	app.Execute()
