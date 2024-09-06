@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.9.0] - 2024-09-06
+
+Starting with this release, the project's license has been changed from AGPLv3 to Apache License 2.0. The move to the Apache 2.0 license reflects my desire to make the library more accessible and easier to adopt, especially in commercial and proprietary projects.
+
+### Added
+
+* Adds the `generate mocks` CLI command that can generate configurable mock implemetations from interface types.
+
+### Changed
+
+* Minor refactorings to the internal `generator` package.  
+* Adds the `generic_generator.go` module, integrating generator templates, output file configuration, and template execution. The initial implementation resided in the `generate_proxy_command.go` module. By pulling variables and control structures from parameters, the generator command logic could be moved to the generator package, allowing the logic to be reused by other code-file generator commands. Adding other template-based generators based on (interface) type models can be achieved with less effort.
+* Removes methods from the generator type model - uses a function map instead.
+
+
+### Fixed
+
+* Fixes generator command short description texts
+
+
 ## [v0.8.3] - 2024-09-01
 
 ### Fixed
@@ -38,7 +58,7 @@ This version addresses issues with resolving and injecting services as lists.
 
 * Adds the `RegisterList[T]` method to enable the resolver to inject lists of services. While resolving lists of a specific service type was already possible by the `ResolveRequiredServices[T]` method, the consumption of arrays in constructor functions requires an explicit registration. The list registration can be mixed with named service registrations.
 
-### Changes
+### Changed
 
 * Changes the key-type used to register and lookup service registrations (uses `ServiceKey` instead of `reflect.Type`). 
 
@@ -55,7 +75,7 @@ This version addresses issues with resolving and injecting services as lists.
 
 ## [v0.6.1] - 2024-07-30
 
-### Changes
+### Changed
 
 * Registers named services as transient services to resolve them also as a list of services (like services without a name). Changes the `createResolverRegistryAccessor` method so temporary registrations are selected first (and shadow permanent registrations). This behavior can also be leveraged in `ResolverOptionsFunc` to shadow other registrations when resolving instances via `ResolveWithOptions.`
 
@@ -68,13 +88,13 @@ This version addresses issues with resolving and injecting services as lists.
 * Allows registration and activation of pointer types (to not enforce usage of interfaces as abstractions).
 * Adds the `RegisterNamed[T]` method to register services of the same interface and allow to resolve them by name.
 
-### Changes
+### Changed
 
 * Renames the `ServiceType[T]` method to `MakeServiceType[T]`; a service type represents now the reflected type and its name (which makes debugging and understanding service dependencies much easier).
 * Replaces all usages of `reflect.Type` by `ServiceType` in all Parsley interfaces.
 * Changes the `IsSame` method of the `ServiceRegistration` type; service registrations of type function are always treated as different service types.
 
-### Fixes
+### Fixed
 
 * Fixes a bug in the `detectCircularDependency` function which could make the method get stuck in an infinite loop.
 
@@ -132,7 +152,7 @@ This version addresses issues with resolving and injecting services as lists.
 
 * The registry rejects non-interface types.
 
-### Fixes
+### Fixed
 
 * Fixes error wrapping in custom error types.
 * Improves error handling for service registry and resolver.

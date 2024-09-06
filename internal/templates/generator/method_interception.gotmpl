@@ -24,8 +24,8 @@ type {{$proxyInterfaceTypeName}} interface {
     {{$interface.Name}}
 }
 
-// New{{$proxyTypeName}} Creates a new {{$interface.Name}}Proxy object. Register this constructor method with the registry.
-func New{{$proxyTypeName}}(target {{$interface.Name}}, interceptors []features.MethodInterceptor) {{$proxyInterfaceTypeName}} {
+// New{{ $proxyTypeName | asPublic }} Creates a new {{$interface.Name}}Proxy object. Register this constructor method with the registry.
+func New{{ $proxyTypeName | asPublic }}(target {{$interface.Name}}, interceptors []features.MethodInterceptor) {{$proxyInterfaceTypeName}} {
     return &{{$proxyTypeName}}{
         ProxyBase: features.NewProxyBase(target, interceptors),
         target:    target,
