@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"github.com/matzefriedrich/cobra-extensions/pkg"
 	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 	"github.com/matzefriedrich/parsley/internal/generator"
@@ -23,7 +24,10 @@ func (m *mockGeneratorCommand) Execute() {
 		config.TemplateLoader = templateLoader
 	})
 
-	gen.GenerateCode()
+	err := gen.GenerateCode()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 var _ pkg.TypedCommand = (*mockGeneratorCommand)(nil)
