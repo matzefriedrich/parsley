@@ -22,6 +22,9 @@ func (m *mockGeneratorCommand) Execute() {
 	kind := "mocks"
 	gen, _ := generator.NewCodeFileGenerator(kind, func(config *generator.CodeFileGeneratorOptions) {
 		config.TemplateLoader = templateLoader
+		config.ConfigureModelCallback = func(m *generator.Model) {
+			m.AddImport("github.com/matzefriedrich/parsley/pkg/features")
+		}
 	})
 
 	err := gen.GenerateCode()

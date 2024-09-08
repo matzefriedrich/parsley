@@ -4,6 +4,10 @@
 
 package features
 
+import (
+	"github.com/matzefriedrich/parsley/pkg/features"
+)
+
 type greeterMock struct {
 	features.MockBase
 	SayHelloFunc   SayHelloFunc
