@@ -1,7 +1,9 @@
 package generator
 
 import (
+	"bytes"
 	"github.com/pkg/errors"
+	"go/format"
 	"io"
 	"os"
 	"reflect"
@@ -54,15 +56,28 @@ func (g *genericGenerator) AddTemplateFunc(functions ...TemplateFunction) error 
 }
 
 func (g *genericGenerator) Generate(templateName string, templateModel any, writer io.Writer) error {
+
 	tmpl, err := g.templateLoader(templateName)
 	if err != nil {
-		return errors.Wrap(err, ErrorCannotGenerateProxies)
+		return newGeneratorError(ErrorCannotGenerateProxies, WithCause(err))
 	}
 
+	var generatedCode bytes.Buffer
+
 	t := template.Must(template.New("").Funcs(g.funcMap).Parse(tmpl))
-	err = t.Execute(writer, templateModel)
+	err = t.Execute(&generatedCode, templateModel)
 	if err != nil {
-		return errors.Wrap(err, ErrorCannotExecuteTemplate)
+		return newGeneratorError(ErrorCannotExecuteTemplate, WithCause(err))
+	}
+
+	formattedCode, formatErr := format.Source(generatedCode.Bytes())
+	if formatErr != nil {
+		return newGeneratorError(ErrorCannotFormatGeneratedCode, WithCause(formatErr))
+	}
+
+	_, writerErr := writer.Write(formattedCode)
+	if writerErr != nil {
+		return newGeneratorError(ErrorFailedToWriteGeneratedCode, WithCause(writerErr))
 	}
 
 	return nil

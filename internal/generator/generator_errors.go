@@ -3,17 +3,21 @@ package generator
 import "errors"
 
 const (
-	ErrorCannotGenerateProxies    = "cannot generate proxies"
-	ErrorCannotExecuteTemplate    = "cannot execute template"
-	ErrorFailedToOpenTemplateFile = "failed to open template file"
-	ErrorTemplateFileNotFound     = "template file not found"
+	ErrorCannotExecuteTemplate      = "cannot execute template"
+	ErrorCannotFormatGeneratedCode  = "cannot format generated code"
+	ErrorCannotGenerateProxies      = "cannot generate proxies"
+	ErrorFailedToOpenTemplateFile   = "failed to open template file"
+	ErrorFailedToWriteGeneratedCode = "failed to write generated code"
+	ErrorTemplateFileNotFound       = "template file not found"
 )
 
 var (
-	ErrCannotGenerateProxies    = errors.New(ErrorCannotGenerateProxies)
-	ErrCannotExecuteTemplate    = errors.New(ErrorCannotExecuteTemplate)
-	ErrFailedToOpenTemplateFile = errors.New(ErrorFailedToOpenTemplateFile)
-	ErrTemplateFileNotFound     = errors.New(ErrorTemplateFileNotFound)
+	ErrCannotExecuteTemplate      = errors.New(ErrorCannotExecuteTemplate)
+	ErrCannotFormatGeneratedCode  = errors.New(ErrorCannotFormatGeneratedCode)
+	ErrCannotGenerateProxies      = errors.New(ErrorCannotGenerateProxies)
+	ErrFailedToOpenTemplateFile   = errors.New(ErrorFailedToOpenTemplateFile)
+	ErrFailedToWriteGeneratedCode = errors.New(ErrorFailedToWriteGeneratedCode)
+	ErrTemplateFileNotFound       = errors.New(ErrorTemplateFileNotFound)
 )
 
 type generatorError struct {
