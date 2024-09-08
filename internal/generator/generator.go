@@ -70,9 +70,14 @@ func (g *codeFileGenerator) GenerateCode() error {
 
 	targetFilePath := path.Join(goFileDirectory, fmt.Sprintf("%s.%s.g.go", goFileNameWithoutExtension, g.options.kind))
 	f, _ := os.OpenFile(targetFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-	defer f.Close()
+	defer func(f *os.File) {
+		_ = f.Close()
+	}(f)
 
-	gen.Generate(g.options.kind, model, f)
+	err = gen.Generate(g.options.kind, model, f)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

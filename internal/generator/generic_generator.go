@@ -2,6 +2,7 @@ package generator
 
 import (
 	"bytes"
+	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/pkg/errors"
 	"go/format"
 	"io"
@@ -59,7 +60,7 @@ func (g *genericGenerator) Generate(templateName string, templateModel any, writ
 
 	tmpl, err := g.templateLoader(templateName)
 	if err != nil {
-		return newGeneratorError(ErrorCannotGenerateProxies, WithCause(err))
+		return newGeneratorError(ErrorCannotGenerateProxies, types.WithCause(err))
 	}
 
 	var generatedCode bytes.Buffer
@@ -67,17 +68,18 @@ func (g *genericGenerator) Generate(templateName string, templateModel any, writ
 	t := template.Must(template.New("").Funcs(g.funcMap).Parse(tmpl))
 	err = t.Execute(&generatedCode, templateModel)
 	if err != nil {
-		return newGeneratorError(ErrorCannotExecuteTemplate, WithCause(err))
+		return newGeneratorError(ErrorCannotExecuteTemplate, types.WithCause(err))
 	}
 
 	formattedCode, formatErr := format.Source(generatedCode.Bytes())
 	if formatErr != nil {
-		return newGeneratorError(ErrorCannotFormatGeneratedCode, WithCause(formatErr))
+		_, _ = writer.Write(formattedCode) // just dump the code to the target writer for inspection
+		return newGeneratorError(ErrorCannotFormatGeneratedCode, types.WithCause(formatErr))
 	}
 
 	_, writerErr := writer.Write(formattedCode)
 	if writerErr != nil {
-		return newGeneratorError(ErrorFailedToWriteGeneratedCode, WithCause(writerErr))
+		return newGeneratorError(ErrorFailedToWriteGeneratedCode, types.WithCause(writerErr))
 	}
 
 	return nil
@@ -86,7 +88,7 @@ func (g *genericGenerator) Generate(templateName string, templateModel any, writ
 func (g *genericGenerator) LoadTemplateFromFile(templateFile string) (string, error) {
 
 	if _, err := os.Stat(templateFile); errors.Is(err, os.ErrNotExist) {
-		return "", newGeneratorError(ErrorTemplateFileNotFound, WithCause(err))
+		return "", newGeneratorError(ErrorTemplateFileNotFound, types.WithCause(err))
 	}
 
 	f, err := os.OpenFile(templateFile, os.O_RDONLY, 400)
@@ -95,11 +97,11 @@ func (g *genericGenerator) LoadTemplateFromFile(templateFile string) (string, er
 	}(f)
 
 	if err != nil {
-		return "", newGeneratorError(ErrorFailedToOpenTemplateFile, WithCause(err))
+		return "", newGeneratorError(ErrorFailedToOpenTemplateFile, types.WithCause(err))
 	}
 
-	bytes, _ := io.ReadAll(f)
-	return string(bytes), nil
+	data, _ := io.ReadAll(f)
+	return string(data), nil
 }
 
 func RegisterTemplateFunctions(g GenericCodeGenerator, functions ...func(generator GenericCodeGenerator) error) error {

@@ -11,7 +11,8 @@ func RegisterTypeModelFunctions(generator GenericCodeGenerator) error {
 		NamedFunc("FormattedParameters", FormattedParameters),
 		NamedFunc("FormattedCallParameters", FormattedCallParameters),
 		NamedFunc("FormattedResultParameters", FormattedResultParameters),
-		NamedFunc("FormattedResultTypes", FormattedResultTypes))
+		NamedFunc("FormattedResultTypes", FormattedResultTypes),
+		NamedFunc("Signature", Signature))
 }
 
 func HasResults(m Method) bool {
@@ -51,4 +52,14 @@ func FormattedResultTypes(m Method) string {
 		return ""
 	}
 	return "(" + strings.Join(formattedResults, ", ") + ")"
+}
+
+func Signature(m Method) string {
+	buffer := strings.Builder{}
+	buffer.WriteString(fmt.Sprintf("%s", m.Name))
+	buffer.WriteString(fmt.Sprintf("(%s)", FormattedParameters(m)))
+	if len(m.Results) > 0 {
+		buffer.WriteString(fmt.Sprintf(" %s", FormattedResultTypes(m)))
+	}
+	return buffer.String()
 }

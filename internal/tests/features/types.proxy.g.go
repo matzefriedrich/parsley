@@ -6,58 +6,58 @@
 package features
 
 import (
-    "github.com/matzefriedrich/parsley/pkg/features"
+	"github.com/matzefriedrich/parsley/pkg/features"
 )
 
 // greeterProxyImpl A generated proxy service type for Greeter objects.
 type greeterProxyImpl struct {
-    features.ProxyBase
-    target Greeter
+	features.ProxyBase
+	target Greeter
 }
 
 // GreeterProxy An interface type for Greeter objects. Parsley needs this to distinguish the proxy from the actual implementation.
 type GreeterProxy interface {
-    Greeter
+	Greeter
 }
 
 // NewGreeterProxyImpl Creates a new GreeterProxy object. Register this constructor method with the registry.
 func NewGreeterProxyImpl(target Greeter, interceptors []features.MethodInterceptor) GreeterProxy {
-    return &greeterProxyImpl{
-        ProxyBase: features.NewProxyBase(target, interceptors),
-        target:    target,
-    }
+	return &greeterProxyImpl{
+		ProxyBase: features.NewProxyBase(target, interceptors),
+		target:    target,
+	}
 }
 
 func (p *greeterProxyImpl) SayHello(name string) (string, error) {
 
-    const methodName = "SayHello"
-    parameters := map[string]interface{}{ 
+	const methodName = "SayHello"
+	parameters := map[string]interface{}{
 		"name": name,
 	}
 
 	callContext := features.NewMethodCallContext(methodName, parameters)
 	p.InvokeEnterMethodInterceptors(callContext)
 	defer func() {
-	    p.InvokeExitMethodInterceptors(callContext)
+		p.InvokeExitMethodInterceptors(callContext)
 	}()
-    
-    result0, result1 := p.target.SayHello(name)
-    p.InvokeMethodErrorInterceptors(callContext, result0, result1)
-    return result0, result1
+
+	result0, result1 := p.target.SayHello(name)
+	p.InvokeMethodErrorInterceptors(callContext, result0, result1)
+	return result0, result1
 }
 
-func (p *greeterProxyImpl) SayNothing()  {
+func (p *greeterProxyImpl) SayNothing() {
 
-    const methodName = "SayNothing"
-    parameters := map[string]interface{}{ 	}
+	const methodName = "SayNothing"
+	parameters := map[string]interface{}{}
 
 	callContext := features.NewMethodCallContext(methodName, parameters)
 	p.InvokeEnterMethodInterceptors(callContext)
 	defer func() {
-	    p.InvokeExitMethodInterceptors(callContext)
+		p.InvokeExitMethodInterceptors(callContext)
 	}()
-    
-    p.target.SayNothing()
+
+	p.target.SayNothing()
 }
 
 var _ Greeter = &greeterProxyImpl{}

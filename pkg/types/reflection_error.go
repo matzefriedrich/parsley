@@ -7,7 +7,7 @@ type reflectionError struct {
 func NewReflectionError(msg string, initializers ...ParsleyErrorFunc) error {
 	err := &reflectionError{
 		ParsleyError: ParsleyError{
-			msg: msg,
+			Msg: msg,
 		},
 	}
 	for _, f := range initializers {

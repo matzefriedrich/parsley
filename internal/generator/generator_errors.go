@@ -1,6 +1,9 @@
 package generator
 
-import "errors"
+import (
+	"errors"
+	"github.com/matzefriedrich/parsley/pkg/types"
+)
 
 const (
 	ErrorCannotExecuteTemplate      = "cannot execute template"
@@ -21,39 +24,20 @@ var (
 )
 
 type generatorError struct {
-	msg   string
-	cause error
-}
-
-func (g generatorError) Error() string {
-	return g.msg
-}
-
-func (g generatorError) Unwrap() error {
-	return g.cause
-}
-
-func (g generatorError) Is(err error) bool {
-	return g.Error() == err.Error()
+	types.ParsleyError
 }
 
 var _ error = &generatorError{}
 
-func newGeneratorError(msg string, initializers ...func(error)) error {
+func newGeneratorError(msg string, initializers ...types.ParsleyErrorFunc) error {
 	err := &generatorError{
-		msg: msg,
+		ParsleyError: types.ParsleyError{
+			Msg: msg,
+		},
 	}
 	for _, initializer := range initializers {
+		initializer(&err.ParsleyError)
 		initializer(err)
 	}
 	return err
-}
-
-func WithCause(err error) func(target error) {
-	return func(target error) {
-		var errWithCause *generatorError
-		if errors.As(target, errWithCause) {
-			errWithCause.cause = err
-		}
-	}
 }
