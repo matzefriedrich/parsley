@@ -41,10 +41,22 @@ type {{ .Name }}Func func({{ FormattedParameters . }}) {{ FormattedResultTypes .
 
 {{- "\n" -}}
 
+{{- if .Methods }}
+const (
+{{- range .Methods }}
+    Function{{ .Name }} = "{{ .Name }}"
+{{- end }}
+)
+{{ "" }}
+{{- end }}
+
+{{- "\n" -}}
+
+
 {{- /* Define methods for each function, implementing the interface */ -}}
 {{ range .Methods }}
 func (m *{{ $mockStructName }}) {{ .Name }}({{ FormattedParameters . }}) {{ FormattedResultTypes . }} {
-    m.TraceMethodCall("{{ .Name }}", {{ FormattedCallParameters . }})
+    m.TraceMethodCall(Function{{ .Name }}, {{ FormattedCallParameters . }})
     {{- if HasResults . }}
     return m.{{ .Name | asPublic }}Func({{ FormattedCallParameters . }})
     {{- else }}
@@ -79,7 +91,7 @@ func New{{ $interfaceName }}Mock() *{{ $mockStructName }} {
         {{- end }}
     }
     {{- range .Methods }}
-    mock.AddFunction("{{.Name}}", "{{ Signature . }}")
+    mock.AddFunction(Function{{.Name}}, "{{ Signature . }}")
     {{- end }}
 	return mock
 }

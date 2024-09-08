@@ -17,13 +17,18 @@ type greeterMock struct {
 type SayHelloFunc func(name string) (string, error)
 type SayNothingFunc func()
 
+const (
+	FunctionSayHello   = "SayHello"
+	FunctionSayNothing = "SayNothing"
+)
+
 func (m *greeterMock) SayHello(name string) (string, error) {
-	m.TraceMethodCall("SayHello", name)
+	m.TraceMethodCall(FunctionSayHello, name)
 	return m.SayHelloFunc(name)
 }
 
 func (m *greeterMock) SayNothing() {
-	m.TraceMethodCall("SayNothing")
+	m.TraceMethodCall(FunctionSayNothing)
 	m.SayNothingFunc()
 }
 
@@ -40,7 +45,7 @@ func NewGreeterMock() *greeterMock {
 		},
 		SayNothingFunc: func() {},
 	}
-	mock.AddFunction("SayHello", "SayHello(name string) (string, error)")
-	mock.AddFunction("SayNothing", "SayNothing()")
+	mock.AddFunction(FunctionSayHello, "SayHello(name string) (string, error)")
+	mock.AddFunction(FunctionSayNothing, "SayNothing()")
 	return mock
 }
