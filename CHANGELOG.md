@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.9.0] - 2024-09-06
+## [v0.9.0] - 2024-09-08
 
 Starting with this release, the project's license has been changed from AGPLv3 to Apache License 2.0. The move to the Apache 2.0 license reflects my desire to make the library more accessible and easier to adopt, especially in commercial and proprietary projects.
 
@@ -15,9 +15,13 @@ Starting with this release, the project's license has been changed from AGPLv3 t
 
 ### Changed
 
-* Minor refactorings to the internal `generator` package.  
-* Adds the `generic_generator.go` module, integrating generator templates, output file configuration, and template execution. The initial implementation resided in the `generate_proxy_command.go` module. By pulling variables and control structures from parameters, the generator command logic could be moved to the generator package, allowing the logic to be reused by other code-file generator commands. Adding other template-based generators based on (interface) type models can be achieved with less effort.
+* Several refactorings to the internal `generator` package with improvements to error handling and extensibility.
+
+* Adds the `generic_generator.go` module, integrating generator templates, output file configuration, and template execution. The initial implementation resided in the `generate_proxy_command.go` module. By pulling variables and control structures from parameters, the generator command logic could be moved to the (internal) `generator` package, allowing the logic to be reused by other code-file generator commands. Adding other template-based generators based on (interface) type models can be achieved with less effort.
+
 * Removes methods from the generator type model - uses a function map instead.
+
+* The generic code generator now formats generated code in canonical go fmt style.
 
 
 ### Fixed
@@ -46,7 +50,9 @@ Parsley is extended by the `parsley-cli` utility application, which is the found
 ### Added
 
 * Adds the `parsley-cli` application that adds code generation capabilities. 
+
 * The `init` command bootstraps a new Parsley application (a `main.go` and an `application.go` file providing the bare minimum to kick-start a dependency injection-enabled app).
+
 * The `generate proxy` command generates extensible proxy types by `MethodInterceptor` objects, which can function as proxies or decorator objects.
   
 
@@ -85,13 +91,17 @@ This version addresses issues with resolving and injecting services as lists.
 ### Added 
 
 * Adds the `Activate[T]` method which can resolve an instance from an unregistered activator func.
+
 * Allows registration and activation of pointer types (to not enforce usage of interfaces as abstractions).
+
 * Adds the `RegisterNamed[T]` method to register services of the same interface and allow to resolve them by name.
 
 ### Changed
 
 * Renames the `ServiceType[T]` method to `MakeServiceType[T]`; a service type represents now the reflected type and its name (which makes debugging and understanding service dependencies much easier).
+
 * Replaces all usages of `reflect.Type` by `ServiceType` in all Parsley interfaces.
+
 * Changes the `IsSame` method of the `ServiceRegistration` type; service registrations of type function are always treated as different service types.
 
 ### Fixed
@@ -99,11 +109,12 @@ This version addresses issues with resolving and injecting services as lists.
 * Fixes a bug in the `detectCircularDependency` function which could make the method get stuck in an infinite loop.
 
 
-## v0.5.0 - 2024-07-16
+## [v0.5.0] - 2024-07-16
 
 ### Added
 
 * The service registry now accepts multiple registrations for the same interface (changes internal data structures to keep track of registrations; see `ServiceRegistrationList`).
+
 * Adds the `ResolveRequiredServices[T]` convenience function to resolve all service instances; `ResolveRequiredService[T]` can resolve a single service but will return an error if service registrations are ambiguous.
 
 ### Changed
@@ -111,7 +122,7 @@ This version addresses issues with resolving and injecting services as lists.
 * Extends the resolver to handle multiple service registrations per interface type. The resolver returns resolved objects as a list. 
 
 
-## v0.4.0 - 2024-07-13
+## [v0.4.0] - 2024-07-13
 
 ### Added
 
@@ -120,32 +131,41 @@ This version addresses issues with resolving and injecting services as lists.
 ### Changed
 
 * Reorganizes the whole package structure; adds sub-packages for `registration` and `resolving`. A bunch of types that support the inner functionality of the package have been moved to `internal.`.
+
 * Integration tests are moved to the `internal` package.
 
 
-## v0.3.0 - 2024-07-12
+## [v0.3.0] - 2024-07-12
 
 ### Added
 
 * Service registrations can be bundled in a `ModuleFunc` to register related types as a unit.
+
 * The service registry accepts object instances as singleton service registrations.
+
 * Adds the `ResolveRequiredService[T]` convenience function that resolves and safe-casts objects.
+
 * Registers resolver instance with the registry so that the `Resolver` object can be injected into factory and constructor methods.
+
 * The resolver can now accept instances of non-registered types via the `ResolveWithOptions[T]` method.
+
 * `ServiceRegistry` has new methods for creating linked and scoped registry objects (which share the same `ServiceIdSequence`). Scoped registries inherit all parent service registrations, while linked registries are empty. See `CreateLinkedRegistry` and `CreateScope` methods.
   
 ### Changed
 
 * A `ServiceRegistryAccessor` is no longer a `ServiceRegisty`, it is the other way around.
+
 * The creation of service registrations and type activators has been refactored; see `activator.go` and `service_registration.go` modules.
+
 * Multiple registries can be grouped with `NewMultiRegistryAccessor` to simplify the lookup of service registrations from linked registries. The resolver uses this accessor type to merge registered service types with object instances for unregistered types.
 
 
-## v0.2.0 - 2024-07-11
+## [v0.2.0] - 2024-07-11
 
 ### Added
 
 * The resolver can now detect circular dependencies.
+
 * Adds helpers to register services with a certain lifetime scope.
 
 ### Changed
@@ -155,13 +175,16 @@ This version addresses issues with resolving and injecting services as lists.
 ### Fixed
 
 * Fixes error wrapping in custom error types.
+
 * Improves error handling for service registry and resolver.
 
 
-## v0.1.0 - 2024-07-10
+## [v0.1.0] - 2024-07-10
 
 ### Added
 
 * Adds a service registry; the registry can map interfaces to implementation types via constructor functions.
+
 * Assign lifetime behaviour to services (singleton, scoped, or transient).
+
 * Adds a basic resolver (container) service.
