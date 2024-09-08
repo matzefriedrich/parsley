@@ -7,7 +7,7 @@ import (
 )
 
 type generatorCommand struct {
-	use abstractions.CommandName `flag:"generate" short:"GenerateProjectFiles boilerplate code for advanced DI features."`
+	use abstractions.CommandName `flag:"generate" short:"Generate boilerplate code for advanced DI features."`
 }
 
 func (g *generatorCommand) Execute() {

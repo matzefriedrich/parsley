@@ -9,17 +9,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type generateProxyCommand struct {
-	use abstractions.CommandName `flag:"proxy" short:"Generate generic proxy types for method call interception."`
+type mockGeneratorCommand struct {
+	use abstractions.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types."`
 }
 
-func (g *generateProxyCommand) Execute() {
+func (m *mockGeneratorCommand) Execute() {
 
 	templateLoader := func(_ string) (string, error) {
-		return templates.ProxyTemplate, nil
+		return templates.MockTemplate, nil
 	}
 
-	kind := "proxy"
+	kind := "mocks"
 	gen, _ := generator.NewCodeFileGenerator(kind, func(config *generator.CodeFileGeneratorOptions) {
 		config.TemplateLoader = templateLoader
 		config.ConfigureModelCallback = func(m *generator.Model) {
@@ -33,9 +33,9 @@ func (g *generateProxyCommand) Execute() {
 	}
 }
 
-var _ pkg.TypedCommand = &generateProxyCommand{}
+var _ pkg.TypedCommand = (*mockGeneratorCommand)(nil)
 
-func NewGenerateProxyCommand() *cobra.Command {
-	command := &generateProxyCommand{}
+func NewGenerateMocksCommand() *cobra.Command {
+	command := &mockGeneratorCommand{}
 	return pkg.CreateTypedCommand(command)
 }

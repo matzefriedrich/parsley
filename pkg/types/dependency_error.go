@@ -15,6 +15,6 @@ type DependencyError struct {
 }
 
 func NewDependencyError(msg string) error {
-	err := DependencyError{ParsleyError{msg: msg}}
+	err := DependencyError{ParsleyError{Msg: msg}}
 	return err
 }

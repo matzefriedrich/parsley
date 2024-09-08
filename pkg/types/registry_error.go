@@ -33,7 +33,7 @@ var _ ParsleyErrorWithServiceTypeName = &registryError{}
 func NewRegistryError(msg string, initializers ...ParsleyErrorFunc) error {
 	err := &registryError{
 		ParsleyError: ParsleyError{
-			msg: msg,
+			Msg: msg,
 		},
 	}
 	for _, f := range initializers {

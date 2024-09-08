@@ -1,6 +1,6 @@
 module github.com/matzefriedrich/parsley
 
-go 1.22.4
+go 1.23
 
 require (
 	github.com/matzefriedrich/cobra-extensions v0.2.6

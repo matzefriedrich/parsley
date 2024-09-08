@@ -4,11 +4,11 @@ import "errors"
 
 type ParsleyError struct {
 	cause error
-	msg   string
+	Msg   string
 }
 
 func (f ParsleyError) Error() string {
-	return f.msg
+	return f.Msg
 }
 
 func (f ParsleyError) Unwrap() error {

@@ -41,7 +41,7 @@ func (r *ResolverError) ServiceTypeName(name string) {
 func NewResolverError(msg string, initializers ...ParsleyErrorFunc) error {
 	err := &ResolverError{
 		ParsleyError: ParsleyError{
-			msg: msg,
+			Msg: msg,
 		},
 	}
 	for _, f := range initializers {
