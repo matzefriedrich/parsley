@@ -1,5 +1,7 @@
 {{- /* Package declaration */ -}}
-package mocks
+package {{ .PackageName }}
+
+{{ "" }}
 
 {{- /* Import statements */ -}}
 {{- if .Imports }}
@@ -22,45 +24,38 @@ type {{ $mockStructName }} struct {
     {{- end }}
 }
 
+{{- "\n" -}}
+
 {{- /* Define func types for each method */ -}}
-{{ range .Methods }}
-type {{ .Name }}Func func(
-    {{- range $i, $param := .Parameters }}
-    {{ if $i }}, {{ end }}{{ $param.Name }} {{ $param.TypeName }}
-    {{- end }}
-) (
-    {{- range $i, $result := .Results }}
-    {{ if $i }}, {{ end }}{{ $result.TypeName }}
-    {{- end }}
-)
-{{ end }}
+{{- range $i, $m := .Methods }}
+type {{ $m.Name }}Func func({{ $m | FormattedParameters }}) {{ $m | FormattedResultTypes }}
+{{- end }}
+
+{{- "\n" -}}
 
 {{- /* Define methods for each function, implementing the interface */ -}}
-{{ range .Methods }}
-func (m {{ $mockStructName }}) {{ .Name }}(
-    {{- range $i, $param := .Parameters }}
-    {{ if $i }}, {{ end }}{{ $param.Name }} {{ $param.TypeName }}
-    {{- end }}
-) (
-    {{- range $i, $result := .Results }}
-    {{ if $i }}, {{ end }}{{ $result.TypeName }}
-    {{- end }}
-) {
-    return m.{{ .Name | asPrivate }}(
-        {{- range $i, $param := .Parameters }}
-        {{ if $i }}, {{ end }}{{ $param.Name }}
-        {{- end }}
-    )
+{{ range $i, $m := .Methods }}
+func (m *{{ $mockStructName }}) {{ $m.Name }}({{ $m | FormattedParameters }}) {{ $m | FormattedResultTypes }} {
+	{{- if $m | HasResults }}
+	return m.{{ .Name | asPrivate }}({{ $m | FormattedCallParameters }})
+    {{- else }}
+	m.{{ .Name | asPrivate }}({{ $m | FormattedCallParameters }})
+	{{- end }}
 }
 {{ end }}
+
+{{- "\n" -}}
 
 {{- /* Interface implementation assertion */ -}}
 var _ {{ $interfaceName }} = (*{{ $mockStructName }})(nil)
 
+{{ "" }}
+
 {{- /* Define a constructor for the mock */ -}}
+// New{{ $interfaceName }}Mock Creates a new configurable {{ $mockStructName }} object.
 func New{{ $interfaceName }}Mock(
     {{- range $i, $method := .Methods }}
-    {{ if $i }}, {{ end }}{{ $method.Name | asPrivate }} {{ $method.Name }}Func
+    {{ $method.Name | asPrivate }} {{ $method.Name }}Func,
     {{- end }}
 ) *{{ $mockStructName }} {
     return &{{ $mockStructName }}{
@@ -69,5 +64,4 @@ func New{{ $interfaceName }}Mock(
         {{- end }}
     }
 }
-
 {{ end }}
