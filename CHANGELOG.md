@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Added a `version` command to display the current version of the Parsley CLI application. The command can also check for new versions by querying the latest release information from GitHub, notifying users if an update is available and providing instructions on how to update.
+
 ### Fixed
 
 * Fixes matching of expected arguments in `mock_verify.go`
