@@ -50,7 +50,7 @@ func (g *codeFileGenerator) GenerateCode() error {
 		return err
 	}
 
-	builder, err := NewTemplateModelBuilder(goFilePath)
+	builder, err := NewTemplateModelBuilder(AstFromFile(goFilePath))
 	if err != nil {
 		return err
 	}

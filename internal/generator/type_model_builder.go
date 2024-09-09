@@ -3,21 +3,17 @@ package generator
 import (
 	"fmt"
 	"go/ast"
-	"go/parser"
-	"go/token"
 )
 
 type TemplateModelBuilder struct {
 	node *ast.File
 }
 
-func NewTemplateModelBuilder(sourceFilePath string) (*TemplateModelBuilder, error) {
-	fileSet := token.NewFileSet()
-	node, err := parser.ParseFile(fileSet, sourceFilePath, nil, parser.ParseComments)
+func NewTemplateModelBuilder(accessor AstFileAccessor) (*TemplateModelBuilder, error) {
+	node, err := accessor()
 	if err != nil {
 		return nil, err
 	}
-
 	return &TemplateModelBuilder{
 		node: node,
 	}, nil
