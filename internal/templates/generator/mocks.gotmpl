@@ -81,7 +81,7 @@ func New{{ $interfaceName }}Mock() *{{ $mockStructName }} {
 		{{- if HasResults . }}
         {{ .Name | asPublic }}Func: func({{ FormattedParameters . }}) {{ FormattedResultTypes . }} {
 			{{- range .Results }}
-			var {{ .Name }} {{ .TypeName }}
+			var {{ .Name }} {{ FormatType . }}
 			{{- end}}
 			return {{ FormattedResultParameters . }}
 		},
