@@ -15,10 +15,11 @@ func Test_Version_parse_version_from_github_release(t *testing.T) {
 	const expectedVersionString = "1.2.3"
 
 	// Act
-	actual := release.TryParseVersionFromTag()
+	actual, err := release.TryParseVersionFromTag()
 
 	// Assert
-	assert.Equal(t, expectedVersionString, actual)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedVersionString, actual.String())
 }
 
 func Test_Version_parse_prefixed_version_from_github_release(t *testing.T) {
@@ -30,10 +31,11 @@ func Test_Version_parse_prefixed_version_from_github_release(t *testing.T) {
 	const expectedVersionString = "1.2.3"
 
 	// Act
-	actual := release.TryParseVersionFromTag()
+	actual, err := release.TryParseVersionFromTag()
 
 	// Assert
-	assert.Equal(t, expectedVersionString, actual)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedVersionString, actual.String())
 }
 
 func Test_Version_parse_prefixed_prerelease_version_from_github_release(t *testing.T) {
@@ -45,8 +47,9 @@ func Test_Version_parse_prefixed_prerelease_version_from_github_release(t *testi
 	const expectedVersionString = "1.2.3"
 
 	// Act
-	actual := release.TryParseVersionFromTag()
+	actual, err := release.TryParseVersionFromTag()
 
 	// Assert
-	assert.Equal(t, expectedVersionString, actual)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedVersionString, actual.String())
 }
