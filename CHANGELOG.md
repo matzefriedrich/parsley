@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.9.1] - 2024-09-09
+
+### Changed
+
+* Added improved testability for the `TemplateModelBuilder` by refactoring its constructor function to accept an `AstFileAccessor` function instead of a filename. This allows for greater flexibility in testing, as the AST can now be sourced either from a file or directly from a string, making it easier to test different code inputs without relying on file I/O.
+
+### Fixed
+
+* Fixed an issue in the `type_model_builder.go` module where parameters and result fields of type array were not correctly handled. This update ensures that array types are properly represented in the generated template models, allowing for accurate code generation in cases involving arrays.
+
+
 ## [v0.9.0] - 2024-09-08
 
 Starting with this release, the project's license has been changed from AGPLv3 to Apache License 2.0. The move to the Apache 2.0 license reflects my desire to make the library more accessible and easier to adopt, especially in commercial and proprietary projects.

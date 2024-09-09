@@ -22,7 +22,11 @@ func HasResults(m Method) bool {
 func FormattedParameters(m Method) string {
 	formattedParameters := make([]string, len(m.Parameters))
 	for i, parameter := range m.Parameters {
-		formattedParameters[i] = fmt.Sprintf("%s %s", parameter.Name, parameter.TypeName)
+		typeName := parameter.TypeName
+		if parameter.IsArray {
+			typeName = "[]" + typeName
+		}
+		formattedParameters[i] = fmt.Sprintf("%s %s", parameter.Name, typeName)
 	}
 	return strings.Join(formattedParameters, ", ")
 }
@@ -46,7 +50,11 @@ func FormattedResultParameters(m Method) string {
 func FormattedResultTypes(m Method) string {
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
-		formattedResults[i] = fmt.Sprintf("%s", result.TypeName)
+		typeName := result.TypeName
+		if result.IsArray {
+			typeName = "[]" + typeName
+		}
+		formattedResults[i] = fmt.Sprintf("%s", typeName)
 	}
 	if len(formattedResults) == 0 {
 		return ""

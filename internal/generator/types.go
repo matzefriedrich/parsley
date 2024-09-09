@@ -7,6 +7,7 @@ import (
 type Parameter struct {
 	Name     string
 	TypeName string
+	IsArray  bool
 }
 
 func (p Parameter) MatchesType(name string) bool {
