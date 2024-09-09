@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"github.com/matzefriedrich/parsley/internal/utils"
 	"os"
 
 	"github.com/matzefriedrich/cobra-extensions/pkg"
@@ -23,9 +24,9 @@ func (g *initCommand) Execute() {
 		return
 	}
 
-	const minVersion = "v0.9.1"
+	minVersion, _ := utils.ApplicationVersion()
 	const packageName = "github.com/matzefriedrich/parsley"
-	dependencyErr := p.AddDependency(packageName, minVersion)
+	dependencyErr := p.AddDependency(packageName, minVersion.String())
 	if dependencyErr != nil {
 		fmt.Println(err)
 		return

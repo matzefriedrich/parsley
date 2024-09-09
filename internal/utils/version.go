@@ -3,14 +3,14 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"github.com/hashicorp/go-version"
 	"regexp"
 	"strconv"
+
+	"github.com/hashicorp/go-version"
 )
 
-var (
-	CommitSha     string
-	VersionString string = "0.1.0"
+const (
+	VersionString string = "0.9.2"
 )
 
 type VersionInfo struct {
