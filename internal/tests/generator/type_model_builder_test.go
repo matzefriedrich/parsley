@@ -36,8 +36,8 @@ func Test_NewTemplateModelBuilder_Build_multiple_interface_definitions(t *testin
 
 	// Arrange
 	source := []byte("package types\n" + "\n" +
-		"type Service0 interface {\n" + "	Method0()\n" + "}\n" + "\n" +
-		"type Service1 interface {\n" + "	Method1() string\n" + "	Method2() (string, error)\n" +
+		"type Service0 interface {\n" + "	Method0(s string)\n" + "}\n" + "\n" +
+		"type Service1 interface {\n" + "	Method1() string\n" + "	Method2(data []bytes) (string, error)\n" +
 		"}\n")
 
 	accessor := generator.AstFromSource(source)
@@ -55,4 +55,10 @@ func Test_NewTemplateModelBuilder_Build_multiple_interface_definitions(t *testin
 
 	serviceInterface1 := actual.Interfaces[1]
 	assert.Equal(t, "Service1", serviceInterface1.Name)
+
+	method1 := serviceInterface1.Methods[0]
+	assert.Equal(t, "Method1", method1.Name)
+
+	method2 := serviceInterface1.Methods[1]
+	assert.Equal(t, "Method2", method2.Name)
 }
