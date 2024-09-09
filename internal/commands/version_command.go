@@ -42,6 +42,12 @@ func (v *versionCommand) Execute() {
 				"go install github.com/matzefriedrich/parsley/cmd/parsley-cli@v%s\n\n", releaseVersion.String(), releaseVersion.String())
 
 			fmt.Printf("More information about the release %s is available at:\n%s\n", release.Name, release.HtmlUrl)
+
+		} else if appVersion.Equal(*releaseVersion) {
+
+			fmt.Printf("\n" +
+				"You are using the latest version of Parsley CLI.\n\n")
+
 		}
 	}
 }
