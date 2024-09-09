@@ -5,7 +5,8 @@ import "unicode"
 func RegisterNamingFunctions(generator GenericCodeGenerator) error {
 	return generator.AddTemplateFunc(
 		NamedFunc("asPrivate", MakePrivate),
-		NamedFunc("asPublic", MakePublic))
+		NamedFunc("asPublic", MakePublic),
+	)
 }
 
 func MakePrivate(s string) string {

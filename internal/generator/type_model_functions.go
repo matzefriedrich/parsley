@@ -7,12 +7,14 @@ import (
 
 func RegisterTypeModelFunctions(generator GenericCodeGenerator) error {
 	return generator.AddTemplateFunc(
-		NamedFunc("HasResults", HasResults),
-		NamedFunc("FormattedParameters", FormattedParameters),
+		NamedFunc("FormatType", FormatType),
 		NamedFunc("FormattedCallParameters", FormattedCallParameters),
+		NamedFunc("FormattedParameters", FormattedParameters),
 		NamedFunc("FormattedResultParameters", FormattedResultParameters),
 		NamedFunc("FormattedResultTypes", FormattedResultTypes),
-		NamedFunc("Signature", Signature))
+		NamedFunc("HasResults", HasResults),
+		NamedFunc("Signature", Signature),
+	)
 }
 
 func HasResults(m Method) bool {
@@ -22,10 +24,7 @@ func HasResults(m Method) bool {
 func FormattedParameters(m Method) string {
 	formattedParameters := make([]string, len(m.Parameters))
 	for i, parameter := range m.Parameters {
-		typeName := parameter.TypeName
-		if parameter.IsArray {
-			typeName = "[]" + typeName
-		}
+		typeName := FormatType(parameter)
 		formattedParameters[i] = fmt.Sprintf("%s %s", parameter.Name, typeName)
 	}
 	return strings.Join(formattedParameters, ", ")
@@ -50,10 +49,7 @@ func FormattedResultParameters(m Method) string {
 func FormattedResultTypes(m Method) string {
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
-		typeName := result.TypeName
-		if result.IsArray {
-			typeName = "[]" + typeName
-		}
+		typeName := FormatType(result)
 		formattedResults[i] = fmt.Sprintf("%s", typeName)
 	}
 	if len(formattedResults) == 0 {
@@ -70,4 +66,12 @@ func Signature(m Method) string {
 		buffer.WriteString(fmt.Sprintf(" %s", FormattedResultTypes(m)))
 	}
 	return buffer.String()
+}
+
+func FormatType(parameter Parameter) string {
+	typeName := parameter.TypeName
+	if parameter.IsArray {
+		typeName = "[]" + typeName
+	}
+	return typeName
 }
