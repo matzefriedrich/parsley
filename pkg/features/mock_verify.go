@@ -51,11 +51,14 @@ func (m *MockBase) Verify(name string, times TimesFunc, matches ...ArgMatch) boo
 			numMatches := 0
 		callsLoop:
 			for _, call := range function.tracedCalls {
-				for _, arg := range call.args {
-					for _, doesMatch := range matches {
-						if doesMatch(arg) == false {
+				for i, arg := range call.args {
+					if i < len(matches) {
+						match := matches[i]
+						if match(arg) == false {
 							continue callsLoop
 						}
+					} else {
+						break
 					}
 				}
 				numMatches++

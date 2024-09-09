@@ -28,11 +28,13 @@ func NewGreeterProxyImpl(target Greeter, interceptors []features.MethodIntercept
 	}
 }
 
-func (p *greeterProxyImpl) SayHello(name string) (string, error) {
+func (p *greeterProxyImpl) SayHello(name string, polite bool) (string, error) {
 
 	const methodName = "SayHello"
 	parameters := map[string]interface{}{
 		"name": name,
+
+		"polite": polite,
 	}
 
 	callContext := features.NewMethodCallContext(methodName, parameters)
@@ -41,7 +43,7 @@ func (p *greeterProxyImpl) SayHello(name string) (string, error) {
 		p.InvokeExitMethodInterceptors(callContext)
 	}()
 
-	result0, result1 := p.target.SayHello(name)
+	result0, result1 := p.target.SayHello(name, polite)
 	p.InvokeMethodErrorInterceptors(callContext, result0, result1)
 	return result0, result1
 }
