@@ -58,7 +58,7 @@ func Test_Register_generated_proxy_type_handles_error(t *testing.T) {
 
 	// Act
 	proxy, _ := resolving.ResolveRequiredService[GreeterProxy](resolver, ctx)
-	msg, _ := proxy.SayHello("Jane")
+	msg, _ := proxy.SayHello("Jane", false)
 	fmt.Println(msg)
 
 	// Assert
@@ -73,7 +73,7 @@ type johnGreeter struct {
 func (g johnGreeter) SayNothing() {
 }
 
-func (g johnGreeter) SayHello(name string) (string, error) {
+func (g johnGreeter) SayHello(name string, _ bool) (string, error) {
 	if name != "John" {
 		return "", fmt.Errorf("name is not John")
 	}

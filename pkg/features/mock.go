@@ -10,6 +10,13 @@ type MockFunction struct {
 	tracedCalls []methodCall
 }
 
+func (m MockFunction) String() string {
+	if len(m.signature) > 0 {
+		return m.signature
+	}
+	return m.name
+}
+
 type methodCall struct {
 	args []any
 }
@@ -38,4 +45,3 @@ func (m *MockBase) TraceMethodCall(name string, arguments ...any) {
 		m.functions[name] = function
 	}
 }
-

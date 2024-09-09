@@ -26,7 +26,7 @@ func Test_Register_generated_proxy_type(t *testing.T) {
 
 	// Act
 	proxy, _ := resolving.ResolveRequiredService[GreeterProxy](resolver, ctx)
-	msg, _ := proxy.SayHello("John")
+	msg, _ := proxy.SayHello("John", false)
 	fmt.Println(msg)
 
 	// Assert
@@ -89,7 +89,7 @@ type greeter struct {
 func (g greeter) SayNothing() {
 }
 
-func (g greeter) SayHello(name string) (string, error) {
+func (g greeter) SayHello(name string, _ bool) (string, error) {
 	return "Hello " + name, nil
 }
 
