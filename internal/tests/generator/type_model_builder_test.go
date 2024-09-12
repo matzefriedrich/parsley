@@ -2,6 +2,7 @@ package generator
 
 import (
 	"github.com/matzefriedrich/parsley/internal/generator"
+	"github.com/matzefriedrich/parsley/internal/reflection"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -10,26 +11,28 @@ func Test_NewTemplateModelBuilder_from_empty_source_file_returns_error(t *testin
 
 	// Arrange
 	source := []byte("")
+	sut := generator.NewTemplateModelBuilder(reflection.AstFromSource(source))
 
 	// Act
-	sut, err := generator.NewTemplateModelBuilder(generator.AstFromSource(source))
+	actual, err := sut.Build()
 
 	// Assert
 	assert.Error(t, err)
-	assert.Nil(t, sut)
+	assert.Nil(t, actual)
 }
 
 func Test_NewTemplateModelBuilder_from_minimal_source_file(t *testing.T) {
 
 	// Arrange
 	source := []byte("package main")
+	sut := generator.NewTemplateModelBuilder(reflection.AstFromSource(source))
 
 	// Act
-	sut, err := generator.NewTemplateModelBuilder(generator.AstFromSource(source))
+	actual, err := sut.Build()
 
 	// Assert
 	assert.NoError(t, err)
-	assert.NotNil(t, sut)
+	assert.NotNil(t, actual)
 }
 
 func Test_NewTemplateModelBuilder_Build_multiple_interface_definitions(t *testing.T) {
@@ -40,8 +43,8 @@ func Test_NewTemplateModelBuilder_Build_multiple_interface_definitions(t *testin
 		"type Service1 interface {\n" + "	Method1() string\n" + "	Method2(data []bytes) (string, error)\n" +
 		"}\n")
 
-	accessor := generator.AstFromSource(source)
-	sut, _ := generator.NewTemplateModelBuilder(accessor)
+	accessor := reflection.AstFromSource(source)
+	sut := generator.NewTemplateModelBuilder(accessor)
 
 	// Act
 	actual, err := sut.Build()

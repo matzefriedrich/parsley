@@ -1,7 +1,7 @@
 package generator
 
 import (
-	"github.com/matzefriedrich/parsley/internal/generator"
+	"github.com/matzefriedrich/parsley/internal/reflection"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -20,7 +20,7 @@ func Test_AstFileAccessor_create_accessor_from_source(t *testing.T) {
 		"	Method3() (string, error)\n" +
 		"}\n")
 
-	accessor := generator.AstFromSource(source)
+	accessor := reflection.AstFromSource(source)
 
 	// Act
 	actual, err := accessor()

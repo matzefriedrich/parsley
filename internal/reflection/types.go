@@ -1,4 +1,4 @@
-package generator
+package reflection
 
 import (
 	"strings"
@@ -32,9 +32,16 @@ func InterfaceWithName(name string) Interface {
 	}
 }
 
+type FuncType struct {
+	Name       string
+	Parameters []Parameter
+	Results    []Parameter
+}
+
 // Model The generator root model type.
 type Model struct {
 	Interfaces  []Interface
+	FuncTypes   []FuncType
 	PackageName string
 	Imports     []string
 }
@@ -50,5 +57,6 @@ func NewModel(packageName string) *Model {
 		PackageName: packageName,
 		Interfaces:  make([]Interface, 0),
 		Imports:     make([]string, 0),
+		FuncTypes:   make([]FuncType, 0),
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/matzefriedrich/cobra-extensions/pkg"
 	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 	"github.com/matzefriedrich/parsley/internal/generator"
+	"github.com/matzefriedrich/parsley/internal/reflection"
 	"github.com/matzefriedrich/parsley/internal/templates"
 	"github.com/spf13/cobra"
 )
@@ -22,7 +23,7 @@ func (g *generateProxyCommand) Execute() {
 	kind := "proxy"
 	gen, _ := generator.NewCodeFileGenerator(kind, func(config *generator.CodeFileGeneratorOptions) {
 		config.TemplateLoader = templateLoader
-		config.ConfigureModelCallback = func(m *generator.Model) {
+		config.ConfigureModelCallback = func(m *reflection.Model) {
 			m.AddImport("github.com/matzefriedrich/parsley/pkg/features")
 		}
 	})
