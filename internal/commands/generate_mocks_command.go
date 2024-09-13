@@ -101,7 +101,7 @@ func filterInterfaces(m *reflection.Model) []reflection.Interface {
 	}
 }
 
-var _ pkg.TypedCommand = (*mockGeneratorCommand)(nil)
+var _ pkg.TypedCommand = (*mocksGeneratorCommand)(nil)
 
 func NewGenerateMocksCommand() *cobra.Command {
 	command := &mocksGeneratorCommand{}
