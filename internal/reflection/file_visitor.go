@@ -2,7 +2,8 @@ package reflection
 
 import "go/ast"
 
-type fileCollector struct {
+type fileVisitor struct {
+	idSequence  uint64
 	packageName string
 	imports     []string
 	interfaces  []Interface
@@ -10,7 +11,7 @@ type fileCollector struct {
 	comments    []Comment
 }
 
-func (t *fileCollector) Model() (*Model, error) {
+func (t *fileVisitor) Model() (*Model, error) {
 	return &Model{
 		PackageName: t.packageName,
 		Imports:     t.imports,
@@ -20,10 +21,12 @@ func (t *fileCollector) Model() (*Model, error) {
 	}, nil
 }
 
-var _ AstFileVisitor = (*fileCollector)(nil)
+var _ AstFileVisitor = (*fileVisitor)(nil)
 
 func NewFileVisitor() AstFileVisitor {
-	return &fileCollector{
+	idSeed := 1
+	return &fileVisitor{
+		idSequence: uint64(idSeed),
 		imports:    make([]string, 0),
 		interfaces: make([]Interface, 0),
 		funcTypes:  make([]FuncType, 0),
@@ -31,7 +34,7 @@ func NewFileVisitor() AstFileVisitor {
 	}
 }
 
-func (t *fileCollector) VisitNode(n ast.Node) bool {
+func (t *fileVisitor) VisitNode(n ast.Node) bool {
 	switch n.(type) {
 	case *ast.CommentGroup:
 		commentsGroup, _ := n.(*ast.CommentGroup)
@@ -49,7 +52,7 @@ func (t *fileCollector) VisitNode(n ast.Node) bool {
 	return true
 }
 
-func (t *fileCollector) VisitComment(comment *ast.Comment) {
+func (t *fileVisitor) VisitComment(comment *ast.Comment) {
 	model := Comment{
 		SymbolInfo: SymbolInfo{
 			Pos: comment.Pos(),
@@ -60,28 +63,30 @@ func (t *fileCollector) VisitComment(comment *ast.Comment) {
 	t.comments = append(t.comments, model)
 }
 
-func (t *fileCollector) VisitFile(file *ast.File) {
+func (t *fileVisitor) VisitFile(file *ast.File) {
 	name := file.Name
 	t.packageName = name.Name
 }
 
-func (t *fileCollector) VisitImport(importSpec *ast.ImportSpec) {
+func (t *fileVisitor) VisitImport(importSpec *ast.ImportSpec) {
 	t.imports = append(t.imports, importSpec.Path.Value)
 }
 
-func (t *fileCollector) VisitInterfaceType(name string, interfaceType *ast.InterfaceType) {
-	model := InterfaceWithName(name, SymbolInfo{Pos: interfaceType.Pos(), End: interfaceType.End()})
+func (t *fileVisitor) VisitInterfaceType(name string, interfaceType *ast.InterfaceType) {
+	id := t.newSymbolId()
+	model := InterfaceWithName(name, SymbolInfo{Id: id, Pos: interfaceType.Pos(), End: interfaceType.End()})
 	methodsCollector := newInterfaceMethodsCollector(&model)
 	walker := NewTypeWalker(methodsCollector)
 	walker.WalkInterface(interfaceType)
 	t.interfaces = append(t.interfaces, model)
 }
 
-func (t *fileCollector) VisitFuncType(name string, funcType *ast.FuncType) {
+func (t *fileVisitor) VisitFuncType(name string, funcType *ast.FuncType) {
 	parameters := CollectParametersFor(funcType)
 	results := CollectResultFieldsFor(funcType)
 	model := FuncType{
 		SymbolInfo: SymbolInfo{
+			Id:  t.newSymbolId(),
 			Pos: funcType.Pos(),
 			End: funcType.End(),
 		},
@@ -92,11 +97,11 @@ func (t *fileCollector) VisitFuncType(name string, funcType *ast.FuncType) {
 	t.funcTypes = append(t.funcTypes, model)
 }
 
-func (t *fileCollector) VisitStructType(_ string, _ *ast.StructType) {
+func (t *fileVisitor) VisitStructType(_ string, _ *ast.StructType) {
 
 }
 
-func (t *fileCollector) walkTypeSpecNode(spec *ast.TypeSpec) {
+func (t *fileVisitor) walkTypeSpecNode(spec *ast.TypeSpec) {
 	typeName := spec.Name.Name
 	switch spec.Type.(type) {
 	case *ast.InterfaceType:
@@ -111,8 +116,14 @@ func (t *fileCollector) walkTypeSpecNode(spec *ast.TypeSpec) {
 	}
 }
 
-func (t *fileCollector) walkComments(commentGroup *ast.CommentGroup) {
+func (t *fileVisitor) walkComments(commentGroup *ast.CommentGroup) {
 	for _, comment := range commentGroup.List {
 		t.VisitComment(comment)
 	}
+}
+
+func (t *fileVisitor) newSymbolId() uint64 {
+	next := t.idSequence + 1
+	t.idSequence = next
+	return next
 }

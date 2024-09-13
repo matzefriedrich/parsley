@@ -16,12 +16,9 @@ func (p Parameter) MatchesType(name string) bool {
 }
 
 type SymbolInfo struct {
+	Id  uint64
 	Pos token.Pos
 	End token.Pos
-}
-
-func NewSymbolInfo(pos token.Pos, end token.Pos) SymbolInfo {
-	return SymbolInfo{pos, end}
 }
 
 type Method struct {
