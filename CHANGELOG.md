@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.9.3] - 2024-09-13
+
+### Changed
+
+* The `type_model_builder.go` module has been refactored to improve flexibility and maintain separation of concerns. By decoupling AST traversal from model building, the system now employs an extensible visitor pattern.
+
+* The `generate mocks` command does now support additional annotations; use `//parsley:mock` and `//parsley:ignore` to gain full control over how mock generation is handled, while keeping the default behavior of including all interfaces. If `//parsley:mock` is present, it takes precedence, meaning all interfaces are excluded by default, and only those explicitly marked with `//parsley:mock` are included.
+
+
 ## [v0.9.2] - 2024-09-09
 
 ### Added
