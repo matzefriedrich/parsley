@@ -10,11 +10,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type mockGeneratorCommand struct {
+type mocksGeneratorCommand struct {
 	use abstractions.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types."`
 }
 
-func (m *mockGeneratorCommand) Execute() {
+func (m *mocksGeneratorCommand) Execute() {
 
 	templateLoader := func(_ string) (string, error) {
 		return templates.MockTemplate, nil
@@ -37,6 +37,6 @@ func (m *mockGeneratorCommand) Execute() {
 var _ pkg.TypedCommand = (*mockGeneratorCommand)(nil)
 
 func NewGenerateMocksCommand() *cobra.Command {
-	command := &mockGeneratorCommand{}
+	command := &mocksGeneratorCommand{}
 	return pkg.CreateTypedCommand(command)
 }

@@ -17,7 +17,7 @@ func NewTemplateModelBuilder(accessor reflection.AstFileAccessor) *TemplateModel
 func (b *TemplateModelBuilder) Build() (*reflection.Model, error) {
 
 	fileVisitor := reflection.NewFileVisitor()
-	walker := reflection.NewFileWalker(fileVisitor)
+	walker := reflection.NewSyntaxWalker(fileVisitor)
 	err := walker.WalkSyntaxTree(b.accessor)
 	if err != nil {
 		return nil, err

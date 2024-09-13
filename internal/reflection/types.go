@@ -1,6 +1,7 @@
 package reflection
 
 import (
+	"go/token"
 	"strings"
 )
 
@@ -14,32 +15,51 @@ func (p Parameter) MatchesType(name string) bool {
 	return strings.Compare(name, p.TypeName) == 0
 }
 
+type SymbolInfo struct {
+	Pos token.Pos
+	End token.Pos
+}
+
+func NewSymbolInfo(pos token.Pos, end token.Pos) SymbolInfo {
+	return SymbolInfo{pos, end}
+}
+
 type Method struct {
+	SymbolInfo
 	Name       string
 	Parameters []Parameter
 	Results    []Parameter
 }
 
 type Interface struct {
+	SymbolInfo
 	Name    string
 	Methods []Method
 }
 
-func InterfaceWithName(name string) Interface {
+func InterfaceWithName(name string, info SymbolInfo) Interface {
 	return Interface{
-		Name:    name,
-		Methods: make([]Method, 0),
+		SymbolInfo: info,
+		Name:       name,
+		Methods:    make([]Method, 0),
 	}
 }
 
 type FuncType struct {
+	SymbolInfo
 	Name       string
 	Parameters []Parameter
 	Results    []Parameter
 }
 
+type Comment struct {
+	SymbolInfo
+	Text string
+}
+
 // Model The generator root model type.
 type Model struct {
+	Comments    []Comment
 	Interfaces  []Interface
 	FuncTypes   []FuncType
 	PackageName string
@@ -50,13 +70,4 @@ type ModelConfigurationFunc func(m *Model)
 
 func (m *Model) AddImport(s string) {
 	m.Imports = append(m.Imports, s)
-}
-
-func NewModel(packageName string) *Model {
-	return &Model{
-		PackageName: packageName,
-		Interfaces:  make([]Interface, 0),
-		Imports:     make([]string, 0),
-		FuncTypes:   make([]FuncType, 0),
-	}
 }

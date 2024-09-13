@@ -9,7 +9,7 @@ func Test_FileWalker_WalkSyntaxTree_build_Model_collect_interfaces(t *testing.T)
 
 	// Arrange
 	fileVisitor := NewFileVisitor()
-	sut := NewFileWalker(fileVisitor)
+	sut := NewSyntaxWalker(fileVisitor)
 
 	source := "" +
 		"package main\n\n" +
@@ -39,7 +39,7 @@ func Test_FileWalker_WalkSyntaxTree_build_Model_collect_func_types(t *testing.T)
 
 	// Arrange
 	fileVisitor := NewFileVisitor()
-	sut := NewFileWalker(fileVisitor)
+	sut := NewSyntaxWalker(fileVisitor)
 
 	source := "" +
 		"package main\n\n" +

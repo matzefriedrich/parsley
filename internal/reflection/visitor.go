@@ -4,7 +4,13 @@ import (
 	"go/ast"
 )
 
+type AstVisitor interface {
+	VisitNode(node ast.Node) bool
+}
+
 type AstFileVisitor interface {
+	AstVisitor
+	VisitComment(comment *ast.Comment)
 	VisitFile(file *ast.File)
 	VisitImport(importSpec *ast.ImportSpec)
 	VisitInterfaceType(name string, interfaceType *ast.InterfaceType)
