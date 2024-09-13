@@ -1,4 +1,4 @@
-package generator
+package reflection
 
 import (
 	"go/ast"

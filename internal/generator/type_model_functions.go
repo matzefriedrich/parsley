@@ -2,6 +2,7 @@ package generator
 
 import (
 	"fmt"
+	"github.com/matzefriedrich/parsley/internal/reflection"
 	"strings"
 )
 
@@ -17,11 +18,11 @@ func RegisterTypeModelFunctions(generator GenericCodeGenerator) error {
 	)
 }
 
-func HasResults(m Method) bool {
+func HasResults(m reflection.Method) bool {
 	return len(m.Results) > 0
 }
 
-func FormattedParameters(m Method) string {
+func FormattedParameters(m reflection.Method) string {
 	formattedParameters := make([]string, len(m.Parameters))
 	for i, parameter := range m.Parameters {
 		typeName := FormatType(parameter)
@@ -30,7 +31,7 @@ func FormattedParameters(m Method) string {
 	return strings.Join(formattedParameters, ", ")
 }
 
-func FormattedCallParameters(m Method) string {
+func FormattedCallParameters(m reflection.Method) string {
 	formattedParameters := make([]string, len(m.Parameters))
 	for i, parameter := range m.Parameters {
 		formattedParameters[i] = fmt.Sprintf("%s", parameter.Name)
@@ -38,7 +39,7 @@ func FormattedCallParameters(m Method) string {
 	return strings.Join(formattedParameters, ", ")
 }
 
-func FormattedResultParameters(m Method) string {
+func FormattedResultParameters(m reflection.Method) string {
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
 		formattedResults[i] = fmt.Sprintf("%s", result.Name)
@@ -46,7 +47,7 @@ func FormattedResultParameters(m Method) string {
 	return strings.Join(formattedResults, ", ")
 }
 
-func FormattedResultTypes(m Method) string {
+func FormattedResultTypes(m reflection.Method) string {
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
 		typeName := FormatType(result)
@@ -58,7 +59,7 @@ func FormattedResultTypes(m Method) string {
 	return "(" + strings.Join(formattedResults, ", ") + ")"
 }
 
-func Signature(m Method) string {
+func Signature(m reflection.Method) string {
 	buffer := strings.Builder{}
 	buffer.WriteString(fmt.Sprintf("%s", m.Name))
 	buffer.WriteString(fmt.Sprintf("(%s)", FormattedParameters(m)))
@@ -68,7 +69,7 @@ func Signature(m Method) string {
 	return buffer.String()
 }
 
-func FormatType(parameter Parameter) string {
+func FormatType(parameter reflection.Parameter) string {
 	typeName := parameter.TypeName
 	if parameter.IsArray {
 		typeName = "[]" + typeName

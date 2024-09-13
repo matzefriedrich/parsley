@@ -2,6 +2,7 @@ package generator
 
 import (
 	"fmt"
+	"github.com/matzefriedrich/parsley/internal/reflection"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,7 +15,7 @@ type codeFileGenerator struct {
 
 type CodeFileGeneratorOptions struct {
 	TemplateLoader         TemplateLoader
-	ConfigureModelCallback ModelConfigurationFunc
+	ConfigureModelCallback reflection.ModelConfigurationFunc
 	kind                   string
 }
 
@@ -50,10 +51,7 @@ func (g *codeFileGenerator) GenerateCode() error {
 		return err
 	}
 
-	builder, err := NewTemplateModelBuilder(AstFromFile(goFilePath))
-	if err != nil {
-		return err
-	}
+	builder := NewTemplateModelBuilder(reflection.AstFromFile(goFilePath))
 
 	model, err := builder.Build()
 	if err != nil {
