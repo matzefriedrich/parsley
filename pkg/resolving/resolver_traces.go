@@ -26,7 +26,8 @@ var _ ResolverTraces = (*resolverTraces)(nil)
 
 func newResolveWithOptionsSpan(scope context.Context, serviceType types.ServiceType) (context.Context, trace.Span) {
 
-	tracer := otel.Tracer("parsley")
+	tp := otel.GetTracerProvider()
+	tracer := tp.Tracer(core.TracerName)
 	ctx, span := tracer.Start(scope, "resolver.resolve.ResolveWithOptions")
 
 	span.SetAttributes(
