@@ -191,6 +191,18 @@ type DependencyInfo interface {
 // LifetimeScope represents the duration for which a service or object instance is retained.
 type LifetimeScope uint
 
+func (l LifetimeScope) String() string {
+	switch l {
+	case LifetimeTransient:
+		return "transient"
+	case LifetimeScoped:
+		return "scoped"
+	case LifetimeSingleton:
+		return "singleton"
+	}
+	return ""
+}
+
 const (
 
 	// LifetimeTransient represents a transient lifetime where a new instance is created each time it is requested.

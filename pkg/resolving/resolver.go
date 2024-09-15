@@ -100,7 +100,10 @@ func (r *resolver) Resolve(ctx context.Context, serviceType types.ServiceType) (
 }
 
 // ResolveWithOptions resolves instances for the given service type with the provided resolver options.
-func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.ServiceType, resolverOptions ...types.ResolverOptionsFunc) ([]interface{}, error) {
+func (r *resolver) ResolveWithOptions(scope context.Context, serviceType types.ServiceType, resolverOptions ...types.ResolverOptionsFunc) ([]interface{}, error) {
+
+	ctx, span := newResolveWithOptionsSpan(scope, serviceType)
+	defer span.End()
 
 	registry, registryErr := r.createResolverRegistryAccessor(resolverOptions...)
 	if registryErr != nil {
