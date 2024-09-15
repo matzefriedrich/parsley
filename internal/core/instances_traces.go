@@ -14,6 +14,7 @@ const (
 	SpanAttrResolverInstanceSource            = "resolver.instance.source"
 	SpanAttrResolverInstanceStorage           = "resolver.instance.storage"
 	SpanAttrResolverRegistrationId            = "resolver.registration.id"
+	SpanAttrResolverRegistrationServiceType   = "resolver.registration.service-type"
 	SpanAttrResolverRegistrationLifetimeScope = "resolver.registration.lifetime"
 )
 
@@ -88,8 +89,12 @@ func newKeepInstanceSpan(scope context.Context, registration types.ServiceRegist
 	ctx, span := tracer.Start(scope, "instances.resolve.TryKeepInstance")
 
 	lifetimeScope := registration.LifetimeScope()
+	registrationId := int64(registration.Id())
+	serviceTypeName := registration.ServiceType().Name()
+
 	span.SetAttributes(
-		attribute.Int64(SpanAttrResolverRegistrationId, int64(registration.Id())),
+		attribute.Int64(SpanAttrResolverRegistrationId, registrationId),
+		attribute.String(SpanAttrResolverRegistrationServiceType, serviceTypeName),
 		attribute.String(SpanAttrResolverRegistrationLifetimeScope, lifetimeScope.String()),
 	)
 
