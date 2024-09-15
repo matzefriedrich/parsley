@@ -15,7 +15,6 @@ const (
 	SpanAttrResolverInstanceStorage           = "resolver.instance.storage"
 	SpanAttrResolverRegistrationId            = "resolver.registration.id"
 	SpanAttrResolverRegistrationLifetimeScope = "resolver.registration.lifetime"
-	TracerName                                = "parsley"
 )
 
 const (
@@ -57,7 +56,8 @@ func (t tryResolveInstanceSpan) InstanceNotFound() {
 
 func newTryResolveInstanceSpan(scope context.Context) (context.Context, TryResolveInstanceSpan) {
 
-	tracer := otel.Tracer(TracerName)
+	tp := otel.GetTracerProvider()
+	tracer := tp.Tracer(TracerName)
 	ctx, span := tracer.Start(scope, "instances.resolve.TryResolveInstance")
 
 	return ctx, &tryResolveInstanceSpan{
@@ -83,7 +83,8 @@ func (k keepInstanceSpan) InstanceStorage(location string) {
 
 func newKeepInstanceSpan(scope context.Context, registration types.ServiceRegistration) (context.Context, KeepInstanceSpan) {
 
-	tracer := otel.Tracer(TracerName)
+	tp := otel.GetTracerProvider()
+	tracer := tp.Tracer(TracerName)
 	ctx, span := tracer.Start(scope, "instances.resolve.TryKeepInstance")
 
 	lifetimeScope := registration.LifetimeScope()

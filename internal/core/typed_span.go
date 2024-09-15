@@ -13,6 +13,10 @@ type TypedSpan struct {
 }
 
 const (
+	TracerName = "github.com/matzefriedrich/parsley"
+)
+
+const (
 	SpanAttrModule    = "module"
 	SpanAttrOperation = "operation"
 	SpanAttrMethod    = "method"
