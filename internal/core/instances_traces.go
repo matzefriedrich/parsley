@@ -59,10 +59,10 @@ func newTryResolveInstanceSpan(scope context.Context) (context.Context, TryResol
 
 	tp := otel.GetTracerProvider()
 	tracer := tp.Tracer(TracerName)
-	ctx, span := tracer.Start(scope, "instances.resolve.TryResolveInstance")
+	ctx, span := tracer.Start(scope, "instances.TryResolveInstance")
 
 	return ctx, &tryResolveInstanceSpan{
-		TypedSpan: NewTypedSpan("instances", "resolve", "TryResolveInstance", span),
+		TypedSpan: NewTypedSpan("instances", "TryResolveInstance", span),
 	}
 }
 
@@ -86,7 +86,7 @@ func newKeepInstanceSpan(scope context.Context, registration types.ServiceRegist
 
 	tp := otel.GetTracerProvider()
 	tracer := tp.Tracer(TracerName)
-	ctx, span := tracer.Start(scope, "instances.resolve.TryKeepInstance")
+	ctx, span := tracer.Start(scope, "instances.KeepInstance")
 
 	lifetimeScope := registration.LifetimeScope()
 	registrationId := int64(registration.Id())
@@ -99,7 +99,7 @@ func newKeepInstanceSpan(scope context.Context, registration types.ServiceRegist
 	)
 
 	return ctx, &keepInstanceSpan{
-		TypedSpan:    NewTypedSpan("instances", "resolve", "TryKeepInstance", span),
+		TypedSpan:    NewTypedSpan("instances", "TryKeepInstance", span),
 		registration: registration,
 	}
 }
