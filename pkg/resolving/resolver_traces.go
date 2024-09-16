@@ -28,12 +28,12 @@ func newResolveWithOptionsSpan(scope context.Context, serviceType types.ServiceT
 
 	tp := otel.GetTracerProvider()
 	tracer := tp.Tracer(core.TracerName)
-	ctx, span := tracer.Start(scope, "resolver.resolve.ResolveWithOptions")
+	ctx, span := tracer.Start(scope, "resolver.ResolveWithOptions")
 
 	span.SetAttributes(
 		attribute.String(SpanAttrResolverServiceType, serviceType.Name()),
 	)
 	return ctx, &resolverTraces{
-		TypedSpan: core.NewTypedSpan(ModuleName, "resolve", "ResolveWithOptions", span),
+		TypedSpan: core.NewTypedSpan(ModuleName, "ResolveWithOptions", span),
 	}
 }

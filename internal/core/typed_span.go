@@ -17,9 +17,8 @@ const (
 )
 
 const (
-	SpanAttrModule    = "module"
-	SpanAttrOperation = "operation"
-	SpanAttrMethod    = "method"
+	SpanAttrModule = "module"
+	SpanAttrMethod = "method"
 )
 
 func (t TypedSpan) End(options ...trace.SpanEndOption) {
@@ -64,10 +63,9 @@ func (t TypedSpan) TracerProvider() trace.TracerProvider {
 
 var _ trace.Span = (*TypedSpan)(nil)
 
-func NewTypedSpan(module string, operation string, method string, span trace.Span) TypedSpan {
+func NewTypedSpan(module string, method string, span trace.Span) TypedSpan {
 	span.SetAttributes(
 		attribute.String(SpanAttrModule, module),
-		attribute.String(SpanAttrOperation, operation),
 		attribute.String(SpanAttrMethod, method),
 	)
 	return TypedSpan{
