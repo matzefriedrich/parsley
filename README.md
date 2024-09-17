@@ -1,3 +1,11 @@
+[![CI](https://github.com/matzefriedrich/parsley/actions/workflows/go.yml/badge.svg)](https://github.com/matzefriedrich/parsley/actions/workflows/go.yml)
+[![Coverage Status](https://coveralls.io/repos/github/matzefriedrich/parsley/badge.svg?branch=main)](https://coveralls.io/github/matzefriedrich/parsley?branch=main)
+[![Go Reference](https://pkg.go.dev/badge/github.com/matzefriedrich/parsley.svg)](https://pkg.go.dev/github.com/matzefriedrich/parsley)
+[![Go Report Card](https://goreportcard.com/badge/github.com/matzefriedrich/parsley)](https://goreportcard.com/report/github.com/matzefriedrich/parsley)
+![License](https://img.shields.io/github/license/matzefriedrich/parsley)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/matzefriedrich/parsley)
+![GitHub Release](https://img.shields.io/github/v/release/matzefriedrich/parsley?include_prereleases)
+
 ## What is Parsley?
 
 Parsley is a powerful, easy-to-use reflection-based dependency injection package that integrates seamlessly into any Go application.
