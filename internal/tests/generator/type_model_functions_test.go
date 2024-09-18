@@ -3,6 +3,7 @@ package generator
 import (
 	"github.com/matzefriedrich/parsley/internal/generator"
 	"github.com/matzefriedrich/parsley/internal/reflection"
+	"github.com/matzefriedrich/parsley/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -21,13 +22,12 @@ func Test_RegisterTypeModelFunctions_ensure_expected_methods(t *testing.T) {
 	}
 
 	registeredFunctions := make(map[string]struct{})
-	target := &genericCodeGeneratorMock{
-		AddTemplateFuncFunc: func(functions ...generator.TemplateFunction) error {
-			for _, function := range functions {
-				registeredFunctions[function.Name] = struct{}{}
-			}
-			return nil
-		},
+	target := mocks.NewGenericCodeGeneratorMock()
+	target.AddTemplateFuncFunc = func(functions ...generator.TemplateFunction) error {
+		for _, function := range functions {
+			registeredFunctions[function.Name] = struct{}{}
+		}
+		return nil
 	}
 
 	// Act
