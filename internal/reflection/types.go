@@ -6,9 +6,10 @@ import (
 )
 
 type Parameter struct {
-	Name     string
-	TypeName string
-	IsArray  bool
+	Name      string
+	TypeName  string
+	IsArray   bool
+	IsPointer bool
 }
 
 func (p Parameter) MatchesType(name string) bool {
@@ -66,5 +67,6 @@ type Model struct {
 type ModelConfigurationFunc func(m *Model)
 
 func (m *Model) AddImport(s string) {
+	s = strings.TrimSuffix(strings.TrimPrefix(s, "\""), "\"")
 	m.Imports = append(m.Imports, s)
 }

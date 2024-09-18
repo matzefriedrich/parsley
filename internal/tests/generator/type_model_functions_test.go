@@ -98,15 +98,16 @@ func Test_FormattedParameters_single_parameter(t *testing.T) {
 func Test_FormattedParameters_multiple_parameter(t *testing.T) {
 	// Arrange
 	m := reflection.Method{
-		Name: "SayHello",
+		Name: "Method0",
 		Parameters: []reflection.Parameter{
 			{Name: "s", TypeName: "string"},
+			{Name: "buffer", TypeName: "byte", IsArray: true},
 			{Name: "b", TypeName: "bool"},
 		}}
 	// Act
 	actual := generator.FormattedParameters(m)
 	// Assert
-	assert.Equal(t, "s string, b bool", actual)
+	assert.Equal(t, "s string, buffer []byte, b bool", actual)
 }
 
 func Test_FormattedResultParameters_single_parameter(t *testing.T) {

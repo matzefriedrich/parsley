@@ -10,13 +10,6 @@ import (
 	"time"
 )
 
-//go:generate parsley-cli generate mocks
-
-//parsley:mock
-type HttpClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}
-
 type GithubRelease struct {
 	Id          uint64    `json:"id"`
 	TagName     string    `json:"tag_name"`

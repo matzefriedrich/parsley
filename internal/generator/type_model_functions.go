@@ -71,6 +71,9 @@ func Signature(m reflection.Method) string {
 
 func FormatType(parameter reflection.Parameter) string {
 	typeName := parameter.TypeName
+	if parameter.IsPointer {
+		typeName = "*" + typeName
+	}
 	if parameter.IsArray {
 		typeName = "[]" + typeName
 	}

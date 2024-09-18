@@ -2,6 +2,7 @@ package reflection
 
 import (
 	"go/ast"
+	"strings"
 )
 
 type fileVisitor struct {
@@ -71,7 +72,9 @@ func (t *fileVisitor) VisitFile(file *ast.File) {
 }
 
 func (t *fileVisitor) VisitImport(importSpec *ast.ImportSpec) {
-	t.imports = append(t.imports, importSpec.Path.Value)
+	name := importSpec.Path.Value
+	name = strings.TrimSuffix(strings.TrimPrefix(name, "\""), "\"")
+	t.imports = append(t.imports, name)
 }
 
 func (t *fileVisitor) VisitInterfaceType(name string, interfaceType *ast.InterfaceType) {

@@ -139,5 +139,43 @@ func Test_NewTemplateModelBuilder_Build_collect_struct_types(t *testing.T) {
 	// Assert
 	assert.NoError(t, err)
 	assert.NotNil(t, actual)
+}
 
+func Test_NewTemplateModelBuilder_Build_interface_method_with_pointer_parameters(t *testing.T) {
+
+	// Arrange
+	source := []byte("package types\n" + "\n" +
+		"import (" + "\n" +
+		"	\"http\"" + "\n" +
+		")" + "\n\n" +
+		"type HttpClient interface {\n" +
+		"	Do(req *http.Request) (*http.Response, error)" + "\n" +
+		"}")
+
+	accessor := reflection.AstFromSource(source)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
+
+	// Act
+	actual, err := sut.Build()
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+
+	httpClientInterface := actual.Interfaces[0]
+	assert.Equal(t, "HttpClient", httpClientInterface.Name)
+
+	doMethod := httpClientInterface.Methods[0]
+	assert.Equal(t, "Do", doMethod.Name)
+
+	reqParameter := doMethod.Parameters[0]
+	assert.Equal(t, "req", reqParameter.Name)
+	assert.Equal(t, "http.Request", reqParameter.TypeName)
+	assert.True(t, reqParameter.IsPointer)
+
+	responseResult := doMethod.Results[0]
+	assert.Equal(t, "http.Response", responseResult.TypeName)
+	assert.True(t, responseResult.IsPointer)
 }
