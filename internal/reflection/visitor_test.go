@@ -21,9 +21,10 @@ func Test_FileWalker_WalkSyntaxTree_build_Model_collect_interfaces(t *testing.T)
 		"}"
 
 	fileAccessor := AstFromSource([]byte(source))
+	file, _ := fileAccessor()
 
 	// Act
-	err := sut.WalkSyntaxTree(fileAccessor)
+	err := sut.WalkSyntaxTree(file.File)
 
 	// Assert
 	assert.NoError(t, err)
@@ -47,9 +48,10 @@ func Test_FileWalker_WalkSyntaxTree_build_Model_collect_func_types(t *testing.T)
 		"type SayHelloFunc func(name string)\n\n"
 
 	fileAccessor := AstFromSource([]byte(source))
+	file, _ := fileAccessor()
 
 	// Act
-	err := sut.WalkSyntaxTree(fileAccessor)
+	err := sut.WalkSyntaxTree(file.File)
 
 	// Assert
 	assert.NoError(t, err)

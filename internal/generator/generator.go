@@ -10,12 +10,14 @@ import (
 )
 
 type codeFileGenerator struct {
-	options CodeFileGeneratorOptions
+	options      CodeFileGeneratorOptions
+	fileAccessor reflection.AstFileAccessor
 }
 
 type CodeFileGeneratorOptions struct {
 	TemplateLoader         TemplateLoader
 	ConfigureModelCallback reflection.ModelConfigurationFunc
+	OutputWriterFactory    OutputWriterFactory
 	kind                   string
 }
 
@@ -25,7 +27,32 @@ type CodeFileGenerator interface {
 
 type CodeFileGeneratorOptionsFunc func(config *CodeFileGeneratorOptions)
 
-func NewCodeFileGenerator(kind string, config ...CodeFileGeneratorOptionsFunc) (CodeFileGenerator, error) {
+// GoFileAccessor Creates a new reflection.AstFileAccessor object that reads a source file from the GOFILE variable.
+func GoFileAccessor() reflection.AstFileAccessor {
+
+	goFilePath, err := GetGoFilePath()
+	if err != nil {
+		return func() (*reflection.AstFileSource, error) {
+			return nil, newGeneratorError("failed to obtain generator source file")
+		}
+	}
+
+	return reflection.AstFromFile(goFilePath)
+}
+
+// FileOutputWriter Creates an OutputWriterFactory object that can be used create file writers.
+func FileOutputWriter() OutputWriterFactory {
+	return func(kind string, source *reflection.AstFileSource) (OutputWriter, error) {
+		fileName := path.Base(source.Filename)
+		fileNameWithoutExtension := strings.TrimSuffix(fileName, filepath.Ext(fileName))
+		fileDirectory := path.Dir(source.Filename)
+
+		targetFilePath := path.Join(fileDirectory, fmt.Sprintf("%s.%s.g.go", fileNameWithoutExtension, kind))
+		return os.OpenFile(targetFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	}
+}
+
+func NewCodeFileGenerator(kind string, fileAccessor reflection.AstFileAccessor, config ...CodeFileGeneratorOptionsFunc) (CodeFileGenerator, error) {
 	options := CodeFileGeneratorOptions{
 		kind: kind,
 	}
@@ -35,23 +62,26 @@ func NewCodeFileGenerator(kind string, config ...CodeFileGeneratorOptionsFunc) (
 	if options.TemplateLoader == nil {
 		return nil, fmt.Errorf("template loader is not set")
 	}
-	return &codeFileGenerator{options: options}, nil
+	return &codeFileGenerator{
+		fileAccessor: fileAccessor,
+		options:      options,
+	}, nil
 }
 
 func (g *codeFileGenerator) GenerateCode() error {
 
-	goFilePath, err := GetGoFilePath()
-	if err != nil {
-		return err
-	}
-
 	gen := NewGenericCodeGenerator(g.options.TemplateLoader)
-	err = RegisterTemplateFunctions(gen, RegisterTypeModelFunctions, RegisterNamingFunctions)
+	err := RegisterTemplateFunctions(gen, RegisterTypeModelFunctions, RegisterNamingFunctions)
 	if err != nil {
 		return err
 	}
 
-	builder := NewTemplateModelBuilder(reflection.AstFromFile(goFilePath))
+	source, err := g.fileAccessor()
+	if err != nil {
+		return err
+	}
+
+	builder := NewTemplateModelBuilder(source.File)
 
 	model, err := builder.Build()
 	if err != nil {
@@ -62,13 +92,12 @@ func (g *codeFileGenerator) GenerateCode() error {
 		g.options.ConfigureModelCallback(model)
 	}
 
-	goFileName := path.Base(goFilePath)
-	goFileNameWithoutExtension := strings.TrimSuffix(goFileName, filepath.Ext(goFileName))
-	goFileDirectory := path.Dir(goFilePath)
+	f, outputErr := g.options.OutputWriterFactory(g.options.kind, source)
+	if outputErr != nil {
+		return outputErr
+	}
 
-	targetFilePath := path.Join(goFileDirectory, fmt.Sprintf("%s.%s.g.go", goFileNameWithoutExtension, g.options.kind))
-	f, _ := os.OpenFile(targetFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-	defer func(f *os.File) {
+	defer func(f OutputWriter) {
 		_ = f.Close()
 	}(f)
 

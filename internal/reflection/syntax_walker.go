@@ -7,7 +7,7 @@ type walker struct {
 }
 
 type AstWalker interface {
-	WalkSyntaxTree(accessor AstFileAccessor) error
+	WalkSyntaxTree(file *ast.File) error
 }
 
 var _ AstWalker = (*walker)(nil)
@@ -19,12 +19,7 @@ func NewSyntaxWalker(visitor AstVisitor) AstWalker {
 	}
 }
 
-func (w *walker) WalkSyntaxTree(accessor AstFileAccessor) error {
-	file, err := accessor()
-	if err != nil {
-		return err
-	}
-
+func (w *walker) WalkSyntaxTree(file *ast.File) error {
 	ast.Inspect(file, func(n ast.Node) bool {
 		return w.visitor.VisitNode(n)
 	})

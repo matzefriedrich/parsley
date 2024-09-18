@@ -7,25 +7,29 @@ import (
 	"testing"
 )
 
-func Test_NewTemplateModelBuilder_from_empty_source_file_returns_error(t *testing.T) {
+func Test_AstFromSource_empty_source_file_returns_error(t *testing.T) {
 
 	// Arrange
 	source := []byte("")
-	sut := generator.NewTemplateModelBuilder(reflection.AstFromSource(source))
+	accessor := reflection.AstFromSource(source)
 
 	// Act
-	actual, err := sut.Build()
+	file, err := accessor()
 
 	// Assert
 	assert.Error(t, err)
-	assert.Nil(t, actual)
+	assert.Nil(t, file)
 }
 
 func Test_NewTemplateModelBuilder_from_minimal_source_file(t *testing.T) {
 
 	// Arrange
 	source := []byte("package main")
-	sut := generator.NewTemplateModelBuilder(reflection.AstFromSource(source))
+
+	accessor := reflection.AstFromSource(source)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
 
 	// Act
 	actual, err := sut.Build()
@@ -44,7 +48,9 @@ func Test_NewTemplateModelBuilder_Build_multiple_interface_definitions(t *testin
 		"}\n")
 
 	accessor := reflection.AstFromSource(source)
-	sut := generator.NewTemplateModelBuilder(accessor)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
 
 	// Act
 	actual, err := sut.Build()
@@ -76,7 +82,9 @@ func Test_NewTemplateModelBuilder_Build_collect_imports(t *testing.T) {
 		")")
 
 	accessor := reflection.AstFromSource(source)
-	sut := generator.NewTemplateModelBuilder(accessor)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
 
 	// Act
 	actual, err := sut.Build()
@@ -98,7 +106,9 @@ func Test_NewTemplateModelBuilder_Build_collect_comments(t *testing.T) {
 		"}")
 
 	accessor := reflection.AstFromSource(source)
-	sut := generator.NewTemplateModelBuilder(accessor)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
 
 	// Act
 	actual, err := sut.Build()
@@ -119,7 +129,9 @@ func Test_NewTemplateModelBuilder_Build_collect_struct_types(t *testing.T) {
 		"}")
 
 	accessor := reflection.AstFromSource(source)
-	sut := generator.NewTemplateModelBuilder(accessor)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
 
 	// Act
 	actual, err := sut.Build()
