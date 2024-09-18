@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	VersionString string = "0.9.2"
+	VersionString string = "1.0.0"
 )
 
 type VersionInfo struct {
@@ -36,11 +36,11 @@ func (v VersionInfo) Equal(other VersionInfo) bool {
 }
 
 func ApplicationVersion() (*VersionInfo, error) {
-	version, err := tryParseVersionInfo(VersionString)
+	v, err := tryParseVersionInfo(VersionString)
 	if err != nil {
 		return nil, errors.New("application version not set")
 	}
-	return version, nil
+	return v, nil
 }
 
 func tryParseVersionInfo(version string) (*VersionInfo, error) {

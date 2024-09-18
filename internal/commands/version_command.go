@@ -7,6 +7,7 @@ import (
 	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 	"github.com/matzefriedrich/parsley/internal/utils"
 	"github.com/spf13/cobra"
+	"net/http"
 )
 
 type versionCommand struct {
@@ -25,7 +26,8 @@ func (v *versionCommand) Execute() {
 		return
 	}
 
-	githubClient := utils.NewGitHubApiClient()
+	client := &http.Client{}
+	githubClient := utils.NewGitHubApiClient(client)
 	release, err := githubClient.QueryLatestReleaseTag(context.Background())
 	if err != nil {
 		return

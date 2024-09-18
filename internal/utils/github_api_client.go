@@ -5,9 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
+
+//go:generate parsley-cli generate mocks
+
+//parsley:mock
+type HttpClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
 
 type GithubRelease struct {
 	Id          uint64    `json:"id"`
@@ -23,8 +31,15 @@ func (r GithubRelease) TryParseVersionFromTag() (*VersionInfo, error) {
 }
 
 type githubApiClient struct {
-	options HttpClientOptions
+	httpClient HttpClient
+	options    HttpClientOptions
 }
+
+type GitHubClient interface {
+	QueryLatestReleaseTag(ctx context.Context) (*GithubRelease, error)
+}
+
+var _ GitHubClient = (*githubApiClient)(nil)
 
 type HttpClientOptions struct {
 	RequestTimeout time.Duration
@@ -32,7 +47,7 @@ type HttpClientOptions struct {
 
 type HttpClientOptionsFunc func(*HttpClientOptions)
 
-func NewGitHubApiClient(config ...HttpClientOptionsFunc) *githubApiClient {
+func NewGitHubApiClient(httpClient HttpClient, config ...HttpClientOptionsFunc) GitHubClient {
 	options := HttpClientOptions{
 		RequestTimeout: 5 * time.Second,
 	}
@@ -40,7 +55,8 @@ func NewGitHubApiClient(config ...HttpClientOptionsFunc) *githubApiClient {
 		optionsFunc(&options)
 	}
 	return &githubApiClient{
-		options: options,
+		httpClient: httpClient,
+		options:    options,
 	}
 }
 
@@ -59,13 +75,14 @@ func (c *githubApiClient) QueryLatestReleaseTag(ctx context.Context) (*GithubRel
 		return nil, err
 	}
 
-	client := &http.Client{}
-	response, requestErr := client.Do(request)
+	response, requestErr := c.httpClient.Do(request)
 	if requestErr != nil {
 		return nil, requestErr
 	}
 
-	defer response.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(response.Body)
 
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("failed to fetch latest release: %s", response.Status)
