@@ -86,7 +86,7 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 		case *ast.SelectorExpr:
 			selector, _ := next.(*ast.SelectorExpr)
 			ident, _ := selector.X.(*ast.Ident)
-			typeStack.Push(ParameterType{SelectorName: selector.Sel.Name, Name: ident.Name})
+			typeStack.Push(ParameterType{SelectorName: ident.Name, Name: selector.Sel.Name})
 
 		case *ast.ArrayType:
 			arrayType := next.(*ast.ArrayType)

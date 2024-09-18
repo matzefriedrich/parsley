@@ -185,10 +185,10 @@ func Test_NewTemplateModelBuilder_Build_interface_method_array_pointer_parameter
 	// Arrange
 	source := []byte("package types\n" + "\n" +
 		"import (" + "\n" +
-		"	\"net/http\"" + "\n" +
+		"	\"types\"" + "\n" +
 		")" + "\n\n" +
 		"type Service interface {\n" +
-		"	Method0(args *[]*string)" + "\n" +
+		"	Method0(args *[]*types.Arg)" + "\n" +
 		"}")
 
 	accessor := reflection.AstFromSource(source)
@@ -202,4 +202,8 @@ func Test_NewTemplateModelBuilder_Build_interface_method_array_pointer_parameter
 	// Assert
 	assert.NoError(t, err)
 	assert.NotNil(t, actual)
+
+	method := actual.Interfaces[0].Methods[0]
+	signature := generator.Signature(method)
+	assert.Equal(t, "Method0(args *[]*types.Arg)", signature)
 }

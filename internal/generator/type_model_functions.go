@@ -71,25 +71,37 @@ func Signature(m reflection.Method) string {
 }
 
 func FormatType(parameter reflection.Parameter) string {
+
 	segments := make([]string, 0)
+
 	s := internal.MakeStack[*reflection.ParameterType]()
 	s.Push(parameter.Type)
+
 	for s.IsEmpty() == false {
+
 		t := s.Pop()
+
 		typeName := t.Name
 		if len(t.SelectorName) > 0 {
 			typeName = fmt.Sprintf("%s.%s", t.SelectorName, typeName)
 		}
+
 		if t.IsPointer {
-			typeName = "*" + typeName
+			star := "*"
+			typeName = star + typeName
 		}
+
 		if t.IsArray {
-			typeName = "[]" + typeName
+			array := "[]"
+			typeName = array + typeName
 		}
+
 		segments = append(segments, typeName)
+
 		if t.Next != nil {
 			s.Push(t.Next)
 		}
 	}
+
 	return strings.Join(segments, "")
 }
