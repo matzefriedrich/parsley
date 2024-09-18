@@ -9,7 +9,6 @@ type typeWalker struct {
 type AstTypeSpecWalker interface {
 	WalkInterface(interfaceType *ast.InterfaceType)
 	WalkFunc(name string, funcSpec *ast.FuncType)
-	WalkStruct(structType *ast.StructType)
 }
 
 var _ AstTypeSpecWalker = (*typeWalker)(nil)
@@ -32,8 +31,4 @@ func (t *typeWalker) WalkInterface(interfaceType *ast.InterfaceType) {
 
 func (t *typeWalker) WalkFunc(name string, funcSpec *ast.FuncType) {
 	t.visitor.VisitMethod(name, funcSpec)
-}
-
-func (t *typeWalker) WalkStruct(structType *ast.StructType) {
-
 }

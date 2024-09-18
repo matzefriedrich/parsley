@@ -65,3 +65,67 @@ func Test_NewTemplateModelBuilder_Build_multiple_interface_definitions(t *testin
 	method2 := serviceInterface1.Methods[1]
 	assert.Equal(t, "Method2", method2.Name)
 }
+
+func Test_NewTemplateModelBuilder_Build_collect_imports(t *testing.T) {
+
+	// Arrange
+	source := []byte("package types\n" + "\n" +
+		"\n" +
+		"import (\n" +
+		"	\"fmt\"\n" +
+		")")
+
+	accessor := reflection.AstFromSource(source)
+	sut := generator.NewTemplateModelBuilder(accessor)
+
+	// Act
+	actual, err := sut.Build()
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+
+	assert.Equal(t, "\"fmt\"", actual.Imports[0])
+}
+
+func Test_NewTemplateModelBuilder_Build_collect_comments(t *testing.T) {
+
+	// Arrange
+	source := []byte("package types\n" + "\n" +
+		"//parsley:ignore\n" +
+		"type Greeter interface {\n" +
+		"	SayHello(name string)\n" +
+		"}")
+
+	accessor := reflection.AstFromSource(source)
+	sut := generator.NewTemplateModelBuilder(accessor)
+
+	// Act
+	actual, err := sut.Build()
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+
+	assert.Equal(t, 1, len(actual.Comments))
+	assert.Equal(t, "//parsley:ignore", actual.Comments[0].Text)
+}
+
+func Test_NewTemplateModelBuilder_Build_collect_struct_types(t *testing.T) {
+
+	// Arrange
+	source := []byte("package types\n" + "\n" +
+		"type Greeter struct {\n" +
+		"}")
+
+	accessor := reflection.AstFromSource(source)
+	sut := generator.NewTemplateModelBuilder(accessor)
+
+	// Act
+	actual, err := sut.Build()
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+
+}

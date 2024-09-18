@@ -1,6 +1,8 @@
 package reflection
 
-import "go/ast"
+import (
+	"go/ast"
+)
 
 type fileVisitor struct {
 	idSequence  uint64
@@ -98,7 +100,6 @@ func (t *fileVisitor) VisitFuncType(name string, funcType *ast.FuncType) {
 }
 
 func (t *fileVisitor) VisitStructType(_ string, _ *ast.StructType) {
-
 }
 
 func (t *fileVisitor) walkTypeSpecNode(spec *ast.TypeSpec) {
