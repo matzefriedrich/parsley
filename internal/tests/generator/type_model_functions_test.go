@@ -44,7 +44,7 @@ func Test_RegisterTypeModelFunctions_ensure_expected_methods(t *testing.T) {
 
 func Test_FormatType_scalar_value_type(t *testing.T) {
 	// Arrange
-	p := reflection.Parameter{Name: "p", TypeName: "string"}
+	p := reflection.Parameter{Name: "p", Type: &reflection.ParameterType{Name: "string"}}
 	// Act
 	actual := generator.FormatType(p)
 	// Assert
@@ -53,16 +53,52 @@ func Test_FormatType_scalar_value_type(t *testing.T) {
 
 func Test_FormatType_scalar_array_type(t *testing.T) {
 	// Arrange
-	p := reflection.Parameter{Name: "p", TypeName: "string", IsArray: true}
+	p := reflection.Parameter{
+		Name: "p",
+		Type: &reflection.ParameterType{
+			IsArray: true,
+			Next: &reflection.ParameterType{
+				Name: "string",
+			},
+		},
+	}
 	// Act
 	actual := generator.FormatType(p)
 	// Assert
 	assert.Equal(t, "[]string", actual)
 }
 
+func Test_FormatType_array_pointer_type(t *testing.T) {
+	// Arrange
+	p := reflection.Parameter{
+		Name: "p",
+		Type: &reflection.ParameterType{
+			IsArray: true,
+			Next: &reflection.ParameterType{
+				IsPointer: true,
+				Next: &reflection.ParameterType{
+					Name: "Arg",
+				},
+			},
+		},
+	}
+	// Act
+	actual := generator.FormatType(p)
+	// Assert
+	assert.Equal(t, "[]*Arg", actual)
+}
+
 func Test_FormattedCallParameters_single_parameter(t *testing.T) {
 	// Arrange
-	m := reflection.Method{Name: "SayHello", Parameters: []reflection.Parameter{{Name: "p", TypeName: "string"}}}
+	m := reflection.Method{
+		Name: "SayHello",
+		Parameters: []reflection.Parameter{
+			{
+				Name: "p", Type: &reflection.ParameterType{Name: "string"},
+			},
+		},
+	}
+
 	// Act
 	actual := generator.FormattedCallParameters(m)
 	// Assert
@@ -71,10 +107,14 @@ func Test_FormattedCallParameters_single_parameter(t *testing.T) {
 
 func Test_FormattedCallParameters_multiple_parameter(t *testing.T) {
 	// Arrange
-	m := reflection.Method{Name: "SayHello", Parameters: []reflection.Parameter{
-		{Name: "s", TypeName: "string"},
-		{Name: "b", TypeName: "bool"},
-	}}
+	m := reflection.Method{
+		Name: "SayHello",
+		Parameters: []reflection.Parameter{
+			{Name: "s", Type: &reflection.ParameterType{Name: "string"}},
+			{Name: "b", Type: &reflection.ParameterType{Name: "bool"}},
+		},
+	}
+
 	// Act
 	actual := generator.FormattedCallParameters(m)
 	// Assert
@@ -86,8 +126,9 @@ func Test_FormattedParameters_single_parameter(t *testing.T) {
 	m := reflection.Method{
 		Name: "SayHello",
 		Parameters: []reflection.Parameter{
-			{Name: "p", TypeName: "string"},
-		}}
+			{Name: "p", Type: &reflection.ParameterType{Name: "string"}},
+		},
+	}
 
 	// Act
 	actual := generator.FormattedParameters(m)
@@ -100,10 +141,28 @@ func Test_FormattedParameters_multiple_parameter(t *testing.T) {
 	m := reflection.Method{
 		Name: "Method0",
 		Parameters: []reflection.Parameter{
-			{Name: "s", TypeName: "string"},
-			{Name: "buffer", TypeName: "byte", IsArray: true},
-			{Name: "b", TypeName: "bool"},
-		}}
+			{
+				Name: "s",
+				Type: &reflection.ParameterType{
+					Name: "string",
+				},
+			},
+			{
+				Name: "buffer",
+				Type: &reflection.ParameterType{
+					IsArray: true,
+					Next: &reflection.ParameterType{
+						Name: "byte",
+					},
+				},
+			},
+			{
+				Name: "b", Type: &reflection.ParameterType{
+					Name: "bool"},
+			},
+		},
+	}
+
 	// Act
 	actual := generator.FormattedParameters(m)
 	// Assert
@@ -115,10 +174,10 @@ func Test_FormattedResultParameters_single_parameter(t *testing.T) {
 	m := reflection.Method{
 		Name: "SayHello",
 		Parameters: []reflection.Parameter{
-			{Name: "p", TypeName: "string"},
+			{Name: "p", Type: &reflection.ParameterType{Name: "string"}},
 		},
 		Results: []reflection.Parameter{
-			{Name: "result0", TypeName: "error"},
+			{Name: "result0", Type: &reflection.ParameterType{Name: "error"}},
 		}}
 
 	// Act
@@ -132,11 +191,11 @@ func Test_FormattedResultParameters_multiple_parameter(t *testing.T) {
 	m := reflection.Method{
 		Name: "SayHello",
 		Parameters: []reflection.Parameter{
-			{Name: "s", TypeName: "string"},
+			{Name: "s", Type: &reflection.ParameterType{Name: "string"}},
 		},
 		Results: []reflection.Parameter{
-			{Name: "result0", TypeName: "string"},
-			{Name: "result1", TypeName: "error"},
+			{Name: "result0", Type: &reflection.ParameterType{Name: "string"}},
+			{Name: "result1", Type: &reflection.ParameterType{Name: "error"}},
 		},
 	}
 	// Act

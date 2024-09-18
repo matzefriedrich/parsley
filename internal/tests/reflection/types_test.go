@@ -38,7 +38,7 @@ func Test_Model_AddImport_adds_quoted_import(t *testing.T) {
 
 func Test_Parameter_MatchesType_returns_true_if_parameter_type_matches_expected_typename(t *testing.T) {
 	// Arrange
-	sut := &reflection.Parameter{Name: "p", TypeName: "string"}
+	sut := &reflection.Parameter{Name: "p", Type: &reflection.ParameterType{Name: "string"}}
 	// Act
 	actual := sut.MatchesType("string")
 	// Assert
@@ -47,7 +47,7 @@ func Test_Parameter_MatchesType_returns_true_if_parameter_type_matches_expected_
 
 func Test_Parameter_MatchesType_returns_false_if_type_does_not_match_expected_typename(t *testing.T) {
 	// Arrange
-	sut := &reflection.Parameter{Name: "p", TypeName: "string"}
+	sut := &reflection.Parameter{Name: "p", Type: &reflection.ParameterType{Name: "string"}}
 	// Act
 	actual := sut.MatchesType("bool")
 	// Assert

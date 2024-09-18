@@ -2,6 +2,7 @@ package reflection
 
 import (
 	"fmt"
+	"github.com/matzefriedrich/parsley/internal"
 	"go/ast"
 )
 
@@ -39,10 +40,8 @@ func CollectParametersFor(funcType *ast.FuncType) []Parameter {
 		typeInfo := getFieldTypeInfo(param)
 		for _, paramName := range param.Names {
 			parameters = append(parameters, Parameter{
-				Name:      paramName.Name,
-				TypeName:  typeInfo.Name,
-				IsArray:   typeInfo.IsArray,
-				IsPointer: typeInfo.IsPointer,
+				Name: paramName.Name,
+				Type: typeInfo,
 			})
 		}
 	}
@@ -57,48 +56,73 @@ func CollectResultFieldsFor(funcType *ast.FuncType) []Parameter {
 	for index, field := range funcType.Results.List {
 		typeInfo := getFieldTypeInfo(field)
 		parameters = append(parameters, Parameter{
-			Name:      fmt.Sprintf("result%d", index),
-			TypeName:  typeInfo.Name,
-			IsArray:   typeInfo.IsArray,
-			IsPointer: typeInfo.IsPointer,
+			Name: fmt.Sprintf("result%d", index),
+			Type: typeInfo,
 		})
 	}
 	return parameters
 }
 
-func getFieldTypeInfo(param *ast.Field) fieldTypeInfo {
+func getFieldTypeInfo(param *ast.Field) *ParameterType {
 
 	paramTypeName := ""
 
 	paramType := param.Type
-	paramArrayType, isArrayType := paramType.(*ast.ArrayType)
-	if isArrayType {
-		paramType = paramArrayType.Elt
-	}
 
-	if paramType != nil {
-		id, ok := paramType.(*ast.Ident)
-		if ok {
-			paramTypeName = id.Name
-		}
-	}
+	typeStack := internal.MakeStack[ParameterType]()
+	expressionStack := internal.MakeStack[ast.Expr]()
+	expressionStack.Push(paramType)
 
-	paramPointerType, isPointerType := paramType.(*ast.StarExpr)
-	if isPointerType && paramPointerType != nil {
-		switch paramPointerType.X.(type) {
+	for expressionStack.IsEmpty() == false {
+
+		next := expressionStack.Pop()
+
+		switch next.(type) {
+		case *ast.Ident:
+			ident, _ := next.(*ast.Ident)
+			paramTypeName = ident.Name
+			typeStack.Push(ParameterType{Name: paramTypeName})
+
 		case *ast.SelectorExpr:
-			selectorExpr, _ := paramPointerType.X.(*ast.SelectorExpr)
-			ident, xOk := selectorExpr.X.(*ast.Ident)
-			if xOk {
-				paramTypeName = fmt.Sprintf("%s.%s", ident.Name, selectorExpr.Sel.Name)
+			selector, _ := next.(*ast.SelectorExpr)
+			ident, _ := selector.X.(*ast.Ident)
+			typeStack.Push(ParameterType{SelectorName: selector.Sel.Name, Name: ident.Name})
+
+		case *ast.ArrayType:
+			arrayType := next.(*ast.ArrayType)
+			t := arrayType.Elt
+			typeStack.Push(ParameterType{IsArray: true})
+			expressionStack.Push(t)
+
+		case *ast.StarExpr:
+			starExpr := next.(*ast.StarExpr)
+			typeStack.Push(ParameterType{IsPointer: true})
+			switch starExpr.X.(type) {
+			case *ast.Ident:
+				expressionStack.Push(starExpr.X)
+
+			case *ast.SelectorExpr:
+				selectorExpr, _ := starExpr.X.(*ast.SelectorExpr)
+				expressionStack.Push(selectorExpr)
+
+			case *ast.ArrayType:
+				arrayType := starExpr.X.(*ast.ArrayType)
+				expressionStack.Push(arrayType)
 			}
-			break
 		}
 	}
 
-	return fieldTypeInfo{
-		Name:      paramTypeName,
-		IsArray:   isArrayType,
-		IsPointer: isPointerType,
+	if typeStack.IsEmpty() {
+		return nil
 	}
+
+	last := typeStack.Pop()
+	result := &last
+	for typeStack.IsEmpty() == false {
+		parameterType := typeStack.Pop()
+		parameterType.Next = result
+		result = &parameterType
+	}
+
+	return result
 }

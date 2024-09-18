@@ -2,6 +2,7 @@ package generator
 
 import (
 	"fmt"
+	"github.com/matzefriedrich/parsley/internal"
 	"github.com/matzefriedrich/parsley/internal/reflection"
 	"strings"
 )
@@ -70,12 +71,25 @@ func Signature(m reflection.Method) string {
 }
 
 func FormatType(parameter reflection.Parameter) string {
-	typeName := parameter.TypeName
-	if parameter.IsPointer {
-		typeName = "*" + typeName
+	segments := make([]string, 0)
+	s := internal.MakeStack[*reflection.ParameterType]()
+	s.Push(parameter.Type)
+	for s.IsEmpty() == false {
+		t := s.Pop()
+		typeName := t.Name
+		if len(t.SelectorName) > 0 {
+			typeName = fmt.Sprintf("%s.%s", t.SelectorName, typeName)
+		}
+		if t.IsPointer {
+			typeName = "*" + typeName
+		}
+		if t.IsArray {
+			typeName = "[]" + typeName
+		}
+		segments = append(segments, typeName)
+		if t.Next != nil {
+			s.Push(t.Next)
+		}
 	}
-	if parameter.IsArray {
-		typeName = "[]" + typeName
-	}
-	return typeName
+	return strings.Join(segments, "")
 }

@@ -6,14 +6,20 @@ import (
 )
 
 type Parameter struct {
-	Name      string
-	TypeName  string
-	IsArray   bool
-	IsPointer bool
+	Name string
+	Type *ParameterType
+}
+
+type ParameterType struct {
+	Name         string
+	SelectorName string
+	IsArray      bool
+	IsPointer    bool
+	Next         *ParameterType
 }
 
 func (p Parameter) MatchesType(name string) bool {
-	return strings.Compare(name, p.TypeName) == 0
+	return strings.Compare(name, p.Type.Name) == 0
 }
 
 type SymbolInfo struct {
