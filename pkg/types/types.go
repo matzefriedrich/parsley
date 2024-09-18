@@ -27,6 +27,10 @@ func (s ServiceKey) String() string {
 	return s.value
 }
 
+func NewServiceKey(value string) ServiceKey {
+	return ServiceKey{value: value}
+}
+
 type ServiceType interface {
 	Name() string
 	PackagePath() string

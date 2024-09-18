@@ -12,6 +12,7 @@ import (
 type versionCommand struct {
 	use            abstractions.CommandName `flag:"version" short:"Show the current Parsley CLI version"`
 	CheckForUpdate bool                     `flag:"check-update" usage:"Checks for available updates and prints the update command"`
+	httpClient     utils.HttpClient
 }
 
 func (v *versionCommand) Execute() {
@@ -25,7 +26,7 @@ func (v *versionCommand) Execute() {
 		return
 	}
 
-	githubClient := utils.NewGitHubApiClient()
+	githubClient := utils.NewGitHubApiClient(v.httpClient)
 	release, err := githubClient.QueryLatestReleaseTag(context.Background())
 	if err != nil {
 		return
@@ -54,7 +55,9 @@ func (v *versionCommand) Execute() {
 
 var _ pkg.TypedCommand = (*versionCommand)(nil)
 
-func NewVersionCommand() *cobra.Command {
-	command := &versionCommand{}
+func NewVersionCommand(httpClient utils.HttpClient) *cobra.Command {
+	command := &versionCommand{
+		httpClient: httpClient,
+	}
 	return pkg.CreateTypedCommand(command)
 }

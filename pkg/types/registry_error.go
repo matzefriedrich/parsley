@@ -17,21 +17,25 @@ var (
 	ErrFailedToRegisterType  = errors.New(ErrorFailedToRegisterType)
 )
 
-type registryError struct {
+type RegistryError struct {
 	ParsleyError
 	serviceTypeName string
 }
 
-var _ ParsleyErrorWithServiceTypeName = &registryError{}
+var _ ParsleyErrorWithServiceTypeName = &RegistryError{}
 
-func (r *registryError) ServiceTypeName(name string) {
+func (r *RegistryError) ServiceTypeName(name string) {
 	r.serviceTypeName = name
 }
 
-var _ ParsleyErrorWithServiceTypeName = &registryError{}
+func (r *RegistryError) MatchesServiceType(name string) bool {
+	return r.serviceTypeName == name
+}
+
+var _ ParsleyErrorWithServiceTypeName = &RegistryError{}
 
 func NewRegistryError(msg string, initializers ...ParsleyErrorFunc) error {
-	err := &registryError{
+	err := &RegistryError{
 		ParsleyError: ParsleyError{
 			Msg: msg,
 		},

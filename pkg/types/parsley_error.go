@@ -46,19 +46,19 @@ func ForServiceType(serviceType string) ParsleyErrorFunc {
 
 type ParsleyAggregateError struct {
 	errors []error
-	msg    string
+	Msg    string
 }
 
 func (f ParsleyAggregateError) Error() string {
-	return f.msg
+	return f.Msg
 }
 
 func (f ParsleyAggregateError) Is(err error) bool {
 	if f.Error() == err.Error() {
 		return true
 	}
-	for _, err := range f.errors {
-		if errors.Is(err, err) {
+	for _, cause := range f.errors {
+		if errors.Is(err, cause) {
 			return true
 		}
 	}
@@ -72,7 +72,7 @@ func WithAggregatedCause(errs ...error) ParsleyErrorFunc {
 		if ok {
 			funqErr.cause = &ParsleyAggregateError{
 				errors: errs,
-				msg:    "one or more errors occurred",
+				Msg:    "one or more errors occurred",
 			}
 		}
 	}

@@ -27,8 +27,8 @@ type ProjectItem struct {
 func (b *bootstrapGenerator) GenerateProjectFiles() {
 
 	gen := NewGenericCodeGenerator(func(name string) (string, error) {
-		path := path.Join("bootstrap", name)
-		data, err := templates.BootstrapTemplates.ReadFile(path)
+		templateFilePath := path.Join("bootstrap", name)
+		data, err := templates.BootstrapTemplates.ReadFile(templateFilePath)
 		if err != nil {
 			return "", err
 		}
@@ -47,7 +47,9 @@ func (b *bootstrapGenerator) GenerateProjectFiles() {
 		generateFile := func(item ProjectItem) error {
 			targetFilePath := path.Join(b.projectFolderPath, item.TargetFilename)
 			f, _ := os.OpenFile(targetFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-			defer f.Close()
+			defer func(f *os.File) {
+				_ = f.Close()
+			}(f)
 			return gen.Generate(item.TemplateName, m, f)
 		}
 		err := generateFile(v)

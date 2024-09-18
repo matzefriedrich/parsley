@@ -71,9 +71,10 @@ func (g *genericGenerator) Generate(templateName string, templateModel any, writ
 		return newGeneratorError(ErrorCannotExecuteTemplate, types.WithCause(err))
 	}
 
-	formattedCode, formatErr := format.Source(generatedCode.Bytes())
+	code := generatedCode.Bytes()
+	formattedCode, formatErr := format.Source(code)
 	if formatErr != nil {
-		_, _ = writer.Write(formattedCode) // just dump the code to the target writer for inspection
+		_, _ = writer.Write(code) // just dump the code to the target writer for inspection
 		return newGeneratorError(ErrorCannotFormatGeneratedCode, types.WithCause(formatErr))
 	}
 

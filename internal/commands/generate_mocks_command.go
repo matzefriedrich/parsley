@@ -13,7 +13,9 @@ import (
 )
 
 type mocksGeneratorCommand struct {
-	use abstractions.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types."`
+	use                 abstractions.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types."`
+	fileAccessor        reflection.AstFileAccessor
+	outputWriterFactory generator.OutputWriterFactory
 }
 
 type MocksGeneratorBehavior int
@@ -49,8 +51,9 @@ func (m *mocksGeneratorCommand) Execute() {
 	}
 
 	kind := "mocks"
-	gen, _ := generator.NewCodeFileGenerator(kind, func(config *generator.CodeFileGeneratorOptions) {
+	gen, _ := generator.NewCodeFileGenerator(kind, m.fileAccessor, func(config *generator.CodeFileGeneratorOptions) {
 		config.TemplateLoader = templateLoader
+		config.OutputWriterFactory = m.outputWriterFactory
 		config.ConfigureModelCallback = func(m *reflection.Model) {
 			m.AddImport("github.com/matzefriedrich/parsley/pkg/features")
 			m.Interfaces = filterInterfaces(m)
@@ -103,8 +106,17 @@ func filterInterfaces(m *reflection.Model) []reflection.Interface {
 
 var _ pkg.TypedCommand = (*mocksGeneratorCommand)(nil)
 
-func NewGenerateMocksCommand() *cobra.Command {
-	command := &mocksGeneratorCommand{}
+func NewGenerateMocksCommand(fileAccessor reflection.AstFileAccessor, outputWriterFactory generator.OutputWriterFactory) *cobra.Command {
+	if fileAccessor == nil {
+		panic("file accessor required")
+	}
+	if outputWriterFactory == nil {
+		panic("output writer factory required")
+	}
+	command := &mocksGeneratorCommand{
+		fileAccessor:        fileAccessor,
+		outputWriterFactory: outputWriterFactory,
+	}
 	return pkg.CreateTypedCommand(command)
 }
 

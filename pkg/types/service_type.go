@@ -73,7 +73,7 @@ func newServiceType(t reflect.Type, elemType reflect.Type, isList bool) ServiceT
 	if isList {
 		key = fmt.Sprintf("%s.%s[]", packagePath, name)
 	}
-	serviceKey := ServiceKey{value: key}
+	serviceKey := NewServiceKey(key)
 	return &serviceType{
 		reflectedType: t,
 		name:          name,

@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"context"
+	"errors"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -13,14 +14,27 @@ type infrastructure struct {
 	app      Application
 }
 
+const (
+	ErrorCannotRegisterAppFactory = "cannot register application factory"
+)
+
+var (
+	ErrCannotRegisterAppFactory = errors.New(ErrorCannotRegisterAppFactory)
+)
+
 var parsley infrastructure
 
 func RunParsleyApplication(cxt context.Context, appFactoryFunc any, configure ...types.ModuleFunc) error {
 
 	registry := registration.NewServiceRegistry()
-	registry.Register(appFactoryFunc, types.LifetimeSingleton)
+	registerErr := registry.Register(appFactoryFunc, types.LifetimeSingleton)
+	if registerErr != nil {
+		bootstrapErr := &types.ParsleyError{Msg: ErrorCannotRegisterAppFactory}
+		types.WithCause(registerErr)(bootstrapErr)
+		return bootstrapErr
+	}
 	for _, m := range configure {
-		m(registry)
+		_ = m(registry)
 	}
 
 	resolver := resolving.NewResolver(registry)

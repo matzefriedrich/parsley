@@ -2,15 +2,16 @@ package generator
 
 import (
 	"github.com/matzefriedrich/parsley/internal/reflection"
+	"go/ast"
 )
 
 type TemplateModelBuilder struct {
-	accessor reflection.AstFileAccessor
+	file *ast.File
 }
 
-func NewTemplateModelBuilder(accessor reflection.AstFileAccessor) *TemplateModelBuilder {
+func NewTemplateModelBuilder(file *ast.File) *TemplateModelBuilder {
 	return &TemplateModelBuilder{
-		accessor: accessor,
+		file: file,
 	}
 }
 
@@ -18,7 +19,7 @@ func (b *TemplateModelBuilder) Build() (*reflection.Model, error) {
 
 	fileVisitor := reflection.NewFileVisitor()
 	walker := reflection.NewSyntaxWalker(fileVisitor)
-	err := walker.WalkSyntaxTree(b.accessor)
+	err := walker.WalkSyntaxTree(b.file)
 	if err != nil {
 		return nil, err
 	}
