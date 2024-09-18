@@ -21,8 +21,10 @@ func (g *generateProxyCommand) Execute() {
 	}
 
 	kind := "proxy"
-	gen, _ := generator.NewCodeFileGenerator(kind, func(config *generator.CodeFileGeneratorOptions) {
+	accessor := generator.GoFileAccessor()
+	gen, _ := generator.NewCodeFileGenerator(kind, accessor, func(config *generator.CodeFileGeneratorOptions) {
 		config.TemplateLoader = templateLoader
+		config.OutputWriterFactory = generator.FileOutputWriter()
 		config.ConfigureModelCallback = func(m *reflection.Model) {
 			m.AddImport("github.com/matzefriedrich/parsley/pkg/features")
 		}

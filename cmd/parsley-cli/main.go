@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/matzefriedrich/cobra-extensions/pkg/charmer"
 	"github.com/matzefriedrich/parsley/internal/commands"
+	"github.com/matzefriedrich/parsley/internal/generator"
 )
 
 func main() {
@@ -22,7 +23,9 @@ func main() {
 	app.AddGroupCommand(
 		commands.NewGenerateGroupCommand(),
 		func(w charmer.CommandSetup) {
-			w.AddCommand(commands.NewGenerateMocksCommand())
+			goFileAccessor := generator.GoFileAccessor()
+			outputWriterFactory := generator.FileOutputWriter()
+			w.AddCommand(commands.NewGenerateMocksCommand(goFileAccessor, outputWriterFactory))
 			w.AddCommand(commands.NewGenerateProxyCommand())
 		})
 
