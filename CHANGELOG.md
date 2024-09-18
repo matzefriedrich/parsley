@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.10.0] - 2024-09-19
+
+### Changed
+
+Increased overall test coverage for the Parsley library and CLI utility from 55% to 80%, improving reliability and confidence in the codebase.
+  
+### Added
+
+* Introduced new tests for almost all packages and modules
+  
+### Fixed
+
+* Fixed issues discovered during testing, particularly in `ParsleyAggregateError` and the `reflection` and `generator` packages.
+
+### Changed
+
+* Refactored the (internal) `reflection` and `generator` packages to enhance testability. Made minor internal adjustments to ensure better separation of concerns and improved testability. The updated type-model builder now supports pointer—and array-type parameters and result fields (the previous implementation could only handle scalar and simple array types).
+
+* Introduced the `ParameterType` struct to store reflected parameter and field type information.
+
+
 ## [v0.9.3] - 2024-09-13
 
 ### Changed
