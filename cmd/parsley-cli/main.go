@@ -26,7 +26,7 @@ func main() {
 			goFileAccessor := generator.GoFileAccessor()
 			outputWriterFactory := generator.FileOutputWriter()
 			w.AddCommand(commands.NewGenerateMocksCommand(goFileAccessor, outputWriterFactory))
-			w.AddCommand(commands.NewGenerateProxyCommand())
+			w.AddCommand(commands.NewGenerateProxyCommand(goFileAccessor, outputWriterFactory))
 		})
 
 	_ = app.Execute()

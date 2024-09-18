@@ -3,6 +3,7 @@ package generator
 import (
 	"fmt"
 	"github.com/matzefriedrich/parsley/internal/reflection"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -29,7 +30,7 @@ type CodeFileGeneratorOptionsFunc func(config *CodeFileGeneratorOptions)
 
 // FileOutputWriter Creates an OutputWriterFactory object that can be used create file writers.
 func FileOutputWriter() OutputWriterFactory {
-	return func(kind string, source *reflection.AstFileSource) (OutputWriter, error) {
+	return func(kind string, source *reflection.AstFileSource) (io.WriteCloser, error) {
 		fileName := path.Base(source.Filename)
 		fileNameWithoutExtension := strings.TrimSuffix(fileName, filepath.Ext(fileName))
 		fileDirectory := path.Dir(source.Filename)
@@ -84,7 +85,7 @@ func (g *codeFileGenerator) GenerateCode() error {
 		return outputErr
 	}
 
-	defer func(f OutputWriter) {
+	defer func(f io.WriteCloser) {
 		_ = f.Close()
 	}(f)
 

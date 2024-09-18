@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func Test_GenerateMocksCommand_Execute(t *testing.T) {
+func Test_GenerateProxyCommand_Execute(t *testing.T) {
 
 	// Arrange
 	source := []byte("package main\n" + "\n" +
@@ -22,7 +22,7 @@ func Test_GenerateMocksCommand_Execute(t *testing.T) {
 	}
 
 	fileAccessor := reflection.AstFromSource(source)
-	sut := commands.NewGenerateMocksCommand(fileAccessor, outputWriterFactory)
+	sut := commands.NewGenerateProxyCommand(fileAccessor, outputWriterFactory)
 
 	// Act
 	err := sut.Execute()

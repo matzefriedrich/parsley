@@ -11,7 +11,9 @@ import (
 )
 
 type generateProxyCommand struct {
-	use abstractions.CommandName `flag:"proxy" short:"Generate generic proxy types for method call interception."`
+	use                 abstractions.CommandName `flag:"proxy" short:"Generate generic proxy types for method call interception."`
+	fileAccessor        reflection.AstFileAccessor
+	outputWriterFactory generator.OutputWriterFactory
 }
 
 func (g *generateProxyCommand) Execute() {
@@ -21,10 +23,9 @@ func (g *generateProxyCommand) Execute() {
 	}
 
 	kind := "proxy"
-	accessor := generator.GoFileAccessor()
-	gen, _ := generator.NewCodeFileGenerator(kind, accessor, func(config *generator.CodeFileGeneratorOptions) {
+	gen, _ := generator.NewCodeFileGenerator(kind, g.fileAccessor, func(config *generator.CodeFileGeneratorOptions) {
 		config.TemplateLoader = templateLoader
-		config.OutputWriterFactory = generator.FileOutputWriter()
+		config.OutputWriterFactory = g.outputWriterFactory
 		config.ConfigureModelCallback = func(m *reflection.Model) {
 			m.AddImport("github.com/matzefriedrich/parsley/pkg/features")
 		}
@@ -38,7 +39,10 @@ func (g *generateProxyCommand) Execute() {
 
 var _ pkg.TypedCommand = &generateProxyCommand{}
 
-func NewGenerateProxyCommand() *cobra.Command {
-	command := &generateProxyCommand{}
+func NewGenerateProxyCommand(fileAccessor reflection.AstFileAccessor, outputWriterFactory generator.OutputWriterFactory) *cobra.Command {
+	command := &generateProxyCommand{
+		fileAccessor:        fileAccessor,
+		outputWriterFactory: outputWriterFactory,
+	}
 	return pkg.CreateTypedCommand(command)
 }

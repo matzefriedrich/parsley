@@ -5,9 +5,4 @@ import (
 	"io"
 )
 
-type OutputWriter interface {
-	io.Writer
-	io.Closer
-}
-
-type OutputWriterFactory func(kind string, source *reflection.AstFileSource) (OutputWriter, error)
+type OutputWriterFactory func(kind string, source *reflection.AstFileSource) (io.WriteCloser, error)
