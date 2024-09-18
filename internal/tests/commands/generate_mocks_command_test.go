@@ -13,14 +13,18 @@ import (
 func Test_GenerateMocksCommand_Execute(t *testing.T) {
 
 	// Arrange
-	source := []byte("package main\n")
+	source := []byte("package main\n" + "\n" +
+		"type Greeter interface {\n" +
+		"	SayHello(name string)" + "\n" +
+		"}")
 
 	buffer := memoryFileTarget{buffer: strings.Builder{}}
 	outputWriterFactory := func(kind string, source *reflection.AstFileSource) (generator.OutputWriter, error) {
 		return &buffer, nil
 	}
 
-	sut := commands.NewGenerateMocksCommand(reflection.AstFromSource(source), outputWriterFactory)
+	fileAccessor := reflection.AstFromSource(source)
+	sut := commands.NewGenerateMocksCommand(fileAccessor, outputWriterFactory)
 
 	// Act
 	err := sut.Execute()

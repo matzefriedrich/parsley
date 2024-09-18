@@ -6,21 +6,23 @@ import (
 )
 
 const (
-	ErrorCannotExecuteTemplate      = "cannot execute template"
-	ErrorCannotFormatGeneratedCode  = "cannot format generated code"
-	ErrorCannotGenerateProxies      = "cannot generate proxies"
-	ErrorFailedToOpenTemplateFile   = "failed to open template file"
-	ErrorFailedToWriteGeneratedCode = "failed to write generated code"
-	ErrorTemplateFileNotFound       = "template file not found"
+	ErrorCannotExecuteTemplate             = "cannot execute template"
+	ErrorCannotFormatGeneratedCode         = "cannot format generated code"
+	ErrorCannotGenerateProxies             = "cannot generate proxies"
+	ErrorFailedToOpenTemplateFile          = "failed to open template file"
+	ErrorFailedToWriteGeneratedCode        = "failed to write generated code"
+	ErrorTemplateFileNotFound              = "template file not found"
+	ErrorFailedToObtainGeneratorSourceFile = "failed to obtain generator source file"
 )
 
 var (
-	ErrCannotExecuteTemplate      = errors.New(ErrorCannotExecuteTemplate)
-	ErrCannotFormatGeneratedCode  = errors.New(ErrorCannotFormatGeneratedCode)
-	ErrCannotGenerateProxies      = errors.New(ErrorCannotGenerateProxies)
-	ErrFailedToOpenTemplateFile   = errors.New(ErrorFailedToOpenTemplateFile)
-	ErrFailedToWriteGeneratedCode = errors.New(ErrorFailedToWriteGeneratedCode)
-	ErrTemplateFileNotFound       = errors.New(ErrorTemplateFileNotFound)
+	ErrCannotExecuteTemplate             = errors.New(ErrorCannotExecuteTemplate)
+	ErrCannotFormatGeneratedCode         = errors.New(ErrorCannotFormatGeneratedCode)
+	ErrCannotGenerateProxies             = errors.New(ErrorCannotGenerateProxies)
+	ErrFailedToOpenTemplateFile          = errors.New(ErrorFailedToOpenTemplateFile)
+	ErrFailedToWriteGeneratedCode        = errors.New(ErrorFailedToWriteGeneratedCode)
+	ErrTemplateFileNotFound              = errors.New(ErrorTemplateFileNotFound)
+	ErrFailedToObtainGeneratorSourceFile = errors.New(ErrorFailedToObtainGeneratorSourceFile)
 )
 
 type generatorError struct {

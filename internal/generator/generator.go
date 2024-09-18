@@ -27,19 +27,6 @@ type CodeFileGenerator interface {
 
 type CodeFileGeneratorOptionsFunc func(config *CodeFileGeneratorOptions)
 
-// GoFileAccessor Creates a new reflection.AstFileAccessor object that reads a source file from the GOFILE variable.
-func GoFileAccessor() reflection.AstFileAccessor {
-
-	goFilePath, err := GetGoFilePath()
-	if err != nil {
-		return func() (*reflection.AstFileSource, error) {
-			return nil, newGeneratorError("failed to obtain generator source file")
-		}
-	}
-
-	return reflection.AstFromFile(goFilePath)
-}
-
 // FileOutputWriter Creates an OutputWriterFactory object that can be used create file writers.
 func FileOutputWriter() OutputWriterFactory {
 	return func(kind string, source *reflection.AstFileSource) (OutputWriter, error) {

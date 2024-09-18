@@ -3,9 +3,23 @@ package generator
 import (
 	"errors"
 	"fmt"
+	"github.com/matzefriedrich/parsley/internal/reflection"
 	"os"
 	"path"
 )
+
+// GoFileAccessor Creates a new reflection.AstFileAccessor object that reads a source file from the GOFILE variable.
+func GoFileAccessor() reflection.AstFileAccessor {
+
+	goFilePath, err := GetGoFilePath()
+	if err != nil {
+		return func() (*reflection.AstFileSource, error) {
+			return nil, newGeneratorError(ErrorFailedToObtainGeneratorSourceFile)
+		}
+	}
+
+	return reflection.AstFromFile(goFilePath)
+}
 
 func GetGoFilePath() (string, error) {
 
