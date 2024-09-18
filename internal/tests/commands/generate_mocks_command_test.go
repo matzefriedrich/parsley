@@ -12,6 +12,7 @@ func Test_GenerateMocksCommand_Execute(t *testing.T) {
 
 	// Arrange
 	source := []byte("package main\n" + "\n" +
+		"//parsley:mock" + "\n" +
 		"type Greeter interface {\n" +
 		"	SayHello(name string)" + "\n" +
 		"}")

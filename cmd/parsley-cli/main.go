@@ -4,6 +4,7 @@ import (
 	"github.com/matzefriedrich/cobra-extensions/pkg/charmer"
 	"github.com/matzefriedrich/parsley/internal/commands"
 	"github.com/matzefriedrich/parsley/internal/generator"
+	"net/http"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 
 	app.AddCommand(
 		commands.NewInitCommand(),
-		commands.NewVersionCommand())
+		commands.NewVersionCommand(&http.Client{}))
 
 	app.AddGroupCommand(
 		commands.NewGenerateGroupCommand(),
