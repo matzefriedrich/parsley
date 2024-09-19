@@ -13,42 +13,53 @@ Parsley is a powerful, easy-to-use reflection-based dependency injection package
 Just like the versatile green herb it's named after, Parsley enhances the flavor of your codebase by keeping your dependencies clean, organized, and easy to manage. Whether you're working on a small project or a complex system, Parsley brings the convenience of automated dependency injection to Go, inspired by the best practices from other languages. With features like automated lifetime management, proxy generation, and method interception, Parsley is the ingredient that makes your Go applications more maintainable and scalable.
 
 
-## Why dependency injection for Golang?
+### Why dependency injection for Golang?
 
 While dependency injection (DI) is less common in Golang compared to other languages, the complexity it introduces can often be outweighed by the benefits it brings, especially in larger projects. As projects grow, the need for indirection and modularity becomes inevitable, and a DI framework like Parsley can seamlessly bridge the gap between dependency management and service activation. Parsley goes beyond resolving dependencies—it automates key aspects such as lifetime management, proxy generation, and interception, reducing boilerplate and enhancing maintainability. With these powerful features, why not let Parsley handle the heavy lifting for you?
 
 
-## Features
+## Key Features
 
-- ✔️ Register types via constructor functions
-- ✔️ Resolve objects by type (both interface and pointer type)
-  - ✔️ Constructor injection
-  - ⏳ Injection via field initialization (requires annotation)
-  - ❌ Injection via setter methods
-  - ✔️ Convenience function to resolve and safe-cast objects: `ResolveRequiredService[T]`
-- ✔️ Register types with a certain lifetime
-  - ✔️ Singleton
-  - ✔️ Register objects as singletons; use `RegisterInstance[T]` whereby `T` must be an interface type
-  - ✔️ Scoped (requires a certain context `NewScopedContext(context.Background))`; use `RegisterScoped`)
-  - ✔️ Transient
-- ✔️ Bundle type registrations as modules to register them via `RegisterModule` as a unit
-- ✔️ Resolve objects on-demand
-  - ✔️ Allow consumption of `Resolver` in favor of custom factories
-  - ✔️ Lazy loading objects by injecting dependencies as `Lazy[T]`
-  - ✔️ Register factory functions to create instances of services based on input parameters provided at runtime
-  - ⏳ Validate registered services; fail early during application startup if missing registrations are encountered
-  - ✔️ Provide instances for non-registered types, use `ResolveWithOptions[T]` insted of `Resolve[T]`
-- ✔️ Support multiple service registrations for the same interface
-  - ✔️ Register named services (mutiple services), resolve via `func(key string) T`
-  - ✔️ Resolve services as list (default)
-- ✔️ Support for proxy types via code generation
-  - ✔️ Proxies can be consumed as drop-in replacements for target services
-  - ✔️ Proxies are extensible via `MethodInterceptor` services
-- ⏳ Support sub-scopes
-  - ⏳ Automatic clean-up
+### Type Registration
 
+- **Constructor Functions:** Register types via constructor functions.
+- **Resolve by Type:** Resolve objects by both interface and pointer types.
+  - **Constructor Injection:** Supported.
+  - **Field Injection:** ⏳ Will be supported via struct tags (in progress).
+  - **Setter Method Injection:** ❌ Not supported.
+  - **Safe Casts:** Convenience function `ResolveRequiredService[T]` to resolve and safely cast objects.
 
-✔️ Already available | ❌ Not supported | ⏳ On schedule to be developed
+- **Lifetime Management:** Register types with different lifetimes.
+  - **Singleton:** Available.
+  - **Register Instances as Singletons:** Use `RegisterInstance[T]` (where `T` must be an interface type).
+  - **Scoped:** Requires a `NewScopedContext(context.Background)`. Use `RegisterScoped()`.
+  - **Transient:** Available for objects with a transient lifetime.
+
+### Module & On-Demand Registrations
+
+- **Modular Registrations:** Bundle type registrations as modules, register them via `RegisterModule` as a unit.
+
+- **On-Demand Resolution:** Resolve objects only when needed.
+  - **Custom Factories:** Allow consumption of `Resolver` instead of custom factories.
+  - **Lazy Loading:** Inject dependencies lazily using `Lazy[T]`.
+  - **Factory Functions:** Register factories to create service instances dynamically at runtime.
+  - **Service Validation:** ⏳ Planned feature to validate services during startup and fail early if missing registrations are found (in progress).
+  - **Non-Registered Types:** Resolve non-registered types using `ResolveWithOptions[T]`.
+  - **Override Type Registrations:** Provide custom service instances when resolving service instances.
+
+### Multiple Registrations for the Same Interface
+
+- **Named Services:** Register and resolve multiple services for the same interface, via `func(key string) T`.
+- **Service Lists:** Resolve services as a list. Enable list dependencies via `RegisterList`.
+
+### Proxy Type Support
+
+- **Proxies as Drop-in Replacements:** Generate proxy types that can be used in place of target services.
+- **Extensible Proxies:** Proxies are extensible with `MethodInterceptor` services.
+
+### Configurable Mocks
+
+- **Generate Mocks:** Generate configurable mocks via `//go:parsley-cli generate mocks` to boost automated testing.
 
 
 ## Usage
