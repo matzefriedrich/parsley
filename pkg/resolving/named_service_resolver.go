@@ -5,8 +5,10 @@ import (
 	"github.com/matzefriedrich/parsley/pkg/types"
 )
 
+// NamedServiceResolverActivatorFunc defines a function for resolving named services.
 type NamedServiceResolverActivatorFunc[T any] func(types.Resolver) func(string) (T, error)
 
+// CreateNamedServiceResolverActivatorFunc creates a NamedServiceResolverActivatorFunc for resolving named services.
 func CreateNamedServiceResolverActivatorFunc[T any]() NamedServiceResolverActivatorFunc[T] {
 	return func(resolver types.Resolver) func(string) (T, error) {
 		var nilInstance T

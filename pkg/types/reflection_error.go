@@ -1,11 +1,13 @@
 package types
 
-type reflectionError struct {
+// ReflectionError represents an error specifically related to reflection operations, extending ParsleyError.
+type ReflectionError struct {
 	ParsleyError
 }
 
+// NewReflectionError creates a new ReflectionError with a specified message and optional initializers.
 func NewReflectionError(msg string, initializers ...ParsleyErrorFunc) error {
-	err := &reflectionError{
+	err := &ReflectionError{
 		ParsleyError: ParsleyError{
 			Msg: msg,
 		},

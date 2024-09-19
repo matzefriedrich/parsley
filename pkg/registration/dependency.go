@@ -15,6 +15,7 @@ type dependencyInfo struct {
 
 var _ types.DependencyInfo = &dependencyInfo{}
 
+// NewDependencyInfo creates a new instance of types.DependencyInfo with the provided service registration, instance, and parent dependency.
 func NewDependencyInfo(registration types.ServiceRegistration, instance interface{}, consumer types.DependencyInfo) types.DependencyInfo {
 	return &dependencyInfo{
 		registration: registration,

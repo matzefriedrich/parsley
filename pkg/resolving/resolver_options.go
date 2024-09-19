@@ -15,6 +15,7 @@ func applyResolverOptions(registry types.ServiceRegistry, options ...types.Resol
 	return nil
 }
 
+// WithInstance Creates a ResolverOptionsFunc that registers a specific instance of a type T with a service registry to be resolved as a singleton.
 func WithInstance[T any](instance T) types.ResolverOptionsFunc {
 	return func(registry types.ServiceRegistry) error {
 		err := registration.RegisterInstance[T](registry, instance)

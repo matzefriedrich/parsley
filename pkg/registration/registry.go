@@ -10,14 +10,18 @@ type serviceRegistry struct {
 	registrations    map[types.ServiceKey]types.ServiceRegistrationList
 }
 
+// RegisterTransient adds a transient service registration with the provided activator function.
+// See https://matzefriedrich.github.io/parsley-docs/registration/register-constructor-functions/ for further information.
 func RegisterTransient(registry types.ServiceRegistry, activatorFunc any) error {
 	return registry.Register(activatorFunc, types.LifetimeTransient)
 }
 
+// RegisterScoped adds a scoped service registration with the provided activator function.
 func RegisterScoped(registry types.ServiceRegistry, activatorFunc any) error {
 	return registry.Register(activatorFunc, types.LifetimeScoped)
 }
 
+// RegisterSingleton adds a singleton service registration with the provided activator function.
 func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error {
 	return registry.Register(activatorFunc, types.LifetimeSingleton)
 }
@@ -32,6 +36,7 @@ func (s *serviceRegistry) addOrUpdateServiceRegistrationListFor(serviceType type
 	return list
 }
 
+// Register adds a service registration with the provided activator function and lifetime scope.
 func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.LifetimeScope) error {
 
 	registration, err := CreateServiceRegistration(activatorFunc, lifetimeScope)
@@ -49,6 +54,7 @@ func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.Lifeti
 	return nil
 }
 
+// RegisterModule registers one or more modules with the service registry.
 func (s *serviceRegistry) RegisterModule(modules ...types.ModuleFunc) error {
 	for _, m := range modules {
 		err := m(s)
@@ -59,11 +65,13 @@ func (s *serviceRegistry) RegisterModule(modules ...types.ModuleFunc) error {
 	return nil
 }
 
+// IsRegistered checks if a service type is registered in the service registry.
 func (s *serviceRegistry) IsRegistered(serviceType types.ServiceType) bool {
 	_, found := s.registrations[serviceType.LookupKey()]
 	return found
 }
 
+// TryGetServiceRegistrations Tries to find all available service registrations for the given service type.
 func (s *serviceRegistry) TryGetServiceRegistrations(serviceType types.ServiceType) (types.ServiceRegistrationList, bool) {
 	if s.IsRegistered(serviceType) == false {
 		return nil, false
@@ -75,6 +83,7 @@ func (s *serviceRegistry) TryGetServiceRegistrations(serviceType types.ServiceTy
 	return nil, false
 }
 
+// TryGetSingleServiceRegistration Tries to find a single service registration for the given service type.
 func (s *serviceRegistry) TryGetSingleServiceRegistration(serviceType types.ServiceType) (types.ServiceRegistration, bool) {
 	list, found := s.TryGetServiceRegistrations(serviceType)
 	if found && list.IsEmpty() == false {
@@ -87,6 +96,7 @@ func (s *serviceRegistry) TryGetSingleServiceRegistration(serviceType types.Serv
 	return nil, false
 }
 
+// NewServiceRegistry creates a new types.ServiceRegistry instance.
 func NewServiceRegistry() types.ServiceRegistry {
 	registrations := make(map[types.ServiceKey]types.ServiceRegistrationList)
 	return &serviceRegistry{

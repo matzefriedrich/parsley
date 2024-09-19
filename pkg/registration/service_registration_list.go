@@ -13,16 +13,20 @@ type serviceRegistrationList struct {
 	m                sync.RWMutex
 }
 
+// IsEmpty Returns true if the list contains no registrations, otherwise false.
 func (s *serviceRegistrationList) IsEmpty() bool {
 	return len(s.registrations) == 0
 }
 
+// Registrations returns a slice of ServiceRegistration representing the current registrations in the list.
 func (s *serviceRegistrationList) Registrations() []types.ServiceRegistration {
 	s.m.RLock()
 	defer s.m.RUnlock()
 	return s.registrations
 }
 
+// AddRegistration adds a new service registration to the list.
+// It returns an ErrorTypeAlreadyRegistered error if the registration already exists.
 func (s *serviceRegistrationList) AddRegistration(registration types.ServiceRegistrationSetup) error {
 
 	s.m.Lock()
@@ -44,12 +48,14 @@ func (s *serviceRegistrationList) AddRegistration(registration types.ServiceRegi
 	return nil
 }
 
+// Id returns the unique identifier of the service registration list.
 func (s *serviceRegistrationList) Id() uint64 {
 	return s.id
 }
 
 var _ types.ServiceRegistrationList = &serviceRegistrationList{}
 
+// NewServiceRegistrationList creates a new service registration list instance.
 func NewServiceRegistrationList(sequence core.ServiceIdSequence) types.ServiceRegistrationList {
 	id := sequence.Next()
 	return &serviceRegistrationList{
