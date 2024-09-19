@@ -14,6 +14,7 @@ type resolver struct {
 	globalInstances *core.InstanceBag
 }
 
+// ResolveRequiredServices resolves all registered services of a specified type T using the given resolver and context.
 func ResolveRequiredServices[T any](resolver types.Resolver, ctx context.Context) ([]T, error) {
 	t := reflect.TypeOf((*T)(nil)).Elem()
 	switch t.Kind() {
@@ -37,6 +38,8 @@ func ResolveRequiredServices[T any](resolver types.Resolver, ctx context.Context
 	return result, err
 }
 
+// ResolveRequiredService resolves a single service instance of the specified type using the given resolver and context.
+// The method can return the following errors: ErrorCannotResolveService, ErrorAmbiguousServiceInstancesResolved.
 func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context) (T, error) {
 	var nilInstance T
 	services, err := ResolveRequiredServices[T](resolver, ctx)
@@ -51,6 +54,7 @@ func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context)
 	return nilInstance, types.NewResolverError(types.ErrorCannotResolveService)
 }
 
+// NewResolver creates and returns a new Resolver instance based on the provided ServiceRegistry.
 func NewResolver(registry types.ServiceRegistry) types.Resolver {
 	r := &resolver{
 		registry:        registry,
@@ -90,10 +94,12 @@ func (r *resolver) createResolverRegistryAccessor(resolverOptions ...types.Resol
 	return r.registry, nil
 }
 
+// Resolve returns a list of instances associated with the specified service type.
 func (r *resolver) Resolve(ctx context.Context, serviceType types.ServiceType) ([]interface{}, error) {
 	return r.ResolveWithOptions(ctx, serviceType)
 }
 
+// ResolveWithOptions resolves instances for the given service type with the provided resolver options.
 func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.ServiceType, resolverOptions ...types.ResolverOptionsFunc) ([]interface{}, error) {
 
 	registry, registryErr := r.createResolverRegistryAccessor(resolverOptions...)
