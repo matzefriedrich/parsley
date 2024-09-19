@@ -29,6 +29,7 @@ func newTypeInfo(t types.ServiceType) typeInfo {
 	}
 }
 
+// InvokeActivator calls the activator function with the provided parameters and returns the created service instance.
 func (s *serviceRegistration) InvokeActivator(params ...interface{}) (interface{}, error) {
 	var values []reflect.Value
 	if len(params) > 0 {
@@ -45,10 +46,12 @@ func (s *serviceRegistration) InvokeActivator(params ...interface{}) (interface{
 	return serviceInstance.Interface(), nil
 }
 
+// Id returns the unique identifier of this service registration.
 func (s *serviceRegistration) Id() uint64 {
 	return s.id
 }
 
+// SetId sets the unique identifier for the service registration. Returns an error if the id is already set.
 func (s *serviceRegistration) SetId(id uint64) error {
 	if s.id != 0 {
 		return errors.New("the id cannot be changed once set")
@@ -57,6 +60,7 @@ func (s *serviceRegistration) SetId(id uint64) error {
 	return nil
 }
 
+// IsSame Returns true, if the current instance equals the given service registration instance.
 func (s *serviceRegistration) IsSame(other types.ServiceRegistration) bool {
 	sr, ok := other.(*serviceRegistration)
 	if ok {
@@ -71,10 +75,12 @@ func (s *serviceRegistration) IsSame(other types.ServiceRegistration) bool {
 	return false
 }
 
+// LifetimeScope returns the lifetime scope of the service registration.
 func (s *serviceRegistration) LifetimeScope() types.LifetimeScope {
 	return s.lifetimeScope
 }
 
+// RequiredServiceTypes returns a slice of ServiceType representing the service dependencies.
 func (s *serviceRegistration) RequiredServiceTypes() []types.ServiceType {
 	requiredTypes := make([]types.ServiceType, len(s.parameters))
 	for i, p := range s.parameters {
@@ -83,10 +89,12 @@ func (s *serviceRegistration) RequiredServiceTypes() []types.ServiceType {
 	return requiredTypes
 }
 
+// ServiceType returns the service type of the service registration.
 func (s *serviceRegistration) ServiceType() types.ServiceType {
 	return s.serviceType.t
 }
 
+// String returns a string representation of the service registration, including the typename and its activator parameter types.
 func (s *serviceRegistration) String() string {
 
 	buffer := strings.Builder{}
@@ -99,6 +107,7 @@ func (s *serviceRegistration) String() string {
 	return buffer.String()
 }
 
+// CreateServiceRegistration creates a service registration instance from the given activator function and lifetime scope.
 func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeScope) (types.ServiceRegistrationSetup, error) {
 	value := reflect.ValueOf(activatorFunc)
 

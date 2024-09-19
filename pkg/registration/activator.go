@@ -6,6 +6,7 @@ import (
 	"reflect"
 )
 
+// CreateServiceActivatorFrom creates a service activator function for a given instance of type T.
 func CreateServiceActivatorFrom[T any](instance T) (func() T, error) {
 	if internal.IsNil(instance) {
 		return nil, types.NewRegistryError(types.ErrorInstanceCannotBeNil)
@@ -25,6 +26,9 @@ func CreateServiceActivatorFrom[T any](instance T) (func() T, error) {
 	return instanceFunc, nil
 }
 
+// RegisterInstance registers an instance of type T. A registered instance behaves like a service registration with
+// a singleton lifetime scope. See https://matzefriedrich.github.io/parsley-docs/registration/register-instances/ for
+// further information.
 func RegisterInstance[T any](registry types.ServiceRegistry, instance T) error {
 	instanceFunc, err := CreateServiceActivatorFrom[T](instance)
 	if err != nil {
