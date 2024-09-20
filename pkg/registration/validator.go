@@ -10,7 +10,7 @@ import (
 const (
 	ErrorFailedToRetrieveServiceRegistrations       = "failed to retrieve service registrations"
 	ErrorRegistryMissesRequiredServiceRegistrations = "the registry misses required service registrations"
-	ErrorCircularDependencyDetected                 = "circular dependencies detected"
+	ErrorCircularServiceRegistrationDetected        = "circular service registration detected"
 )
 
 var (
@@ -22,7 +22,7 @@ var (
 	ErrRegistryMissesRequiredServiceRegistrations = types.NewRegistryError(ErrorRegistryMissesRequiredServiceRegistrations)
 
 	// ErrCircularDependencyDetected signifies that a circular dependency was encountered.
-	ErrCircularDependencyDetected = types.NewResolverError(types.ErrorCircularDependencyDetected)
+	ErrCircularDependencyDetected = types.NewResolverError(ErrorCircularServiceRegistrationDetected)
 )
 
 // Validator defines an interface to validate service registries..
@@ -83,16 +83,12 @@ func (s *serviceRegistrationsValidator) Validate(registry types.ServiceRegistry)
 	circularDependencyErrors := make([]error, 0)
 	for _, registration := range registrations {
 		if dependencyError := detectCircularDependency(registration, registry); dependencyError != nil {
-			serviceType := registration.ServiceType()
-			circularDependencyError := types.NewRegistryError(ErrorCircularDependencyDetected,
-				types.WithCause(dependencyError),
-				types.ForServiceType(serviceType.Name()))
-			circularDependencyErrors = append(circularDependencyErrors, circularDependencyError)
+			circularDependencyErrors = append(circularDependencyErrors, dependencyError)
 		}
 	}
 
 	if len(circularDependencyErrors) > 0 {
-		return types.NewRegistryError(ErrorCircularDependencyDetected, types.WithAggregatedCause(circularDependencyErrors...))
+		return types.NewRegistryError(ErrorCircularServiceRegistrationDetected, types.WithAggregatedCause(circularDependencyErrors...))
 	}
 
 	return nil
@@ -121,7 +117,7 @@ func detectCircularDependency(sr types.ServiceRegistration, registry types.Servi
 		next := stack.Pop()
 		if next.Id() == sr.Id() {
 			serviceType := sr.ServiceType()
-			return fmt.Errorf("circular dependency detected for service type %s", serviceType.Name())
+			return types.NewRegistryError(ErrorCircularServiceRegistrationDetected, types.ForServiceType(serviceType.Name()))
 		}
 		pushRequiredServices(next)
 	}
