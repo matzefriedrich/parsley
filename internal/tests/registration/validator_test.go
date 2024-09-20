@@ -73,7 +73,7 @@ func Test_Validator_Validate_detects_circular_dependencies_and_returns_error(t *
 	err := sut.Validate(registry)
 
 	// Assert
-	assert.ErrorIs(t, err, registration.ErrCircularDependencyDetected)
+	assert.ErrorIs(t, err, registration.ErrCircularServiceRegistrationDetected)
 
 	var aggregateErr *types.ParsleyAggregateError
 	if errors.As(err, &aggregateErr) {

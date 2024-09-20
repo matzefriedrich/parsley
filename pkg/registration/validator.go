@@ -21,8 +21,8 @@ var (
 	// ErrRegistryMissesRequiredServiceRegistrations indicates that required service registrations are missing.
 	ErrRegistryMissesRequiredServiceRegistrations = types.NewRegistryError(ErrorRegistryMissesRequiredServiceRegistrations)
 
-	// ErrCircularDependencyDetected signifies that a circular dependency was encountered.
-	ErrCircularDependencyDetected = types.NewResolverError(ErrorCircularServiceRegistrationDetected)
+	// ErrCircularServiceRegistrationDetected signifies that a circular service registration was encountered.
+	ErrCircularServiceRegistrationDetected = types.NewResolverError(ErrorCircularServiceRegistrationDetected)
 )
 
 // Validator defines an interface to validate service registries..
