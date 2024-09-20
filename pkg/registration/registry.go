@@ -36,6 +36,15 @@ func (s *serviceRegistry) addOrUpdateServiceRegistrationListFor(serviceType type
 	return list
 }
 
+// GetServiceRegistrations retrieves all registered services as a slice of ServiceRegistration.
+func (s *serviceRegistry) GetServiceRegistrations() ([]types.ServiceRegistration, error) {
+	registrations := make([]types.ServiceRegistration, 0)
+	for _, list := range s.registrations {
+		registrations = append(registrations, list.Registrations()...)
+	}
+	return registrations, nil
+}
+
 // Register adds a service registration with the provided activator function and lifetime scope.
 func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.LifetimeScope) error {
 
@@ -105,6 +114,7 @@ func NewServiceRegistry() types.ServiceRegistry {
 	}
 }
 
+// CreateLinkedRegistry creates and returns a new, empty ServiceRegistry instance linked to the current registry.
 func (s *serviceRegistry) CreateLinkedRegistry() types.ServiceRegistry {
 	registrations := make(map[types.ServiceKey]types.ServiceRegistrationList)
 	return &serviceRegistry{
@@ -113,6 +123,7 @@ func (s *serviceRegistry) CreateLinkedRegistry() types.ServiceRegistry {
 	}
 }
 
+// CreateScope creates and returns a scoped types.ServiceRegistry instance that inherits all service registrations from the current registry.
 func (s *serviceRegistry) CreateScope() types.ServiceRegistry {
 	registrations := make(map[types.ServiceKey]types.ServiceRegistrationList)
 	for serviceType, registration := range s.registrations {

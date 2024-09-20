@@ -61,6 +61,9 @@ type ServiceRegistry interface {
 	// CreateScope creates and returns a scoped ServiceRegistry instance which inherits all service registrations from the current ServiceRegistry instance.
 	CreateScope() ServiceRegistry
 
+	// GetServiceRegistrations retrieves all service registrations.
+	GetServiceRegistrations() ([]ServiceRegistration, error)
+
 	// IsRegistered checks if a service of the specified ServiceType is registered in the service registry.
 	IsRegistered(serviceType ServiceType) bool
 
