@@ -58,6 +58,11 @@ type ParsleyAggregateError struct {
 	Msg    string
 }
 
+// Errors returns the slice of errors contained within ParsleyAggregateError.
+func (f ParsleyAggregateError) Errors() []error {
+	return f.errors
+}
+
 // Error returns the message associated with the ParsleyAggregateError.
 func (f ParsleyAggregateError) Error() string {
 	return f.Msg

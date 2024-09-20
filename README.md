@@ -43,7 +43,7 @@ While dependency injection (DI) is less common in Golang compared to other langu
   - **Custom Factories:** Allow consumption of `Resolver` instead of custom factories.
   - **Lazy Loading:** Inject dependencies lazily using `Lazy[T]`.
   - **Factory Functions:** Register factories to create service instances dynamically at runtime.
-  - **Service Validation:** ⏳ Planned feature to validate services during startup and fail early if missing registrations are found (in progress).
+  - **Service Validation:** Validate services during startup and fail early if missing registrations or circular dependencies are found.
   - **Non-Registered Types:** Resolve non-registered types using `ResolveWithOptions[T]`.
   - **Override Type Registrations:** Provide custom service instances when resolving service instances.
 

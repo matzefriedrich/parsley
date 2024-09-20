@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.0] - 2024-09-21
+
+### Added
+
+- Added the `validator.go` module to the `registration` package, introducing a `Validator` service to verify service registrations:
+  - Detects missing service dependencies.
+  - Identifies circular service registrations, where services depend on themselves.
+
+
+## [v0.10.1] - 2024-09-20
+
+### Changed
+
+* Added documentation comments to all exported types and methods.
+
+
 ## [v0.10.0] - 2024-09-19
 
 ### Changed
