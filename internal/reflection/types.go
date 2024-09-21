@@ -15,6 +15,7 @@ type ParameterType struct {
 	SelectorName string
 	IsArray      bool
 	IsPointer    bool
+	IsEllipsis   bool
 	Next         *ParameterType
 }
 

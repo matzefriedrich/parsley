@@ -42,6 +42,23 @@ func Test_RegisterTypeModelFunctions_ensure_expected_methods(t *testing.T) {
 	}
 }
 
+func Test_FormatType_ellipsis_type(t *testing.T) {
+	// Arrange
+	p := reflection.Parameter{Name: "p",
+		Type: &reflection.ParameterType{
+			IsEllipsis: true,
+			Next: &reflection.ParameterType{
+				Name: "string",
+			},
+		},
+	}
+
+	// Act
+	actual := generator.FormatType(p)
+	// Assert
+	assert.Equal(t, "...string", actual)
+}
+
 func Test_FormatType_scalar_value_type(t *testing.T) {
 	// Arrange
 	p := reflection.Parameter{Name: "p", Type: &reflection.ParameterType{Name: "string"}}

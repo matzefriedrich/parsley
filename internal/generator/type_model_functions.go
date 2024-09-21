@@ -70,6 +70,12 @@ func Signature(m reflection.Method) string {
 	return buffer.String()
 }
 
+const (
+	ellipsis = "..."
+	star     = "*"
+	array    = "[]"
+)
+
 func FormatType(parameter reflection.Parameter) string {
 
 	segments := make([]string, 0)
@@ -86,13 +92,15 @@ func FormatType(parameter reflection.Parameter) string {
 			typeName = fmt.Sprintf("%s.%s", t.SelectorName, typeName)
 		}
 
+		if t.IsEllipsis {
+			typeName = ellipsis + typeName
+		}
+
 		if t.IsPointer {
-			star := "*"
 			typeName = star + typeName
 		}
 
 		if t.IsArray {
-			array := "[]"
 			typeName = array + typeName
 		}
 
