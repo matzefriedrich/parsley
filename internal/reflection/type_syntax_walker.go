@@ -22,7 +22,11 @@ func NewTypeWalker(typeVisitor AstTypeVisitor) AstTypeSpecWalker {
 
 func (t *typeWalker) WalkInterface(interfaceType *ast.InterfaceType) {
 	for _, method := range interfaceType.Methods.List {
-		name := method.Names[0].Name
+		methodNames := method.Names
+		if methodNames == nil || len(methodNames) == 0 {
+			continue
+		}
+		name := methodNames[0].Name
 		if funcType, ok := method.Type.(*ast.FuncType); ok {
 			t.WalkFunc(name, funcType)
 		}

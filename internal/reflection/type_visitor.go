@@ -6,12 +6,6 @@ import (
 	"go/ast"
 )
 
-type fieldTypeInfo struct {
-	Name      string
-	IsArray   bool
-	IsPointer bool
-}
-
 type interfaceMethodsCollector struct {
 	model *Interface
 }
@@ -78,10 +72,18 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 		next := expressionStack.Pop()
 
 		switch next.(type) {
+		case *ast.Ellipsis:
+			ellipsis, _ := next.(*ast.Ellipsis)
+			typeStack.Push(ParameterType{IsEllipsis: true})
+			expressionStack.Push(ellipsis.Elt)
+
 		case *ast.Ident:
 			ident, _ := next.(*ast.Ident)
 			paramTypeName = ident.Name
 			typeStack.Push(ParameterType{Name: paramTypeName})
+
+		case *ast.InterfaceType:
+			typeStack.Push(ParameterType{IsInterface: true})
 
 		case *ast.SelectorExpr:
 			selector, _ := next.(*ast.SelectorExpr)

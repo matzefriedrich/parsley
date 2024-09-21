@@ -172,12 +172,6 @@ func Test_NewTemplateModelBuilder_Build_interface_method_with_pointer_parameters
 
 	reqParameter := doMethod.Parameters[0]
 	assert.Equal(t, "req", reqParameter.Name)
-	// assert.Equal(t, "http.Request", reqParameter.TypeName)
-	// assert.True(t, reqParameter.IsPointer)
-
-	// responseResult := doMethod.Results[0]
-	// assert.Equal(t, "http.Response", responseResult.TypeName)
-	// assert.True(t, responseResult.IsPointer)
 }
 
 func Test_NewTemplateModelBuilder_Build_interface_method_array_pointer_parameter(t *testing.T) {
@@ -206,4 +200,54 @@ func Test_NewTemplateModelBuilder_Build_interface_method_array_pointer_parameter
 	method := actual.Interfaces[0].Methods[0]
 	signature := generator.Signature(method)
 	assert.Equal(t, "Method0(args *[]*types.Arg)", signature)
+}
+
+func Test_NewTemplateModelBuilder_Build_interface_method_ellipsis_parameter(t *testing.T) {
+
+	// Arrange
+	source := []byte("package types\n" + "\n" +
+		"type Service interface {\n" +
+		"	Method0(args ...any)" + "\n" +
+		"}")
+
+	accessor := reflection.AstFromSource(source)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
+
+	// Act
+	actual, err := sut.Build()
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+
+	method := actual.Interfaces[0].Methods[0]
+	signature := generator.Signature(method)
+	assert.Equal(t, "Method0(args ...any)", signature)
+}
+
+func Test_NewTemplateModelBuilder_Build_interface_method_interface_array_parameter(t *testing.T) {
+
+	// Arrange
+	source := []byte("package types\n" + "\n" +
+		"type Service interface {\n" +
+		"	Method0(args []interface{})" + "\n" +
+		"}")
+
+	accessor := reflection.AstFromSource(source)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
+
+	// Act
+	actual, err := sut.Build()
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+
+	method := actual.Interfaces[0].Methods[0]
+	signature := generator.Signature(method)
+	assert.Equal(t, "Method0(args []interface{})", signature)
 }

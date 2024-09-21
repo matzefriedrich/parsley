@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// RegisterTypeModelFunctions registers a series of functions for type model processing in the given code generator.
 func RegisterTypeModelFunctions(generator GenericCodeGenerator) error {
 	return generator.AddTemplateFunc(
 		NamedFunc("FormatType", FormatType),
@@ -19,10 +20,12 @@ func RegisterTypeModelFunctions(generator GenericCodeGenerator) error {
 	)
 }
 
+// HasResults checks if the given reflection.Method has any result parameters.
 func HasResults(m reflection.Method) bool {
 	return len(m.Results) > 0
 }
 
+// FormattedParameters formats the parameters of the given reflection.Method into a comma-separated string with type info.
 func FormattedParameters(m reflection.Method) string {
 	formattedParameters := make([]string, len(m.Parameters))
 	for i, parameter := range m.Parameters {
@@ -32,15 +35,24 @@ func FormattedParameters(m reflection.Method) string {
 	return strings.Join(formattedParameters, ", ")
 }
 
+// FormattedCallParameters formats the call parameters of the given reflection.Method into a comma-separated string.
 func FormattedCallParameters(m reflection.Method) string {
 	formattedParameters := make([]string, len(m.Parameters))
 	for i, parameter := range m.Parameters {
-		formattedParameters[i] = fmt.Sprintf("%s", parameter.Name)
+		name := parameter.Name
+		if parameter.IsEllipsis() {
+			name = fmt.Sprintf("%s...", name)
+		}
+		formattedParameters[i] = fmt.Sprintf("%s", name)
 	}
 	return strings.Join(formattedParameters, ", ")
 }
 
+// FormattedResultParameters formats the result parameters of the given reflection.Method into a comma-separated string.
 func FormattedResultParameters(m reflection.Method) string {
+	if m.Results == nil {
+		return ""
+	}
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
 		formattedResults[i] = fmt.Sprintf("%s", result.Name)
@@ -48,7 +60,11 @@ func FormattedResultParameters(m reflection.Method) string {
 	return strings.Join(formattedResults, ", ")
 }
 
+// FormattedResultTypes formats the result types of the given reflection.Method into a string representation.
 func FormattedResultTypes(m reflection.Method) string {
+	if m.Results == nil {
+		return ""
+	}
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
 		typeName := FormatType(result)
@@ -60,6 +76,7 @@ func FormattedResultTypes(m reflection.Method) string {
 	return "(" + strings.Join(formattedResults, ", ") + ")"
 }
 
+// Signature generates the signature string of a given method.
 func Signature(m reflection.Method) string {
 	buffer := strings.Builder{}
 	buffer.WriteString(fmt.Sprintf("%s", m.Name))
@@ -70,7 +87,18 @@ func Signature(m reflection.Method) string {
 	return buffer.String()
 }
 
+const (
+	ellipsis = "..."
+	star     = "*"
+	array    = "[]"
+)
+
+// FormatType formats the given reflection.Parameter's type information into a string representation.
 func FormatType(parameter reflection.Parameter) string {
+
+	if parameter.Type == nil {
+		return "any"
+	}
 
 	segments := make([]string, 0)
 
@@ -86,13 +114,19 @@ func FormatType(parameter reflection.Parameter) string {
 			typeName = fmt.Sprintf("%s.%s", t.SelectorName, typeName)
 		}
 
+		if t.IsInterface {
+			typeName = fmt.Sprintf("interface{}")
+		}
+
+		if t.IsEllipsis {
+			typeName = ellipsis + typeName
+		}
+
 		if t.IsPointer {
-			star := "*"
 			typeName = star + typeName
 		}
 
 		if t.IsArray {
-			array := "[]"
 			typeName = array + typeName
 		}
 

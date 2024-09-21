@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/matzefriedrich/parsley/internal/commands"
 	"github.com/matzefriedrich/parsley/internal/reflection"
+	"github.com/matzefriedrich/parsley/internal/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"testing"
@@ -16,7 +17,7 @@ func Test_GenerateProxyCommand_Execute(t *testing.T) {
 		"	SayHello(name string)" + "\n" +
 		"}")
 
-	buffer := newMemoryFile()
+	buffer := mocks.NewMemoryFile()
 	outputWriterFactory := func(kind string, source *reflection.AstFileSource) (io.WriteCloser, error) {
 		return buffer, nil
 	}

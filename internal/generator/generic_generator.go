@@ -6,7 +6,6 @@ import (
 	"github.com/pkg/errors"
 	"go/format"
 	"io"
-	"os"
 	"reflect"
 	"text/template"
 )
@@ -84,25 +83,6 @@ func (g *genericGenerator) Generate(templateName string, templateModel any, writ
 	}
 
 	return nil
-}
-
-func (g *genericGenerator) LoadTemplateFromFile(templateFile string) (string, error) {
-
-	if _, err := os.Stat(templateFile); errors.Is(err, os.ErrNotExist) {
-		return "", newGeneratorError(ErrorTemplateFileNotFound, types.WithCause(err))
-	}
-
-	f, err := os.OpenFile(templateFile, os.O_RDONLY, 400)
-	defer func(file *os.File) {
-		_ = file.Close()
-	}(f)
-
-	if err != nil {
-		return "", newGeneratorError(ErrorFailedToOpenTemplateFile, types.WithCause(err))
-	}
-
-	data, _ := io.ReadAll(f)
-	return string(data), nil
 }
 
 func RegisterTemplateFunctions(g GenericCodeGenerator, functions ...func(generator GenericCodeGenerator) error) error {
