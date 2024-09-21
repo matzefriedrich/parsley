@@ -10,12 +10,25 @@ type Parameter struct {
 	Type *ParameterType
 }
 
+// IsEllipsis determines if the parameter type is an ellipsis (`...`) parameter.
+func (p Parameter) IsEllipsis() bool {
+	pt := p.Type
+	for pt != nil {
+		if pt.IsEllipsis {
+			return true
+		}
+		pt = pt.Next
+	}
+	return false
+}
+
 type ParameterType struct {
 	Name         string
 	SelectorName string
 	IsArray      bool
-	IsPointer    bool
 	IsEllipsis   bool
+	IsInterface  bool
+	IsPointer    bool
 	Next         *ParameterType
 }
 

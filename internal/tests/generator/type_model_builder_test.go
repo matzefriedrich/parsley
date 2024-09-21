@@ -226,3 +226,28 @@ func Test_NewTemplateModelBuilder_Build_interface_method_ellipsis_parameter(t *t
 	signature := generator.Signature(method)
 	assert.Equal(t, "Method0(args ...any)", signature)
 }
+
+func Test_NewTemplateModelBuilder_Build_interface_method_interface_array_parameter(t *testing.T) {
+
+	// Arrange
+	source := []byte("package types\n" + "\n" +
+		"type Service interface {\n" +
+		"	Method0(args []interface{})" + "\n" +
+		"}")
+
+	accessor := reflection.AstFromSource(source)
+	file, _ := accessor()
+
+	sut := generator.NewTemplateModelBuilder(file.File)
+
+	// Act
+	actual, err := sut.Build()
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+
+	method := actual.Interfaces[0].Methods[0]
+	signature := generator.Signature(method)
+	assert.Equal(t, "Method0(args []interface{})", signature)
+}

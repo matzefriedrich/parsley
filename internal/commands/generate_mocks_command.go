@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"github.com/matzefriedrich/cobra-extensions/pkg"
 	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
@@ -61,8 +62,9 @@ func (m *mocksGeneratorCommand) Execute() {
 	})
 
 	err := gen.GenerateCode()
-	if err != nil {
-		fmt.Println(err)
+	for err != nil {
+		fmt.Printf("%+v\n", err)
+		err = errors.Unwrap(err)
 	}
 }
 

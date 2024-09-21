@@ -82,6 +82,9 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 			paramTypeName = ident.Name
 			typeStack.Push(ParameterType{Name: paramTypeName})
 
+		case *ast.InterfaceType:
+			typeStack.Push(ParameterType{IsInterface: true})
+
 		case *ast.SelectorExpr:
 			selector, _ := next.(*ast.SelectorExpr)
 			ident, _ := selector.X.(*ast.Ident)
