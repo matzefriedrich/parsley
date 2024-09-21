@@ -10,22 +10,6 @@ type serviceRegistry struct {
 	registrations    map[types.ServiceKey]types.ServiceRegistrationList
 }
 
-// RegisterTransient adds a transient service registration with the provided activator function.
-// See https://matzefriedrich.github.io/parsley-docs/registration/register-constructor-functions/ for further information.
-func RegisterTransient(registry types.ServiceRegistry, activatorFunc any) error {
-	return registry.Register(activatorFunc, types.LifetimeTransient)
-}
-
-// RegisterScoped adds a scoped service registration with the provided activator function.
-func RegisterScoped(registry types.ServiceRegistry, activatorFunc any) error {
-	return registry.Register(activatorFunc, types.LifetimeScoped)
-}
-
-// RegisterSingleton adds a singleton service registration with the provided activator function.
-func RegisterSingleton(registry types.ServiceRegistry, activatorFunc any) error {
-	return registry.Register(activatorFunc, types.LifetimeSingleton)
-}
-
 func (s *serviceRegistry) addOrUpdateServiceRegistrationListFor(serviceType types.ServiceType) types.ServiceRegistrationList {
 	list, exists := s.registrations[serviceType.LookupKey()]
 	if exists {
