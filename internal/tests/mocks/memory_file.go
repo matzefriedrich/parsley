@@ -1,4 +1,4 @@
-package commands
+package mocks
 
 import (
 	"fmt"
@@ -29,7 +29,9 @@ func (m *memoryFileTarget) Close() error {
 
 var _ MemoryFile = (*memoryFileTarget)(nil)
 
-func newMemoryFile() MemoryFile {
+// NewMemoryFile creates a new MemoryFile instance.
+// The returned MemoryFile acts as a WriteCloser and a Stringer, storing data in a string buffer.
+func NewMemoryFile() MemoryFile {
 	return &memoryFileTarget{
 		buffer: strings.Builder{},
 	}
