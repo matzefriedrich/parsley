@@ -2,29 +2,34 @@ package generator
 
 import (
 	"github.com/matzefriedrich/parsley/internal/templates"
-	"os"
+	"io"
 	"path"
 )
 
 type bootstrapGenerator struct {
-	projectFolderPath string
+	writerFunc ScaffoldingFileWriterFunc
 }
 
+// BootstrapGenerator provides functionalities to scaffold project files.
 type BootstrapGenerator interface {
-	GenerateProjectFiles()
+	ScaffoldProjectFiles()
 }
 
 var _ BootstrapGenerator = (*bootstrapGenerator)(nil)
 
-type ProjectTemplateModel struct {
+type projectTemplateModel struct {
 }
 
+// ProjectItem represents a template file and its corresponding target filename in a project scaffold.
 type ProjectItem struct {
 	TemplateName   string
 	TargetFilename string
 }
 
-func (b *bootstrapGenerator) GenerateProjectFiles() {
+type ScaffoldingFileWriterFunc func(targetFilename string) (io.WriteCloser, error)
+
+// ScaffoldProjectFiles generates required project files using predefined templates and saves them to the project folder
+func (b *bootstrapGenerator) ScaffoldProjectFiles() {
 
 	gen := NewGenericCodeGenerator(func(name string) (string, error) {
 		templateFilePath := path.Join("bootstrap", name)
@@ -35,7 +40,7 @@ func (b *bootstrapGenerator) GenerateProjectFiles() {
 		return string(data), nil
 	})
 
-	m := &ProjectTemplateModel{}
+	m := &projectTemplateModel{}
 
 	projectTemplateFiles := []ProjectItem{
 		{TemplateName: "application.gotmpl", TargetFilename: "application.go"},
@@ -43,24 +48,27 @@ func (b *bootstrapGenerator) GenerateProjectFiles() {
 		{TemplateName: "greeter.gotmpl", TargetFilename: "greeter.go"},
 	}
 
-	for _, v := range projectTemplateFiles {
+	for _, projectItem := range projectTemplateFiles {
 		generateFile := func(item ProjectItem) error {
-			targetFilePath := path.Join(b.projectFolderPath, item.TargetFilename)
-			f, _ := os.OpenFile(targetFilePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-			defer func(f *os.File) {
+			f, err := b.writerFunc(item.TargetFilename)
+			if err != nil {
+				return err
+			}
+			defer func(f io.WriteCloser) {
 				_ = f.Close()
 			}(f)
 			return gen.Generate(item.TemplateName, m, f)
 		}
-		err := generateFile(v)
+		err := generateFile(projectItem)
 		if err != nil {
 			continue
 		}
 	}
 }
 
-func NewBootstrapGenerator(projectFolderPath string) BootstrapGenerator {
+// NewBootstrapGenerator initializes and returns a BootstrapGenerator with the specified project folder path.
+func NewBootstrapGenerator(writerFunc ScaffoldingFileWriterFunc) BootstrapGenerator {
 	return &bootstrapGenerator{
-		projectFolderPath: projectFolderPath,
+		writerFunc: writerFunc,
 	}
 }
