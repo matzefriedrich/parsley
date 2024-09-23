@@ -8,22 +8,29 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
-type GoProject struct {
+type goProject struct {
 	modFilePath string
 }
 
-func OpenProject(projectFolderPath string) (*GoProject, error) {
+type GoProject interface {
+	AddDependency(packageName string, version string) error
+}
+
+var _ GoProject = (*goProject)(nil)
+
+// OpenProject opens an existing Go project from the specified folder path and returns a GoProject instance.
+func OpenProject(projectFolderPath string) (GoProject, error) {
 	modFilePath, found := findModFile(projectFolderPath)
 	if !found {
 		return nil, newProjectError("go.mod file not found", nil)
 	}
-	return &GoProject{
+	return &goProject{
 		modFilePath: modFilePath,
 	}, nil
 }
 
 // AddDependency Adds the specified package to the current project.
-func (p *GoProject) AddDependency(packageName string, version string) error {
+func (p *goProject) AddDependency(packageName string, version string) error {
 
 	data, err := os.ReadFile(p.modFilePath)
 	if err != nil {
