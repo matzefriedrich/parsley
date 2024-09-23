@@ -17,8 +17,12 @@ func main() {
 
 	app := charmer.NewCommandLineApplication("parsley-cli", description)
 
+	writerFactoryFunc := func(projectFolder string) (generator.ScaffoldingFileWriterFunc, error) {
+		return commands.NewProjectFileScaffoldingWriterFactory(projectFolder), nil
+	}
+
 	app.AddCommand(
-		commands.NewInitCommand(),
+		commands.NewInitCommand(writerFactoryFunc, commands.LoadProjectFromDisk),
 		commands.NewVersionCommand(&http.Client{}))
 
 	app.AddGroupCommand(
