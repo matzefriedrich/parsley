@@ -5,13 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.1] - 2024-09-23
+
+### Added
+
+* Added new tests specifically for the service registration convenience functions. 
+* Added new tests for template functions and code generation.
+* Adds documentation texts.
+
+### Changed
+
+* Adds the `SupportsRegisterActivatorFunc`, which is used in the registration functions instead of `ServiceRegistry`. 
+
+* The convenience functions for registering services with different lifetimes are moved to the `register_functions.go` module, for better organization and separation of concerns.
+
+* Multiple activator functions can be passed to the `RegisterTransient`, `RegisterSingleton`, and `RegisterScoped` convenience functions, allowing several services to be registered with a single method call.
+
+### Fixed
+
+* Several improvements and fixes related to handling interface and ellipsis parameters in reflection and code generation.
+
+
 ## [v1.0.0] - 2024-09-21
 
 ### Added
 
-- Added the `validator.go` module to the `registration` package, introducing a `Validator` service to verify service registrations:
-  - Detects missing service dependencies.
-  - Identifies circular service registrations, where services depend on themselves.
+* Added the `validator.go` module to the `registration` package, introducing a `Validator` service to verify service registrations:
+  * Detects missing service dependencies.
+  * Identifies circular service registrations, where services depend on themselves.
 
 
 ## [v0.10.1] - 2024-09-20

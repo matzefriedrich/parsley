@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	VersionString string = "1.0.0"
+	VersionString string = "1.0.1"
 )
 
 type VersionInfo struct {
