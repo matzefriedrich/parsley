@@ -16,6 +16,7 @@ type generateProxyCommand struct {
 	outputWriterFactory generator.OutputWriterFactory
 }
 
+// Execute generates the code for a proxy.
 func (g *generateProxyCommand) Execute() {
 
 	templateLoader := func(_ string) (string, error) {
@@ -39,6 +40,7 @@ func (g *generateProxyCommand) Execute() {
 
 var _ pkg.TypedCommand = &generateProxyCommand{}
 
+// NewGenerateProxyCommand creates a new cobra.Command for generating proxy code, enabling method call interception for interfaces.
 func NewGenerateProxyCommand(fileAccessor reflection.AstFileAccessor, outputWriterFactory generator.OutputWriterFactory) *cobra.Command {
 	command := &generateProxyCommand{
 		fileAccessor:        fileAccessor,

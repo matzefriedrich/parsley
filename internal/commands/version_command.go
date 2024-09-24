@@ -15,6 +15,7 @@ type versionCommand struct {
 	httpClient     utils.HttpClient
 }
 
+// Execute displays the current Parsley CLI version and checks for updates if enabled. Shows update instructions if a new version exists.
 func (v *versionCommand) Execute() {
 
 	appVersion, appVersionErr := utils.ApplicationVersion()
@@ -55,6 +56,7 @@ func (v *versionCommand) Execute() {
 
 var _ pkg.TypedCommand = (*versionCommand)(nil)
 
+// NewVersionCommand creates a new cobra.Command that displays the current version of the Parsley CLI and checks for updates.
 func NewVersionCommand(httpClient utils.HttpClient) *cobra.Command {
 	command := &versionCommand{
 		httpClient: httpClient,

@@ -36,6 +36,7 @@ func NewInstancesBag(parent *InstanceBag, scope types.LifetimeScope) *InstanceBa
 	return bag
 }
 
+// TryResolveInstance attempts to locate an instance of a service identified by the given registration.
 func (b *InstanceBag) TryResolveInstance(ctx context.Context, registration types.ServiceRegistration) (interface{}, bool) {
 	id := registration.Id()
 	instance, found := b.instances[id]
@@ -52,6 +53,9 @@ func (b *InstanceBag) TryResolveInstance(ctx context.Context, registration types
 	return nil, false
 }
 
+// KeepInstance stores an instance of a service based on the service's lifetime scope. Singleton instances are stored
+// at the appropriate singleton level in the hierarchy. Scoped instances are stored in the context-specified scope.
+// Transient instances are stored in the current instance bag.
 func (b *InstanceBag) KeepInstance(ctx context.Context, registration types.ServiceRegistration, instance interface{}) {
 	id := registration.Id()
 	switch registration.LifetimeScope() {

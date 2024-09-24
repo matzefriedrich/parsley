@@ -32,17 +32,22 @@ type functionParameterInfo struct {
 	parameterType types.ServiceType
 }
 
+// String returns the string representation of the reflected type of the function parameter.
 func (f functionParameterInfo) String() string {
 	reflectedType := f.Type().ReflectedType()
 	return fmt.Sprintf("%s", reflectedType.String())
 }
 
+// Type returns the ServiceType of the function parameter, which provides meta information like name, package path, and reflect type.
 func (f functionParameterInfo) Type() types.ServiceType {
 	return f.parameterType
 }
 
 var _ types.FunctionParameterInfo = &functionParameterInfo{}
 
+// ReflectFunctionInfoFrom retrieves metadata about a given function using reflection, providing details about the function's type,
+// return type, parameter types, and other characteristics. Ensures that the value provided is a valid function and returns
+// appropriate errors if it is not. Useful for dynamically inspecting and working with functions.
 func ReflectFunctionInfoFrom(value reflect.Value) (types.FunctionInfo, error) {
 	funcType := value.Type()
 	if funcType.Kind() != reflect.Func {
@@ -61,6 +66,7 @@ func ReflectFunctionInfoFrom(value reflect.Value) (types.FunctionInfo, error) {
 	}, nil
 }
 
+// Name retrieves the name of the reflected function.
 func (f functionInfo) Name() string {
 	pointer := f.reflectedFunctionValue.Pointer()
 	functionFromPointer := runtime.FuncForPC(pointer)
@@ -70,6 +76,7 @@ func (f functionInfo) Name() string {
 	return ""
 }
 
+// Parameters returns a slice of FunctionParameterInfo representing the parameters of the function.
 func (f functionInfo) Parameters() []types.FunctionParameterInfo {
 	return f.parameters
 }
@@ -82,10 +89,12 @@ func (f functionInfo) ParameterTypes() []types.ServiceType {
 	return parameterTypes
 }
 
+// ReturnType returns the type of the service returned by the function.
 func (f functionInfo) ReturnType() types.ServiceType {
 	return f.returnType
 }
 
+// String returns a string representation of the function's signature, including its name, parameters, and return type.
 func (f functionInfo) String() string {
 	parameterTypeNames := make([]string, len(f.parameters))
 	for _, t := range f.parameters {

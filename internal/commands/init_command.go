@@ -16,6 +16,7 @@ import (
 // ScaffoldingFileWriterFactoryFunc defines a function type that returns a generator.ScaffoldingFileWriterFunc.
 type ScaffoldingFileWriterFactoryFunc func(projectFolder string) (generator.ScaffoldingFileWriterFunc, error)
 
+// ProjectLoaderFunc is a function type that loads a Go project given a project folder path.
 type ProjectLoaderFunc func(projectFolderPath string) (generator.GoProject, error)
 
 type initCommand struct {
@@ -24,6 +25,8 @@ type initCommand struct {
 	projectLoadFunc       ProjectLoaderFunc
 }
 
+// Execute sets up a new project by loading the current project folder, adding necessary dependencies,
+// and generating initial project files. It handles errors and ensures the minimum required version of dependencies.
 func (g *initCommand) Execute() {
 
 	projectFolderPath, _ := os.Getwd()

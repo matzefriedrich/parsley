@@ -26,9 +26,7 @@ func CreateServiceActivatorFrom[T any](instance T) (func() T, error) {
 	return instanceFunc, nil
 }
 
-// RegisterInstance registers an instance of type T. A registered instance behaves like a service registration with
-// a singleton lifetime scope. See https://matzefriedrich.github.io/parsley-docs/registration/register-instances/ for
-// further information.
+// RegisterInstance registers an instance of type T. A registered instance behaves like a service registration with a singleton lifetime scope.
 func RegisterInstance[T any](registry types.ServiceRegistry, instance T) error {
 	instanceFunc, err := CreateServiceActivatorFrom[T](instance)
 	if err != nil {

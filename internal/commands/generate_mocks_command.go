@@ -19,6 +19,7 @@ type mocksGeneratorCommand struct {
 	outputWriterFactory generator.OutputWriterFactory
 }
 
+// MocksGeneratorBehavior defines different behaviors for mock generation, which influence how mocks are handled based on annotations.
 type MocksGeneratorBehavior int
 
 const (
@@ -27,6 +28,7 @@ const (
 	ExcludeIgnored
 )
 
+// ParsleyMockAnnotationAttribute represents an attribute used to manage the behavior of mocking annotations during code generation, such as including or ignoring specified interface mocks based on annotations.
 type ParsleyMockAnnotationAttribute int
 
 const (
@@ -34,6 +36,7 @@ const (
 	Ignore
 )
 
+// String provides a string representation of the ParsleyMockAnnotationAttribute enum.
 func (p ParsleyMockAnnotationAttribute) String() string {
 	switch p {
 	case Mock:
@@ -45,6 +48,8 @@ func (p ParsleyMockAnnotationAttribute) String() string {
 	}
 }
 
+// Execute generates configurable mock implementations for all relevant interface types in the input source.
+// It loads the template, configures the model, and writes the generated mocks to the specified output. The method also processes any errors encountered during code generation.
 func (m *mocksGeneratorCommand) Execute() {
 
 	templateLoader := func(_ string) (string, error) {
@@ -108,6 +113,8 @@ func filterInterfaces(m *reflection.Model) []reflection.Interface {
 
 var _ pkg.TypedCommand = (*mocksGeneratorCommand)(nil)
 
+// NewGenerateMocksCommand creates a new cobra command to generate mock implementations for interfaces.
+// This command uses the provided file accessor to read the source file and the output writer factory to write the generated mocks.
 func NewGenerateMocksCommand(fileAccessor reflection.AstFileAccessor, outputWriterFactory generator.OutputWriterFactory) *cobra.Command {
 	if fileAccessor == nil {
 		panic("file accessor required")

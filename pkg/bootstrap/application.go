@@ -18,12 +18,15 @@ const (
 	ErrorCannotRegisterAppFactory = "cannot register application factory"
 )
 
+// ErrCannotRegisterAppFactory is returned when the application factory cannot be registered, indicating an issue with the bootstrap process.
 var (
 	ErrCannotRegisterAppFactory = errors.New(ErrorCannotRegisterAppFactory)
 )
 
 var parsley infrastructure
 
+// RunParsleyApplication initializes and runs the Parsley application lifecycle.
+// It registers the application factory, configures additional modules, resolves the main application instance, and invokes its Run method.
 func RunParsleyApplication(cxt context.Context, appFactoryFunc any, configure ...types.ModuleFunc) error {
 
 	registry := registration.NewServiceRegistry()

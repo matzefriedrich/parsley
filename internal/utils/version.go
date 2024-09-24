@@ -13,28 +13,33 @@ const (
 	VersionString string = "1.0.1"
 )
 
+// VersionInfo represents the version details using semantic versioning.
 type VersionInfo struct {
 	Major int
 	Minor int
 	Patch int
 }
 
+// String returns the VersionInfo as a formatted string in the semantic versioning format (Major.Minor.Patch).
 func (v VersionInfo) String() string {
 	return fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
 }
 
+// LessThan determines if the current VersionInfo is less than the specified VersionInfo based on semantic versioning.
 func (v VersionInfo) LessThan(other VersionInfo) bool {
 	a, _ := version.NewVersion(v.String())
 	b, _ := version.NewVersion(other.String())
 	return a.LessThan(b)
 }
 
+// Equal determines if two VersionInfo instances represent the same version based on semantic versioning.
 func (v VersionInfo) Equal(other VersionInfo) bool {
 	a, _ := version.NewVersion(v.String())
 	b, _ := version.NewVersion(other.String())
 	return a.Equal(b)
 }
 
+// ApplicationVersion parses and returns the application's version information. If the version is not set, an error is returned.
 func ApplicationVersion() (*VersionInfo, error) {
 	v, err := tryParseVersionInfo(VersionString)
 	if err != nil {

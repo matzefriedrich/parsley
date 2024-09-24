@@ -14,7 +14,6 @@ const (
 )
 
 var (
-
 	// ErrFailedToRetrieveServiceRegistrations signifies an error encountered while attempting to retrieve service registrations.
 	ErrFailedToRetrieveServiceRegistrations = types.NewRegistryError(ErrorFailedToRetrieveServiceRegistrations)
 

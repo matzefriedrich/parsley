@@ -29,7 +29,7 @@ func newTypeInfo(t types.ServiceType) typeInfo {
 	}
 }
 
-// InvokeActivator calls the activator function with the provided parameters and returns the created service instance.
+// InvokeActivator calls the activator function stored in the service registration with the provided parameters.
 func (s *serviceRegistration) InvokeActivator(params ...interface{}) (interface{}, error) {
 	var values []reflect.Value
 	if len(params) > 0 {

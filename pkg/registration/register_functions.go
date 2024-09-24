@@ -2,12 +2,12 @@ package registration
 
 import "github.com/matzefriedrich/parsley/pkg/types"
 
+// SupportsRegisterActivatorFunc allows the registration of activator functions with different lifetime scopes.
 type SupportsRegisterActivatorFunc interface {
 	Register(activatorFunc any, scope types.LifetimeScope) error
 }
 
 // RegisterTransient registers services with a transient lifetime in the provided service registry.
-// See https://matzefriedrich.github.io/parsley-docs/registration/register-constructor-functions/ for further information.
 func RegisterTransient(registry SupportsRegisterActivatorFunc, activatorFunc ...any) error {
 	for _, a := range activatorFunc {
 		err := registry.Register(a, types.LifetimeTransient)
