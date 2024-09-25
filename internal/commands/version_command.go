@@ -3,15 +3,15 @@ package commands
 import (
 	"context"
 	"fmt"
-	"github.com/matzefriedrich/cobra-extensions/pkg"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/matzefriedrich/parsley/internal/utils"
 	"github.com/spf13/cobra"
 )
 
 type versionCommand struct {
-	use            abstractions.CommandName `flag:"version" short:"Show the current Parsley CLI version"`
-	CheckForUpdate bool                     `flag:"check-update" usage:"Checks for available updates and prints the update command"`
+	use            types.CommandName `flag:"version" short:"Show the current Parsley CLI version"`
+	CheckForUpdate bool              `flag:"check-update" usage:"Checks for available updates and prints the update command"`
 	httpClient     utils.HttpClient
 }
 
@@ -54,12 +54,12 @@ func (v *versionCommand) Execute() {
 	}
 }
 
-var _ pkg.TypedCommand = (*versionCommand)(nil)
+var _ types.TypedCommand = (*versionCommand)(nil)
 
 // NewVersionCommand creates a new cobra.Command that displays the current version of the Parsley CLI and checks for updates.
 func NewVersionCommand(httpClient utils.HttpClient) *cobra.Command {
 	command := &versionCommand{
 		httpClient: httpClient,
 	}
-	return pkg.CreateTypedCommand(command)
+	return commands.CreateTypedCommand(command)
 }

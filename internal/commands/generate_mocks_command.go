@@ -3,8 +3,8 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"github.com/matzefriedrich/cobra-extensions/pkg"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/matzefriedrich/parsley/internal/generator"
 	"github.com/matzefriedrich/parsley/internal/reflection"
 	"github.com/matzefriedrich/parsley/internal/templates"
@@ -14,7 +14,7 @@ import (
 )
 
 type mocksGeneratorCommand struct {
-	use                 abstractions.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types."`
+	use                 types.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types."`
 	fileAccessor        reflection.AstFileAccessor
 	outputWriterFactory generator.OutputWriterFactory
 }
@@ -111,7 +111,7 @@ func filterInterfaces(m *reflection.Model) []reflection.Interface {
 	}
 }
 
-var _ pkg.TypedCommand = (*mocksGeneratorCommand)(nil)
+var _ types.TypedCommand = (*mocksGeneratorCommand)(nil)
 
 // NewGenerateMocksCommand creates a new cobra command to generate mock implementations for interfaces.
 // This command uses the provided file accessor to read the source file and the output writer factory to write the generated mocks.
@@ -126,7 +126,7 @@ func NewGenerateMocksCommand(fileAccessor reflection.AstFileAccessor, outputWrit
 		fileAccessor:        fileAccessor,
 		outputWriterFactory: outputWriterFactory,
 	}
-	return pkg.CreateTypedCommand(command)
+	return commands.CreateTypedCommand(command)
 }
 
 func determineMockGeneratorBehavior(m *reflection.Model) MocksGeneratorBehavior {
