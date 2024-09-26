@@ -2,8 +2,8 @@ package commands
 
 import (
 	"fmt"
-	"github.com/matzefriedrich/cobra-extensions/pkg"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/matzefriedrich/parsley/internal/generator"
 	"github.com/matzefriedrich/parsley/internal/reflection"
 	"github.com/matzefriedrich/parsley/internal/templates"
@@ -11,7 +11,7 @@ import (
 )
 
 type generateProxyCommand struct {
-	use                 abstractions.CommandName `flag:"proxy" short:"Generate generic proxy types for method call interception."`
+	use                 types.CommandName `flag:"proxy" short:"Generate generic proxy types for method call interception."`
 	fileAccessor        reflection.AstFileAccessor
 	outputWriterFactory generator.OutputWriterFactory
 }
@@ -38,7 +38,7 @@ func (g *generateProxyCommand) Execute() {
 	}
 }
 
-var _ pkg.TypedCommand = &generateProxyCommand{}
+var _ types.TypedCommand = &generateProxyCommand{}
 
 // NewGenerateProxyCommand creates a new cobra.Command for generating proxy code, enabling method call interception for interfaces.
 func NewGenerateProxyCommand(fileAccessor reflection.AstFileAccessor, outputWriterFactory generator.OutputWriterFactory) *cobra.Command {
@@ -46,5 +46,5 @@ func NewGenerateProxyCommand(fileAccessor reflection.AstFileAccessor, outputWrit
 		fileAccessor:        fileAccessor,
 		outputWriterFactory: outputWriterFactory,
 	}
-	return pkg.CreateTypedCommand(command)
+	return commands.CreateTypedCommand(command)
 }

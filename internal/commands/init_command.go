@@ -2,13 +2,13 @@ package commands
 
 import (
 	"fmt"
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/matzefriedrich/parsley/internal/utils"
 	"io"
 	"os"
 	"path"
 
-	"github.com/matzefriedrich/cobra-extensions/pkg"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 	"github.com/matzefriedrich/parsley/internal/generator"
 	"github.com/spf13/cobra"
 )
@@ -20,7 +20,7 @@ type ScaffoldingFileWriterFactoryFunc func(projectFolder string) (generator.Scaf
 type ProjectLoaderFunc func(projectFolderPath string) (generator.GoProject, error)
 
 type initCommand struct {
-	use                   abstractions.CommandName `flag:"init" short:"Add Parsley to an application"`
+	use                   types.CommandName `flag:"init" short:"Add Parsley to an application"`
 	fileWriterFactoryFunc ScaffoldingFileWriterFactoryFunc
 	projectLoadFunc       ProjectLoaderFunc
 }
@@ -50,7 +50,7 @@ func (g *initCommand) Execute() {
 	gen.ScaffoldProjectFiles()
 }
 
-var _ pkg.TypedCommand = &initCommand{}
+var _ types.TypedCommand = &initCommand{}
 
 func NewInitCommand(
 	writerFactoryFunc ScaffoldingFileWriterFactoryFunc,
@@ -59,7 +59,7 @@ func NewInitCommand(
 		fileWriterFactoryFunc: writerFactoryFunc,
 		projectLoadFunc:       projectLoaderFunc,
 	}
-	return pkg.CreateTypedCommand(command)
+	return commands.CreateTypedCommand(command)
 }
 
 // NewProjectFileScaffoldingWriterFactory creates a factory for generating file writers in a specified project directory.
