@@ -37,7 +37,7 @@ func NewInstancesBag(parent *InstanceBag, scope types.LifetimeScope) *InstanceBa
 }
 
 // TryResolveInstance attempts to locate an instance of a service identified by the given registration.
-func (b *InstanceBag) TryResolveInstance(ctx context.Context, registration types.ServiceRegistration) (interface{}, bool) {
+func (b *InstanceBag) TryResolveInstance(scope context.Context, registration types.ServiceRegistration) (interface{}, bool) {
 
 	ctx, span := newTryResolveInstanceSpan(scope)
 	defer span.End()
