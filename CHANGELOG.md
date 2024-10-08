@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.3] - 2024-10-08
+
+### Changed
+
+* Removed `hashicorp/go-version` dependency; added simple comparison functions to the `version.go` module instead.
+
+
+## [v1.0.2] - 2024-09-26
+
+### Changed
+
+* Updated package dependencies (as reported by Dependabot).
+
+
 ## [v1.0.1] - 2024-09-23
 
 ### Added
