@@ -26,14 +26,8 @@ const (
 	// LessThan indicates that the first value is less than the second in a comparison operation.
 	LessThan ComparisonResult = iota
 
-	// LessThanOrEqual indicates that the first value is either less than or equal to the second in a comparison operation.
-	LessThanOrEqual
-
 	// Equal indicates that the first value is equal to the second in a comparison operation.
 	Equal
-
-	// GreaterOrEqual indicates that the first value is either greater than or equal to the second in a comparison operation.
-	GreaterOrEqual
 
 	// GreaterThan indicates that the first value is greater than the second in a comparison operation.
 	GreaterThan
@@ -51,7 +45,8 @@ func (v VersionInfo) LessThan(other VersionInfo) bool {
 
 // LessThanOrEqual determines if the current VersionInfo is less than or equal to the specified VersionInfo based on semantic versioning.
 func (v VersionInfo) LessThanOrEqual(other VersionInfo) bool {
-	return v.Compare(other) == LessThanOrEqual
+	result := v.Compare(other)
+	return result == Equal || result == LessThan
 }
 
 // Equal determines if two VersionInfo instances represent the same version based on semantic versioning.
@@ -66,16 +61,9 @@ func (v VersionInfo) Compare(other VersionInfo) ComparisonResult {
 		return LessThan
 	} else if isEqual(v, other) {
 		return Equal
-	} else if isGreaterThan(v, other) {
-		return GreaterThan
 	}
 
-	// If it’s not less or equal, it must be one of the remaining.
-	if isLessThanOrEqual(v, other) {
-		return LessThanOrEqual
-	} else {
-		return GreaterOrEqual
-	}
+	return GreaterThan
 }
 
 // ApplicationVersion parses and returns the application's version information. If the version is not set, an error is returned.
@@ -95,18 +83,6 @@ func isLessThan(v VersionInfo, other VersionInfo) bool {
 
 func isEqual(v VersionInfo, other VersionInfo) bool {
 	return v.Major == other.Major && v.Minor == other.Minor && v.Patch == other.Patch
-}
-
-func isGreaterThan(v VersionInfo, other VersionInfo) bool {
-	return v.Major > other.Major ||
-		(v.Major == other.Major && v.Minor > other.Minor) ||
-		(v.Major == other.Major && v.Minor == other.Minor && v.Patch > other.Patch)
-}
-
-func isLessThanOrEqual(v VersionInfo, other VersionInfo) bool {
-	return v.Major < other.Major ||
-		(v.Major == other.Major && v.Minor < other.Minor) ||
-		(v.Major == other.Major && v.Minor == other.Minor && v.Patch <= other.Patch)
 }
 
 func tryParseVersionInfo(version string) (*VersionInfo, error) {
