@@ -9,14 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Removed `hashicorp/go-version` dependency; added simple comparion functions to the `version.go` module instead.
+* Removed `hashicorp/go-version` dependency; added simple comparison functions to the `version.go` module instead.
 
 
 ## [v1.0.2] - 2024-09-26
 
 ### Changed
 
-* Updated package dependencies (as reported by dependabot).
+* Updated package dependencies (as reported by Dependabot).
 
 
 ## [v1.0.1] - 2024-09-23
