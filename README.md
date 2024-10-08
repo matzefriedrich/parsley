@@ -6,6 +6,9 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/matzefriedrich/parsley)
 ![GitHub Release](https://img.shields.io/github/v/release/matzefriedrich/parsley?include_prereleases)
 
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B48327%2Fgithub.com%2Fmatzefriedrich%2Fparsley.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B48327%2Fgithub.com%2Fmatzefriedrich%2Fparsley?ref=badge_shield&issueType=license)
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B48327%2Fgithub.com%2Fmatzefriedrich%2Fparsley.svg?type=shield&issueType=security)](https://app.fossa.com/projects/custom%2B48327%2Fgithub.com%2Fmatzefriedrich%2Fparsley?ref=badge_shield&issueType=security)
+
 ## What is Parsley?
 
 Parsley is a powerful, easy-to-use reflection-based dependency injection package that integrates seamlessly into any Go application.
