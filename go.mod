@@ -3,7 +3,6 @@ module github.com/matzefriedrich/parsley
 go 1.23
 
 require (
-	github.com/hashicorp/go-version v1.7.0
 	github.com/matzefriedrich/cobra-extensions v0.3.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.8.1
