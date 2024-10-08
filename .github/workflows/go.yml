@@ -28,3 +28,15 @@ jobs:
       env:
         COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: goveralls -coverprofile=covprofile -service=github
+
+  code-security-analysis:
+    runs-on: ubuntu-latest
+
+    steps: 
+    - uses: actions/checkout@v4
+    - name: Install Fossa
+      run: |
+        curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install-latest.sh | bash
+
+    - name: Run Code Security Analysis
+      run: fossa analyze
