@@ -20,7 +20,7 @@ type ScaffoldingFileWriterFactoryFunc func(projectFolder string) (generator.Scaf
 type ProjectLoaderFunc func(projectFolderPath string) (generator.GoProject, error)
 
 type initCommand struct {
-	use                   types.CommandName `flag:"init" short:"Add Parsley to an application"`
+	use                   types.CommandName `flag:"init" short:"Add Parsley to an application" long:"Integrates Parsley into an existing application by setting up the necessary scaffolding for dependency injection and code generation. It initializes project configurations, generates essential files, and prepares the application for using Parsley's advanced features."`
 	fileWriterFactoryFunc ScaffoldingFileWriterFactoryFunc
 	projectLoadFunc       ProjectLoaderFunc
 }

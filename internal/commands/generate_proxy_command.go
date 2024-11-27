@@ -11,7 +11,7 @@ import (
 )
 
 type generateProxyCommand struct {
-	use                 types.CommandName `flag:"proxy" short:"Generate generic proxy types for method call interception."`
+	use                 types.CommandName `flag:"proxy" short:"Generate generic proxy types for method call interception." long:"Generates generic proxy types designed for method call interception on Go interfaces. These proxies act as intermediaries, allowing you to inject custom behavior—such as logging, validation, or transformation—before or after method execution."`
 	fileAccessor        reflection.AstFileAccessor
 	outputWriterFactory generator.OutputWriterFactory
 }
