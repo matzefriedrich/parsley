@@ -14,7 +14,7 @@ import (
 )
 
 type mocksGeneratorCommand struct {
-	use                 types.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types."`
+	use                 types.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types." long:"The command generates fully configurable mock implementations for Go interface types. It simplifies the process of creating mocks by analyzing the source code and automatically generating mock structs that adhere to the defined interfaces."`
 	fileAccessor        reflection.AstFileAccessor
 	outputWriterFactory generator.OutputWriterFactory
 }
