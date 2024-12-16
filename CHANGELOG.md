@@ -5,67 +5,77 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.7] - 2024-12-17
+
+### Changed
+
+* Bumps `github.com/matzefriedrich/cobra-extensions` from 0.4.1 to 0.4.2 [#42](https://github.com/matzefriedrich/parsley/pull/42)
+
+
 ## [v1.0.6] - 2024-12-11
 
 ### Changed
 
-* Updates package dependencies (as reported by Dependabot).
+* Bumps `github.com/matzefriedrich/cobra-extensions` from 0.4.0 to 0.4.1 [#41](https://github.com/matzefriedrich/parsley/pull/41)
 
 
 ## [v1.0.5] - 2024-11-27
 
 ### Changed
 
-* Updates package dependencies
-
+* Bumps `github.com/matzefriedrich/cobra-extensions` from 0.3.2 to 0.4.0 [#40](https://github.com/matzefriedrich/parsley/pull/40)
+* Alters command metadata (adds long descriptions)
 
 ## [v1.0.4] - 2024-11-18
 
 ### Changed
 
-* Updated package dependencies (as reported by Dependabot).
+* Bumps `github.com/stretchr/testify` from 1.9.0 to 1.10.0 [#39](https://github.com/matzefriedrich/parsley/pull/39)
+* Bumps `github.com/matzefriedrich/cobra-extensions` from 0.3.1 to 0.3.2 [#38](https://github.com/matzefriedrich/parsley/pull/39)
+* Bumps `golang.org/x/mod` from 0.21.0 to 0.22.0 [#37](https://github.com/matzefriedrich/parsley/pull/37)
 
 
 ## [v1.0.3] - 2024-10-08
 
 ### Changed
 
-* Removed `hashicorp/go-version` dependency; added simple comparison functions to the `version.go` module instead.
+* Removed `hashicorp/go-version` dependency; added simple comparison functions to the `version.go` module instead. [#36](https://github.com/matzefriedrich/parsley/pull/36)
 
 
 ## [v1.0.2] - 2024-09-26
 
 ### Changed
 
-* Updated package dependencies (as reported by Dependabot).
+* Bumps `github.com/matzefriedrich/cobra-extensions` from 0.3.0 to 0.3.1 [#35](https://github.com/matzefriedrich/parsley/pull/35)
+* Bumps `github.com/matzefriedrich/cobra-extensions` from 0.2.6 to 0.3.0, and adjusts import paths [#34](https://github.com/matzefriedrich/parsley/pull/34)
 
 
 ## [v1.0.1] - 2024-09-23
 
 ### Added
 
-* Added new tests specifically for the service registration convenience functions. 
-* Added new tests for template functions and code generation.
+* Added new tests specifically for the service registration convenience functions. [#31](https://github.com/matzefriedrich/parsley/pull/31) 
+* Added new tests for template functions and code generation. [#32](https://github.com/matzefriedrich/parsley/pull/32)
 * Adds documentation texts.
 
 ### Changed
 
 * Adds the `SupportsRegisterActivatorFunc`, which is used in the registration functions instead of `ServiceRegistry`. 
 
-* The convenience functions for registering services with different lifetimes are moved to the `register_functions.go` module, for better organization and separation of concerns.
+* The convenience functions for registering services with different lifetimes are moved to the `register_functions.go` module, for better organization and separation of concerns. [#31](https://github.com/matzefriedrich/parsley/pull/31)
 
-* Multiple activator functions can be passed to the `RegisterTransient`, `RegisterSingleton`, and `RegisterScoped` convenience functions, allowing several services to be registered with a single method call.
+* Multiple activator functions can be passed to the `RegisterTransient`, `RegisterSingleton`, and `RegisterScoped` convenience functions, allowing several services to be registered with a single method call. [#31](https://github.com/matzefriedrich/parsley/pull/31) 
 
 ### Fixed
 
-* Several improvements and fixes related to handling interface and ellipsis parameters in reflection and code generation.
+* Several improvements and fixes related to handling interface and ellipsis parameters in reflection and code generation. [#32](https://github.com/matzefriedrich/parsley/pull/32)
 
 
 ## [v1.0.0] - 2024-09-21
 
 ### Added
 
-* Added the `validator.go` module to the `registration` package, introducing a `Validator` service to verify service registrations:
+* Added the `validator.go` module to the `registration` package, introducing a `Validator` service to verify service registrations [#30](https://github.com/matzefriedrich/parsley/pull/30):
   * Detects missing service dependencies.
   * Identifies circular service registrations, where services depend on themselves.
 
