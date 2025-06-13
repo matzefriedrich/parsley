@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v1.0.14] - 2025-06-13
 
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.5.0 to 0.5.1 [#51](https://github.com/matzefriedrich/parsley/pull/51)
+* Bumps `golang.org/x/mod` from 0.24.0 to 0.25.0 #52 [#52](https://github.com/matzefriedrich/parsley/pull/52)
 
 
 ## [v1.0.13] - 2025-05-27
