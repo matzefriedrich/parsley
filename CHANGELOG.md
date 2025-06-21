@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.0] - 2025-06-22
+
+* Adds the `RegisterFactory[T any](registry types.ServiceRegistry, scope types.LifetimeScope) error` function to the features sub-package. It can be used to register generic factory functions for dynamic dependency resolution. With this new function, demand for repetitive boilerplate code can be reduced.
+
+
 ## [v1.0.14] - 2025-06-13
 
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.5.0 to 0.5.1 [#51](https://github.com/matzefriedrich/parsley/pull/51)
