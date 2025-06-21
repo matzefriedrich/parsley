@@ -21,11 +21,6 @@ func RegisterFactory[T any](registry types.ServiceRegistry, scope types.Lifetime
 // resolverFunc creates and returns a FactoryFunc that resolves an instance of type T using the provided resolver.
 func resolverFunc[T any](resolver types.Resolver) FactoryFunc[T] {
 	return func(ctx context.Context) (T, error) {
-		instance, err := resolving.ResolveRequiredService[T](resolver, ctx)
-		if err != nil {
-			var nilInstance T
-			return nilInstance, err
-		}
-		return instance, nil
+		return resolving.ResolveRequiredService[T](resolver, ctx)
 	}
 }
