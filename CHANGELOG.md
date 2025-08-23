@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.2] - 2025-08-23
+
+* Bumps `golang.org/x/mod` from 0.26.0 to 0.27.0 [#56](https://github.com/matzefriedrich/parsley/pull/56)
+
+
 ## [v1.1.1] - 2025-07-25
 
 * Bumps `golang.org/x/mod` from 0.25.0 to 0.26.0 [#55](https://github.com/matzefriedrich/parsley/pull/55)
