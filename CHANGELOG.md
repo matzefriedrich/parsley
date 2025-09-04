@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.1.3] - 2025-09-05
 
+* Bumps `github.com/spf13/cobra` from 1.9.1 to 1.10.1 [#58](https://github.com/matzefriedrich/parsley/pull/58)
 * Bumps `github.com/stretchr/testify` from 1.10.0 to 1.11.1 [#59](https://github.com/matzefriedrich/parsley/pull/59)
 
 
