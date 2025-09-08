@@ -5,8 +5,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
-github.com/matzefriedrich/cobra-extensions v0.5.1 h1:fw9c2LN3JAu9cJ/afy3xES/LbpvDgsl2+B1Z3ICSySU=
-github.com/matzefriedrich/cobra-extensions v0.5.1/go.mod h1:4v4q/1LCEzxuFP/mgY8opRyyLeXdiFXV+NJhxAUZI9E=
+github.com/matzefriedrich/cobra-extensions v0.5.2 h1:MH9jC/7/28GVsR0JnZ/OmXwakrKkRFvd95Cflx7btN4=
+github.com/matzefriedrich/cobra-extensions v0.5.2/go.mod h1:c3lNLxoLPdevrkMy7dfzA5QxoQOxlo1vocEh1L9MnsU=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
