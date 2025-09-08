@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.4] - 2025-09-08
+
+* Bumps `golang.org/x/mod` from 0.27.0 to 0.28.0 [#60](https://github.com/matzefriedrich/parsley/pull/60)
+
+
 ## [v1.1.3] - 2025-09-05
 
 * Bumps `github.com/spf13/cobra` from 1.9.1 to 1.10.1 [#58](https://github.com/matzefriedrich/parsley/pull/58)
