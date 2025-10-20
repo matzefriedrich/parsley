@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"context"
 	"fmt"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/matzefriedrich/parsley/internal/generator"
@@ -17,7 +19,7 @@ type generateProxyCommand struct {
 }
 
 // Execute generates the code for a proxy.
-func (g *generateProxyCommand) Execute() {
+func (g *generateProxyCommand) Execute(_ context.Context) {
 
 	templateLoader := func(_ string) (string, error) {
 		return templates.ProxyTemplate, nil

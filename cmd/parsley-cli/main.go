@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
+	"net/http"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/charmer"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/matzefriedrich/parsley/internal/commands"
 	"github.com/matzefriedrich/parsley/internal/generator"
-	"net/http"
 )
 
 func main() {
@@ -35,5 +37,7 @@ func main() {
 			w.AddCommand(commands.NewGenerateProxyCommand(goFileAccessor, outputWriterFactory))
 		})
 
-	_ = app.Execute()
+	ctx := context.Background()
+
+	_ = app.Execute(ctx)
 }
