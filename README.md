@@ -8,6 +8,8 @@
 
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B48327%2Fgithub.com%2Fmatzefriedrich%2Fparsley.svg?type=shield&issueType=license)](https://app.fossa.com/projects/custom%2B48327%2Fgithub.com%2Fmatzefriedrich%2Fparsley?ref=badge_shield&issueType=license)
 [![FOSSA Status](https://app.fossa.com/api/projects/custom%2B48327%2Fgithub.com%2Fmatzefriedrich%2Fparsley.svg?type=shield&issueType=security)](https://app.fossa.com/projects/custom%2B48327%2Fgithub.com%2Fmatzefriedrich%2Fparsley?ref=badge_shield&issueType=security)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go?tab=readme-ov-file#dependency-injection)
+
 
 ## What is Parsley?
 
