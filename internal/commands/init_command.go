@@ -1,13 +1,15 @@
 package commands
 
 import (
+	"context"
 	"fmt"
-	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
-	"github.com/matzefriedrich/cobra-extensions/pkg/types"
-	"github.com/matzefriedrich/parsley/internal/utils"
 	"io"
 	"os"
 	"path"
+
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
+	"github.com/matzefriedrich/parsley/internal/utils"
 
 	"github.com/matzefriedrich/parsley/internal/generator"
 	"github.com/spf13/cobra"
@@ -27,7 +29,7 @@ type initCommand struct {
 
 // Execute sets up a new project by loading the current project folder, adding necessary dependencies,
 // and generating initial project files. It handles errors and ensures the minimum required version of dependencies.
-func (g *initCommand) Execute() {
+func (g *initCommand) Execute(_ context.Context) {
 
 	projectFolderPath, _ := os.Getwd()
 	p, err := g.projectLoadFunc(projectFolderPath)

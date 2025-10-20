@@ -1,16 +1,18 @@
 package commands
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"slices"
+	"strings"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/matzefriedrich/parsley/internal/generator"
 	"github.com/matzefriedrich/parsley/internal/reflection"
 	"github.com/matzefriedrich/parsley/internal/templates"
 	"github.com/spf13/cobra"
-	"slices"
-	"strings"
 )
 
 type mocksGeneratorCommand struct {
@@ -50,7 +52,7 @@ func (p ParsleyMockAnnotationAttribute) String() string {
 
 // Execute generates configurable mock implementations for all relevant interface types in the input source.
 // It loads the template, configures the model, and writes the generated mocks to the specified output. The method also processes any errors encountered during code generation.
-func (m *mocksGeneratorCommand) Execute() {
+func (m *mocksGeneratorCommand) Execute(_ context.Context) {
 
 	templateLoader := func(_ string) (string, error) {
 		return templates.MockTemplate, nil

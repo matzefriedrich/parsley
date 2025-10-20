@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/matzefriedrich/parsley/internal/utils"
@@ -16,7 +17,7 @@ type versionCommand struct {
 }
 
 // Execute displays the current Parsley CLI version and checks for updates if enabled. Shows update instructions if a new version exists.
-func (v *versionCommand) Execute() {
+func (v *versionCommand) Execute(ctx context.Context) {
 
 	appVersion, appVersionErr := utils.ApplicationVersion()
 	if appVersionErr == nil {
@@ -28,7 +29,7 @@ func (v *versionCommand) Execute() {
 	}
 
 	githubClient := utils.NewGitHubApiClient(v.httpClient)
-	release, err := githubClient.QueryLatestReleaseTag(context.Background())
+	release, err := githubClient.QueryLatestReleaseTag(ctx)
 	if err != nil {
 		return
 	}
