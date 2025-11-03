@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -18,14 +19,18 @@ const (
 	SpanAttrResolverRegistrationLifetimeScope = "resolver.registration.lifetime"
 )
 
+type InstanceSource string
+type InstanceStorage string
+
 const (
-	SourceLocal                    = "local"
-	SourceNotFound                 = "not-found"
-	SourceScope                    = "scope"
-	StorageLocationLocalSingleton  = "local-singleton"
-	StorageLocationParentSingleton = "parent-singleton"
-	StorageLocationScope           = "scope"
-	StorageLocationTransient       = "transient"
+	SourceLocal    InstanceSource = "local"
+	SourceNotFound InstanceSource = "not-found"
+	SourceScope    InstanceSource = "scope"
+
+	StorageLocationLocalSingleton  InstanceStorage = "local-singleton"
+	StorageLocationParentSingleton InstanceStorage = "parent-singleton"
+	StorageLocationScope           InstanceStorage = "scope"
+	StorageLocationTransient       InstanceStorage = "transient"
 )
 
 type tryResolveInstanceSpan struct {
@@ -34,23 +39,23 @@ type tryResolveInstanceSpan struct {
 
 type TryResolveInstanceSpan interface {
 	trace.Span
-	InstanceFound(id uint64, source string)
+	InstanceFound(id uint64, source InstanceSource)
 	InstanceNotFound()
 }
 
 var _ TryResolveInstanceSpan = (*tryResolveInstanceSpan)(nil)
 
-func (t tryResolveInstanceSpan) InstanceFound(id uint64, source string) {
+func (t tryResolveInstanceSpan) InstanceFound(id uint64, source InstanceSource) {
 	t.SetAttributes(
 		attribute.Int64(SpanAttrResolverInstanceId, int64(id)),
-		attribute.String(SpanAttrResolverInstanceSource, source),
+		attribute.String(SpanAttrResolverInstanceSource, string(source)),
 		attribute.Bool(SpanAttrResolverInstanceFound, true),
 	)
 }
 
 func (t tryResolveInstanceSpan) InstanceNotFound() {
 	t.SetAttributes(
-		attribute.String(SpanAttrResolverInstanceSource, SourceNotFound),
+		attribute.String(SpanAttrResolverInstanceSource, string(SourceNotFound)),
 		attribute.Bool(SpanAttrResolverInstanceFound, false),
 	)
 }
@@ -73,13 +78,13 @@ type keepInstanceSpan struct {
 
 type KeepInstanceSpan interface {
 	trace.Span
-	InstanceStorage(location string)
+	InstanceStorage(location InstanceStorage)
 }
 
 var _ KeepInstanceSpan = (*keepInstanceSpan)(nil)
 
-func (k keepInstanceSpan) InstanceStorage(location string) {
-	k.SetAttributes(attribute.String(SpanAttrResolverInstanceStorage, location))
+func (k keepInstanceSpan) InstanceStorage(location InstanceStorage) {
+	k.SetAttributes(attribute.String(SpanAttrResolverInstanceStorage, string(location)))
 }
 
 func newKeepInstanceSpan(scope context.Context, registration types.ServiceRegistration) (context.Context, KeepInstanceSpan) {
