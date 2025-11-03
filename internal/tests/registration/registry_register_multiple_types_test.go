@@ -1,14 +1,14 @@
 package registration
 
 import (
-	"context"
 	"errors"
+	"reflect"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"reflect"
-	"testing"
 )
 
 func Test_Registry_register_multiple_transient_types(t *testing.T) {
@@ -26,7 +26,7 @@ func Test_Registry_register_multiple_transient_types(t *testing.T) {
 	r := resolving.NewResolver(sut)
 
 	// Assert
-	resolvedServices, err := resolving.ResolveRequiredServices[multiFoo](r, context.Background())
+	resolvedServices, err := resolving.ResolveRequiredServices[multiFoo](t.Context(), r)
 
 	assert.NoError(t, err)
 	assert.Len(t, resolvedServices, 2)
@@ -61,8 +61,8 @@ func Test_Registry_register_multiple_types_mixed_lifetime_scopes(t *testing.T) {
 	}
 
 	r := resolving.NewResolver(sut)
-	resolvedServices1, err := resolving.ResolveRequiredServices[multiFoo](r, context.Background())
-	resolvedServices2, _ := resolving.ResolveRequiredServices[multiFoo](r, context.Background())
+	resolvedServices1, err := resolving.ResolveRequiredServices[multiFoo](t.Context(), r)
+	resolvedServices2, _ := resolving.ResolveRequiredServices[multiFoo](t.Context(), r)
 
 	// Assert
 	assert.NoError(t, err)
@@ -114,9 +114,9 @@ func Test_Registry_register_multiple_types_mixed_lifetime_scopes_2(t *testing.T)
 	}
 
 	r := resolving.NewResolver(sut)
-	scope := resolving.NewScopedContext(context.Background())
-	resolvedServices1, err := resolving.ResolveRequiredServices[multiFoo](r, scope)
-	resolvedServices2, _ := resolving.ResolveRequiredServices[multiFoo](r, scope)
+	scopeContext := resolving.NewScopedContext(t.Context())
+	resolvedServices1, err := resolving.ResolveRequiredServices[multiFoo](scopeContext, r)
+	resolvedServices2, _ := resolving.ResolveRequiredServices[multiFoo](scopeContext, r)
 
 	// Assert
 	assert.NoError(t, err)

@@ -1,12 +1,12 @@
 package resolving
 
 import (
-	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Resolver_ResolveWithOptions_inject_unregistered_service_instance(t *testing.T) {
@@ -20,7 +20,7 @@ func Test_Resolver_ResolveWithOptions_inject_unregistered_service_instance(t *te
 	// Assert
 	r := resolving.NewResolver(sut)
 
-	parsleyContext := resolving.NewScopedContext(context.Background())
+	parsleyContext := resolving.NewScopedContext(t.Context())
 	consumers, _ := r.ResolveWithOptions(parsleyContext, types.MakeServiceType[fooConsumer](), resolving.WithInstance[foo](newFoo()))
 	assert.Equal(t, 1, len(consumers))
 

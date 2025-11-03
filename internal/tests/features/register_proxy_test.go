@@ -1,31 +1,32 @@
 package features
 
 import (
-	"context"
 	"fmt"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/features"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
-	"testing"
 )
 
 func Test_Register_generated_proxy_type(t *testing.T) {
 
 	// Arrange
+	ctx := t.Context()
 	collector := &callCollector{methods: make([]string, 0)}
 
 	registry := registration.NewServiceRegistry()
 	registry.Register(newMethodCallInterceptor(collector), types.LifetimeSingleton)
 	registry.Register(NewGreeterProxyImpl, types.LifetimeTransient)
 	registry.Register(newGreeter, types.LifetimeTransient)
-	features.RegisterList[features.MethodInterceptor](registry)
+	features.RegisterList[features.MethodInterceptor](ctx, registry)
 
 	resolver := resolving.NewResolver(registry)
-	ctx := resolving.NewScopedContext(context.Background())
+	resolverContext := resolving.NewScopedContext(ctx)
 
 	// Act
-	proxy, _ := resolving.ResolveRequiredService[GreeterProxy](resolver, ctx)
+	proxy, _ := resolving.ResolveRequiredService[GreeterProxy](resolverContext, resolver)
 	msg, _ := proxy.SayHello("John", false)
 	fmt.Println(msg)
 

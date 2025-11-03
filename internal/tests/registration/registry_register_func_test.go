@@ -1,7 +1,6 @@
 package registration
 
 import (
-	"context"
 	"testing"
 
 	"github.com/matzefriedrich/parsley/pkg/registration"
@@ -21,11 +20,13 @@ func Test_Registry_RegisterTransient_registers_factory_function_to_resolve_dynam
 
 	const userId = "123"
 
+	ctx := t.Context()
+
 	// Act
-	controller, _ := resolving.ResolveRequiredService[userController](r, context.Background())
+	controller, _ := resolving.ResolveRequiredService[userController](ctx, r)
 	model := controller.GetUserInfo(userId)
 
-	userServiceFactory, _ := resolving.ResolveRequiredService[func(string) (userService, error)](r, context.Background())
+	userServiceFactory, _ := resolving.ResolveRequiredService[func(string) (userService, error)](ctx, r)
 	service, factoryErr := userServiceFactory(userId)
 
 	// Assert

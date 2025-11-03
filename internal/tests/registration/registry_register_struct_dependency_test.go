@@ -1,12 +1,12 @@
 package registration
 
 import (
-	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Register_struct_dependency(t *testing.T) {
@@ -18,10 +18,10 @@ func Test_Register_struct_dependency(t *testing.T) {
 	registryErr := registration.RegisterInstance[someConfig](registry, config)
 
 	resolver := resolving.NewResolver(registry)
-	ctx := resolving.NewScopedContext(context.Background())
+	ctx := resolving.NewScopedContext(t.Context())
 
 	// Act
-	actual, err := resolving.ResolveRequiredService[someConfig](resolver, ctx)
+	actual, err := resolving.ResolveRequiredService[someConfig](ctx, resolver)
 
 	// Arrange
 	assert.NoError(t, registryErr)
@@ -39,10 +39,10 @@ func Test_Register_service_with_struct_dependency(t *testing.T) {
 	registryErr := registration.RegisterInstance[someConfig](registry, config)
 
 	resolver := resolving.NewResolver(registry)
-	ctx := resolving.NewScopedContext(context.Background())
+	ctx := resolving.NewScopedContext(t.Context())
 
 	// Act
-	actual, err := resolving.ResolveRequiredService[*appWithStructDependency](resolver, ctx)
+	actual, err := resolving.ResolveRequiredService[*appWithStructDependency](ctx, resolver)
 
 	// Arrange
 	assert.NoError(t, registryErr)
@@ -61,10 +61,10 @@ func Test_Register_immutable_service_with_struct_dependency(t *testing.T) {
 	registryErr := registration.RegisterInstance[someConfig](registry, config)
 
 	resolver := resolving.NewResolver(registry)
-	ctx := resolving.NewScopedContext(context.Background())
+	ctx := resolving.NewScopedContext(t.Context())
 
 	// Act
-	actual, err := resolving.ResolveRequiredService[appWithStructDependency](resolver, ctx)
+	actual, err := resolving.ResolveRequiredService[appWithStructDependency](ctx, resolver)
 
 	// Arrange
 	assert.NoError(t, registryErr)

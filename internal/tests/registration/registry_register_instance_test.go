@@ -1,11 +1,11 @@
 package registration
 
 import (
-	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Registry_RegisterInstance_accepts_pointer(t *testing.T) {
@@ -18,7 +18,8 @@ func Test_Registry_RegisterInstance_accepts_pointer(t *testing.T) {
 	// Act
 	err := registration.RegisterInstance(registry, options)
 	resolver := resolving.NewResolver(registry)
-	actual, _ := resolving.ResolveRequiredService[*someOptions](resolver, resolving.NewScopedContext(context.Background()))
+	resolverContext := resolving.NewScopedContext(t.Context())
+	actual, _ := resolving.ResolveRequiredService[*someOptions](resolverContext, resolver)
 
 	// Assert
 	assert.NoError(t, err)
@@ -36,9 +37,10 @@ func Test_Registry_RegisterInstance_resolve_object_with_pointer_dependency(t *te
 	_ = registration.RegisterTransient(registry, newOptionsConsumer)
 
 	resolver := resolving.NewResolver(registry)
+	resolverContext := resolving.NewScopedContext(t.Context())
 
 	// Act
-	actual, _ := resolving.ResolveRequiredService[*optionsConsumer](resolver, resolving.NewScopedContext(context.Background()))
+	actual, _ := resolving.ResolveRequiredService[*optionsConsumer](resolverContext, resolver)
 
 	// Assert
 	assert.NotNil(t, actual)

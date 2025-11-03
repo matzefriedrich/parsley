@@ -1,13 +1,13 @@
 package resolving
 
 import (
-	"context"
+	"reflect"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"reflect"
-	"testing"
 )
 
 func Test_Resolver_ResolveRequiredService_factory_function_receives_current_resolver(t *testing.T) {
@@ -18,10 +18,10 @@ func Test_Resolver_ResolveRequiredService_factory_function_receives_current_reso
 
 	r := resolving.NewResolver(sut)
 
-	ctx := resolving.NewScopedContext(context.Background())
+	ctx := resolving.NewScopedContext(t.Context())
 
 	// Act
-	serviceFactory, _ := resolving.ResolveRequiredService[FactoryService](r, ctx)
+	serviceFactory, _ := resolving.ResolveRequiredService[FactoryService](ctx, r)
 	f := serviceFactory.(*factory)
 	actual := f.resolver
 

@@ -1,7 +1,6 @@
 package features
 
 import (
-	"context"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -22,10 +21,10 @@ func Test_register_factory_for_type_returns_transient_instance(t *testing.T) {
 
 	resolver := resolving.NewResolver(registry)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	// Act
-	factory, _ := resolving.ResolveRequiredService[features.FactoryFunc[Greeter]](resolver, ctx)
+	factory, _ := resolving.ResolveRequiredService[features.FactoryFunc[Greeter]](ctx, resolver)
 
 	scopedContext := resolving.NewScopedContext(ctx)
 	actual, _ := factory(scopedContext)
@@ -53,10 +52,10 @@ func Test_register_factory_for_type_returns_same_instance_per_scope(t *testing.T
 
 	resolver := resolving.NewResolver(registry)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	// Act
-	factory, _ := resolving.ResolveRequiredService[features.FactoryFunc[Greeter]](resolver, ctx)
+	factory, _ := resolving.ResolveRequiredService[features.FactoryFunc[Greeter]](ctx, resolver)
 
 	scopedContext := resolving.NewScopedContext(ctx)
 	actual, _ := factory(scopedContext)

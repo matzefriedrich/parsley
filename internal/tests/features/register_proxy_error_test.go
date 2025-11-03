@@ -1,15 +1,15 @@
 package features
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/features"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 type errorCollector struct {
@@ -45,19 +45,20 @@ func (m methodErrorInterceptor) OnError(_ any, _ string, err error) {
 func Test_Register_generated_proxy_type_handles_error(t *testing.T) {
 
 	// Arrange
+	ctx := t.Context()
 	collector := &errorCollector{collected: make([]error, 0)}
 
 	registry := registration.NewServiceRegistry()
 	registry.Register(newMethodErrorInterceptor(collector), types.LifetimeSingleton)
 	registry.Register(NewGreeterProxyImpl, types.LifetimeTransient)
 	registry.Register(newJohnGreeter, types.LifetimeTransient)
-	features.RegisterList[features.MethodInterceptor](registry)
+	features.RegisterList[features.MethodInterceptor](ctx, registry)
 
 	resolver := resolving.NewResolver(registry)
-	ctx := resolving.NewScopedContext(context.Background())
+	resolverContext := resolving.NewScopedContext(ctx)
 
 	// Act
-	proxy, _ := resolving.ResolveRequiredService[GreeterProxy](resolver, ctx)
+	proxy, _ := resolving.ResolveRequiredService[GreeterProxy](resolverContext, resolver)
 	msg, _ := proxy.SayHello("Jane", false)
 	fmt.Println(msg)
 

@@ -1,13 +1,13 @@
 package registration
 
 import (
-	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/internal/tests/features"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Registry_CreateScope_inherits_registered_types(t *testing.T) {
@@ -25,8 +25,8 @@ func Test_Registry_CreateScope_inherits_registered_types(t *testing.T) {
 	_ = scopedRegistry.Register(newTestService, types.LifetimeTransient)
 
 	resolver := resolving.NewResolver(scopedRegistry)
-	scopedContext := resolving.NewScopedContext(context.Background())
-	actual, _ := resolving.ResolveRequiredService[*testService](resolver, scopedContext)
+	scopedContext := resolving.NewScopedContext(t.Context())
+	actual, _ := resolving.ResolveRequiredService[*testService](scopedContext, resolver)
 
 	// Assert
 	assert.NotNil(t, scopedRegistry)

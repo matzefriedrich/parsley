@@ -1,7 +1,6 @@
 package registration
 
 import (
-	"context"
 	"reflect"
 	"testing"
 
@@ -41,8 +40,8 @@ func Test_Registry_NewResolver_resolve_type_with_dependencies(t *testing.T) {
 
 	// Assert
 	r := resolving.NewResolver(sut)
-	parsleyContext := resolving.NewScopedContext(context.Background())
-	resolved, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext)
+	parsleyContext := resolving.NewScopedContext(t.Context())
+	resolved, _ := resolving.ResolveRequiredService[FooConsumer](parsleyContext, r)
 	assert.NotNil(t, resolved)
 
 	actual, ok := resolved.(FooConsumer)
@@ -61,11 +60,11 @@ func Test_Registry_NewResolver_resolve_scoped_from_same_context_must_be_return_s
 
 	// Assert
 	r := resolving.NewResolver(sut)
-	parsleyContext := resolving.NewScopedContext(context.Background())
-	consumer1, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext)
+	parsleyContext := resolving.NewScopedContext(t.Context())
+	consumer1, _ := resolving.ResolveRequiredService[FooConsumer](parsleyContext, r)
 	assert.NotNil(t, consumer1)
 
-	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext)
+	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](parsleyContext, r)
 	assert.NotNil(t, consumer2)
 
 	actual, ok := consumer1.(FooConsumer)
@@ -86,13 +85,15 @@ func Test_Registry_NewResolver_resolve_scoped_from_different_context_must_be_ret
 	// Assert
 	r := resolving.NewResolver(sut)
 
-	parsleyContext1 := resolving.NewScopedContext(context.Background())
-	consumer1, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext1)
+	ctx := t.Context()
+
+	parsleyContext1 := resolving.NewScopedContext(ctx)
+	consumer1, _ := resolving.ResolveRequiredService[FooConsumer](parsleyContext1, r)
 
 	assert.NotNil(t, consumer1)
 
-	parsleyContext2 := resolving.NewScopedContext(context.Background())
-	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](r, parsleyContext2)
+	parsleyContext2 := resolving.NewScopedContext(ctx)
+	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](parsleyContext2, r)
 	assert.NotNil(t, consumer2)
 
 	actual, ok := consumer1.(FooConsumer)
@@ -140,7 +141,7 @@ func Test_Registry_RegisterInstance_registers_singleton_service_from_object(t *t
 	// Arrange
 	assert.True(t, fooRegistered)
 
-	resolved, _ := resolving.ResolveRequiredService[Foo](r, context.Background())
+	resolved, _ := resolving.ResolveRequiredService[Foo](t.Context(), r)
 	assert.NotNil(t, resolved)
 
 	actual, ok := resolved.(Foo)
