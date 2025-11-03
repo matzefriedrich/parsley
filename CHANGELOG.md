@@ -5,17 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.3.0] - 2025-11-03
+
+**This version introduces breaking changes due to function signature modifications. All code using the resolver and registration functions will need to be updated.**
+
+### Changed
+
+* Standardized parameter order in resolver and registration functions; `context.Context` is now the first parameter
+
+
 ## [v1.2.0] - 2025-10-20
+
+### Changed
 
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.5.2 to 0.6.0 [#63](https://github.com/matzefriedrich/parsley/pull/63)
 
 
 ## [v1.1.5] - 2025-09-15
 
+### Changed
+
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.5.2 to 0.5.3 [#62](https://github.com/matzefriedrich/parsley/pull/62)
 
 
 ## [v1.1.4] - 2025-09-08
+
+### Changed
 
 * Bumps `golang.org/x/mod` from 0.27.0 to 0.28.0 [#60](https://github.com/matzefriedrich/parsley/pull/60)
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.5.1 to 0.5.2 [#61](https://github.com/matzefriedrich/parsley/pull/61)
@@ -23,26 +38,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.1.3] - 2025-09-05
 
+### Changed
+
 * Bumps `github.com/spf13/cobra` from 1.9.1 to 1.10.1 [#58](https://github.com/matzefriedrich/parsley/pull/58)
 * Bumps `github.com/stretchr/testify` from 1.10.0 to 1.11.1 [#59](https://github.com/matzefriedrich/parsley/pull/59)
 
 
 ## [v1.1.2] - 2025-08-23
 
+### Changed
+
 * Bumps `golang.org/x/mod` from 0.26.0 to 0.27.0 [#56](https://github.com/matzefriedrich/parsley/pull/56)
 
 
 ## [v1.1.1] - 2025-07-25
+
+### Changed
 
 * Bumps `golang.org/x/mod` from 0.25.0 to 0.26.0 [#55](https://github.com/matzefriedrich/parsley/pull/55)
 
 
 ## [v1.1.0] - 2025-06-22
 
+### Added
+
 * Adds the `RegisterFactory[T any](registry types.ServiceRegistry, scope types.LifetimeScope) error` function to the features sub-package. It can be used to register generic factory functions for dynamic dependency resolution. With this new function, demand for repetitive boilerplate code can be reduced.
 
 
 ## [v1.0.14] - 2025-06-13
+
+### Changed
 
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.5.0 to 0.5.1 [#51](https://github.com/matzefriedrich/parsley/pull/51)
 * Bumps `golang.org/x/mod` from 0.24.0 to 0.25.0 #52 [#52](https://github.com/matzefriedrich/parsley/pull/52)
@@ -50,10 +75,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.0.13] - 2025-05-27
 
+### Changed
+
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.4.5 to 0.5.0 [#50](https://github.com/matzefriedrich/parsley/pull/50)
 
 
 ## [v1.0.12] - 2025-05-02
+
+### Changed
 
 * Bumps `golang.org/x/mod` from 0.23.0 to 0.24.0 [#47](https://github.com/matzefriedrich/parsley/pull/47)
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.4.4 to 0.4.5 [#48](https://github.com/matzefriedrich/parsley/pull/48)
@@ -61,10 +90,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.0.11] - 2025-03-06
 
+### Changed
+
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.4.3 to 0.4.4 [#46](https://github.com/matzefriedrich/parsley/pull/46)
 
 
 ## [v1.0.10] - 2025-02-19
+
+### Changed
 
 * Bumps `github.com/spf13/cobra from` 1.8.1 to 1.9.1 [#45](https://github.com/matzefriedrich/parsley/pull/45)
 
