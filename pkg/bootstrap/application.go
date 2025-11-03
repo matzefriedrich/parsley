@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"context"
 	"errors"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -42,7 +43,7 @@ func RunParsleyApplication(cxt context.Context, appFactoryFunc any, configure ..
 
 	resolver := resolving.NewResolver(registry)
 	ctx := resolving.NewScopedContext(cxt)
-	app, _ := resolving.ResolveRequiredService[Application](resolver, ctx)
+	app, _ := resolving.ResolveRequiredService[Application](ctx, resolver)
 
 	parsley = infrastructure{
 		registry: registry,
