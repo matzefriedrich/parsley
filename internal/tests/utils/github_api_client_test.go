@@ -2,12 +2,12 @@ package utils
 
 import (
 	"bytes"
-	"context"
+	"net/http"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/internal/tests/mocks"
 	"github.com/matzefriedrich/parsley/internal/utils"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"testing"
 )
 
 func Test_GitHubApiClient_QueryLatestReleaseTag(t *testing.T) {
@@ -31,7 +31,7 @@ func Test_GitHubApiClient_QueryLatestReleaseTag(t *testing.T) {
 	})
 
 	// Act
-	tag, err := sut.QueryLatestReleaseTag(context.Background())
+	tag, err := sut.QueryLatestReleaseTag(t.Context())
 
 	// Assert
 	assert.Nil(t, err)

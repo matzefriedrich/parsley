@@ -2,13 +2,14 @@ package resolving
 
 import (
 	"context"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/types"
 )
 
 // Activate attempts to create and return an instance of the requested type using the provided resolver.
 // Use this method to instantiate service objects of unregistered types. The specified activator function can have parameters to demand service instances for registered service types.
-func Activate[T any](resolver types.Resolver, ctx context.Context, activatorFunc any, options ...types.ResolverOptionsFunc) (T, error) {
+func Activate[T any](ctx context.Context, resolver types.Resolver, activatorFunc any, options ...types.ResolverOptionsFunc) (T, error) {
 
 	var nilInstance T
 

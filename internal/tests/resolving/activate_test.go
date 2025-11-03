@@ -1,11 +1,11 @@
 package resolving
 
 import (
-	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Activate_resolve_unknown_service_type_using_resolve_options(t *testing.T) {
@@ -15,10 +15,10 @@ func Test_Activate_resolve_unknown_service_type_using_resolve_options(t *testing
 	_ = registration.RegisterTransient(registry, newBar)
 
 	sut := resolving.NewResolver(registry)
-	scopedContext := resolving.NewScopedContext(context.Background())
+	scopedContext := resolving.NewScopedContext(t.Context())
 
 	// Act
-	actual, err := resolving.Activate[bar0](sut, scopedContext, newFooWithBar)
+	actual, err := resolving.Activate[bar0](scopedContext, sut, newFooWithBar)
 
 	// Assert
 	assert.NoError(t, err)

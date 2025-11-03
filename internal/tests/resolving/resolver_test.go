@@ -1,12 +1,12 @@
 package resolving
 
 import (
-	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Resolver_Resolve_returns_err_if_circular_dependency_detected(t *testing.T) {
@@ -18,7 +18,7 @@ func Test_Resolver_Resolve_returns_err_if_circular_dependency_detected(t *testin
 
 	r := resolving.NewResolver(registry)
 
-	scope := resolving.NewScopedContext(context.Background())
+	scope := resolving.NewScopedContext(t.Context())
 
 	// Act
 	_, err := r.Resolve(scope, types.MakeServiceType[fooBar]())

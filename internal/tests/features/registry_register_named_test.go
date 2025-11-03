@@ -1,13 +1,13 @@
 package features
 
 import (
-	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/features"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Registry_register_named_service_resolve_factory(t *testing.T) {
@@ -16,14 +16,14 @@ func Test_Registry_register_named_service_resolve_factory(t *testing.T) {
 	registry := registration.NewServiceRegistry()
 
 	// Act
-	err := features.RegisterNamed[dataService](registry,
+	err := features.RegisterNamed[dataService](t.Context(), registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
 	resolver := resolving.NewResolver(registry)
-	scopedContext := resolving.NewScopedContext(context.Background())
+	scopedContext := resolving.NewScopedContext(t.Context())
 
-	namedServiceFactory, _ := resolving.ResolveRequiredService[func(string) (dataService, error)](resolver, scopedContext)
+	namedServiceFactory, _ := resolving.ResolveRequiredService[func(string) (dataService, error)](scopedContext, resolver)
 	remote, _ := namedServiceFactory("remote")
 	local, _ := namedServiceFactory("local")
 
@@ -37,17 +37,19 @@ func Test_Registry_register_named_service_resolve_factory(t *testing.T) {
 func Test_Registry_register_named_service_consume_factory(t *testing.T) {
 
 	// Arrange
+	ctx := t.Context()
+
 	registry := registration.NewServiceRegistry()
 	_ = registration.RegisterSingleton(registry, newControllerWithNamedServiceFactory)
-	_ = features.RegisterNamed[dataService](registry,
+	_ = features.RegisterNamed[dataService](ctx, registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
 	resolver := resolving.NewResolver(registry)
-	scopedContext := resolving.NewScopedContext(context.Background())
+	scopedContext := resolving.NewScopedContext(ctx)
 
 	// Act
-	actual, err := resolving.ResolveRequiredService[*controllerWithNamedServices](resolver, scopedContext)
+	actual, err := resolving.ResolveRequiredService[*controllerWithNamedServices](scopedContext, resolver)
 
 	// Assert
 	assert.NoError(t, err)
@@ -59,17 +61,19 @@ func Test_Registry_register_named_service_consume_factory(t *testing.T) {
 func Test_Registry_register_named_service_resolve_all_named_services(t *testing.T) {
 
 	// Arrange
+	ctx := t.Context()
+
 	registry := registration.NewServiceRegistry()
-	_ = features.RegisterNamed[dataService](registry,
+	_ = features.RegisterNamed[dataService](ctx, registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
 	resolver := resolving.NewResolver(registry)
-	scopedContext := resolving.NewScopedContext(context.Background())
+	scopedContext := resolving.NewScopedContext(ctx)
 
 	// Act
-	actual, err := resolving.ResolveRequiredServices[dataService](resolver, scopedContext)
-	namedServiceFactory, _ := resolving.ResolveRequiredService[func(string) (dataService, error)](resolver, scopedContext)
+	actual, err := resolving.ResolveRequiredServices[dataService](scopedContext, resolver)
+	namedServiceFactory, _ := resolving.ResolveRequiredService[func(string) (dataService, error)](scopedContext, resolver)
 	remote, _ := namedServiceFactory("remote")
 	local, _ := namedServiceFactory("local")
 
@@ -86,18 +90,20 @@ func Test_Registry_register_named_service_resolve_all_named_services(t *testing.
 func Test_Registry_register_named_service_resolve_all_named_services_as_list(t *testing.T) {
 
 	// Arrange
+	ctx := t.Context()
+
 	registry := registration.NewServiceRegistry()
-	_ = features.RegisterNamed[dataService](registry,
+	_ = features.RegisterNamed[dataService](ctx, registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
-	features.RegisterList[dataService](registry)
+	features.RegisterList[dataService](ctx, registry)
 
 	resolver := resolving.NewResolver(registry)
-	scopedContext := resolving.NewScopedContext(context.Background())
+	scopedContext := resolving.NewScopedContext(ctx)
 
 	// Act
-	actual, err := resolving.ResolveRequiredService[[]dataService](resolver, scopedContext)
+	actual, err := resolving.ResolveRequiredService[[]dataService](scopedContext, resolver)
 
 	// Assert
 	assert.NoError(t, err)

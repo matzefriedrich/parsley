@@ -2,10 +2,11 @@ package bootstrap
 
 import (
 	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/bootstrap"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_RunParsleyApplication(t *testing.T) {
@@ -22,7 +23,7 @@ func Test_RunParsleyApplication(t *testing.T) {
 		}
 	}
 	// Act
-	err := bootstrap.RunParsleyApplication(context.Background(), appFactory, func(registry types.ServiceRegistry) error {
+	err := bootstrap.RunParsleyApplication(t.Context(), appFactory, func(registry types.ServiceRegistry) error {
 		return nil
 	})
 

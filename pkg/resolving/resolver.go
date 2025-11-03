@@ -2,11 +2,12 @@ package resolving
 
 import (
 	"context"
+	"reflect"
+
 	"github.com/matzefriedrich/parsley/internal"
 	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/types"
-	"reflect"
 )
 
 type resolver struct {
@@ -15,7 +16,7 @@ type resolver struct {
 }
 
 // ResolveRequiredServices resolves all registered services of a specified type T using the given resolver and context.
-func ResolveRequiredServices[T any](resolver types.Resolver, ctx context.Context) ([]T, error) {
+func ResolveRequiredServices[T any](ctx context.Context, resolver types.Resolver) ([]T, error) {
 	t := reflect.TypeOf((*T)(nil)).Elem()
 	switch t.Kind() {
 	case reflect.Func:
@@ -40,9 +41,9 @@ func ResolveRequiredServices[T any](resolver types.Resolver, ctx context.Context
 
 // ResolveRequiredService resolves a single service instance of the specified type using the given resolver and context.
 // The method can return the following errors: ErrorCannotResolveService, ErrorAmbiguousServiceInstancesResolved.
-func ResolveRequiredService[T any](resolver types.Resolver, ctx context.Context) (T, error) {
+func ResolveRequiredService[T any](ctx context.Context, resolver types.Resolver) (T, error) {
 	var nilInstance T
-	services, err := ResolveRequiredServices[T](resolver, ctx)
+	services, err := ResolveRequiredServices[T](ctx, resolver)
 	if err != nil {
 		return nilInstance, err
 	}

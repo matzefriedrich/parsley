@@ -1,13 +1,13 @@
 package features
 
 import (
-	"context"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/features"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_Registry_register_lazy_service_type_factory(t *testing.T) {
@@ -19,10 +19,10 @@ func Test_Registry_register_lazy_service_type_factory(t *testing.T) {
 	}, types.LifetimeTransient)
 
 	resolver := resolving.NewResolver(registry)
-	ctx := resolving.NewScopedContext(context.Background())
+	ctx := resolving.NewScopedContext(t.Context())
 
 	// Act
-	actual, err := resolving.ResolveRequiredService[features.Lazy[*foo]](resolver, ctx)
+	actual, err := resolving.ResolveRequiredService[features.Lazy[*foo]](ctx, resolver)
 	fooInstance0 := actual.Value()
 	fooInstance1 := actual.Value()
 
