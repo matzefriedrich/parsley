@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Bumps `golang.org/x/mod` from 0.29.0 to 0.30.0 [#66](https://github.com/matzefriedrich/parsley/pull/66)
 * Upgrades Go version to 1.25.4
+* Bumps `github.com/spf13/cobra` from 1.10.1 to 1.10.2 [#67](https://github.com/matzefriedrich/parsley/pull/67)
 
 
 ## [v1.3.0] - 2025-11-03
