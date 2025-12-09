@@ -1,13 +1,13 @@
 module github.com/matzefriedrich/parsley
 
-go 1.25.4
+go 1.25.5
 
 require (
 	github.com/matzefriedrich/cobra-extensions v0.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/mod v0.30.0
+	golang.org/x/mod v0.31.0
 )
 
 require (
