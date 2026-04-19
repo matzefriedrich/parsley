@@ -42,8 +42,14 @@ func (p *{{$proxyTypeName}}) {{$method.Name}}({{$method | FormattedParameters}})
         "{{ $parameter.Name }}": {{ $parameter.Name }},
 {{ end }}
 	}
+
+	resultNames := []string{
+{{ range $r, $result := .Results -}}
+    "{{$result.Name}}",
+{{ end }}
+    }
 	
-	callContext := features.NewMethodCallContext(methodName, parameters)
+	callContext := features.NewMethodCallContext(methodName, parameters, resultNames...)
 	p.InvokeEnterMethodInterceptors(callContext)
 	defer func() {
 	    p.InvokeExitMethodInterceptors(callContext)
