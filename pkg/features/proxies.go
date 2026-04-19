@@ -49,7 +49,8 @@ func NewInterceptorBase(name string, position int) InterceptorBase {
 type MethodCallContext struct {
 	methodName   string
 	parameters   map[string]interface{}
-	returnValues []interface{}
+	returnNames  []string
+	returnValues []ReturnValueInfo
 }
 
 // ParameterInfo represents information about a method parameter, including its value, type, and name.
@@ -82,8 +83,14 @@ func (p ParameterInfo) ParameterType() reflect.Type {
 
 // ReturnValueInfo represents the value and type information of a method's return value, used in method interception.
 type ReturnValueInfo struct {
+	name      string
 	value     interface{}
 	valueType reflect.Type
+}
+
+// Name returns the return value name.
+func (r ReturnValueInfo) Name() string {
+	return r.name
 }
 
 // Value returns the value stored in the ReturnValueInfo instance.
@@ -100,17 +107,27 @@ func (r ReturnValueInfo) ValueType() reflect.Type {
 func (r ReturnValueInfo) String() string {
 	valueTypeName := r.valueType.String()
 	if r.value != nil {
-		return fmt.Sprintf("{%s: %v}", valueTypeName, r.value)
+		return fmt.Sprintf("{%s (%s): %v}", r.name, valueTypeName, r.value)
 	}
-	return fmt.Sprintf("{%s}: nil", valueTypeName)
+	return fmt.Sprintf("{%s (%s)}: nil", r.name, valueTypeName)
 }
 
-// NewMethodCallContext creates a new MethodCallContext instance with the provided method name and parameters.
-func NewMethodCallContext(methodName string, parameters map[string]interface{}) *MethodCallContext {
+// NewReturnValueInfo creates a new ReturnValueInfo object.
+func NewReturnValueInfo(name string, value any, valueType reflect.Type) ReturnValueInfo {
+	return ReturnValueInfo{
+		name:      name,
+		value:     value,
+		valueType: valueType,
+	}
+}
+
+// NewMethodCallContext creates a new MethodCallContext instance with the provided method name, parameters, and return value names.
+func NewMethodCallContext(methodName string, parameters map[string]interface{}, returnNames ...string) *MethodCallContext {
 	return &MethodCallContext{
 		methodName:   methodName,
 		parameters:   parameters,
-		returnValues: make([]interface{}, 0),
+		returnNames:  returnNames,
+		returnValues: make([]ReturnValueInfo, 0),
 	}
 }
 
@@ -118,18 +135,33 @@ func NewMethodCallContext(methodName string, parameters map[string]interface{}) 
 // Typically used to monitor, log, or modify the behavior of an object's method execution.
 type ProxyBase struct {
 	target       any
+	targetType   reflect.Type
 	interceptors []MethodInterceptor
 }
 
 // InvokeMethodErrorInterceptors intercepts the return values of a method, checks for errors, and triggers OnError for registered interceptors.
-func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext, returnValues ...interface{}) {
-	for _, next := range returnValues {
-		callContext.returnValues = append(callContext.returnValues, next)
+func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext, returnValues ...any) {
+	method, ok := p.targetType.MethodByName(callContext.methodName)
+	if !ok {
+		return
+	}
+
+	for i, next := range returnValues {
+		valueType := method.Type.Out(i)
+		name := fmt.Sprintf("result%d", i)
+		if i < len(callContext.returnNames) {
+			name = callContext.returnNames[i]
+		}
+		info := NewReturnValueInfo(name, next, valueType)
+		callContext.returnValues = append(callContext.returnValues, info)
+		if next == nil {
+			continue
+		}
 		err, ok := next.(error)
 		if ok {
 			wrapped := &proxyError{err: err}
-			for _, i := range p.interceptors {
-				i.OnError(p.target, callContext.methodName, wrapped)
+			for _, interceptor := range p.interceptors {
+				interceptor.OnError(p.target, callContext.methodName, wrapped)
 			}
 		}
 	}
@@ -154,16 +186,8 @@ func (p *ProxyBase) InvokeEnterMethodInterceptors(callContext *MethodCallContext
 
 // InvokeExitMethodInterceptors triggers the Exit method of all registered interceptors after the target method completes.
 func (p *ProxyBase) InvokeExitMethodInterceptors(callContext *MethodCallContext) {
-	returnValues := make([]ReturnValueInfo, 0, len(callContext.returnValues))
-	for _, next := range callContext.returnValues {
-		value, returnType := reflectValueInfo(next)
-		returnValues = append(returnValues, ReturnValueInfo{
-			value:     value,
-			valueType: returnType,
-		})
-	}
 	for _, i := range p.interceptors {
-		i.Exit(p.target, callContext.methodName, returnValues)
+		i.Exit(p.target, callContext.methodName, callContext.returnValues)
 	}
 }
 
@@ -179,6 +203,7 @@ func NewProxyBase[T any](target T, interceptors []MethodInterceptor) ProxyBase {
 	})
 	return ProxyBase{
 		target:       target,
+		targetType:   reflect.TypeOf((*T)(nil)).Elem(),
 		interceptors: sortedInterceptors,
 	}
 }
