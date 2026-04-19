@@ -36,7 +36,12 @@ func (p *greeterProxyImpl) SayHello(name string, polite bool) (string, error) {
 		"polite": polite,
 	}
 
-	callContext := features.NewMethodCallContext(methodName, parameters)
+	resultNames := []string{
+		"result0",
+		"result1",
+	}
+
+	callContext := features.NewMethodCallContext(methodName, parameters, resultNames...)
 	p.InvokeEnterMethodInterceptors(callContext)
 	defer func() {
 		p.InvokeExitMethodInterceptors(callContext)
@@ -52,7 +57,9 @@ func (p *greeterProxyImpl) SayNothing() {
 	const methodName = "SayNothing"
 	parameters := map[string]interface{}{}
 
-	callContext := features.NewMethodCallContext(methodName, parameters)
+	resultNames := []string{}
+
+	callContext := features.NewMethodCallContext(methodName, parameters, resultNames...)
 	p.InvokeEnterMethodInterceptors(callContext)
 	defer func() {
 		p.InvokeExitMethodInterceptors(callContext)
