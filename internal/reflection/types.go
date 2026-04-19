@@ -75,7 +75,7 @@ type Comment struct {
 	Text string
 }
 
-// Model The generator root model type.
+// Model is the generator root model type.
 type Model struct {
 	Comments    []Comment
 	Interfaces  []Interface
