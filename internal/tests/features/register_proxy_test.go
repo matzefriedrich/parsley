@@ -17,10 +17,10 @@ func Test_Register_generated_proxy_type(t *testing.T) {
 	collector := &callCollector{methods: make([]string, 0)}
 
 	registry := registration.NewServiceRegistry()
-	registry.Register(newMethodCallInterceptor(collector), types.LifetimeSingleton)
-	registry.Register(NewGreeterProxyImpl, types.LifetimeTransient)
-	registry.Register(newGreeter, types.LifetimeTransient)
-	features.RegisterList[features.MethodInterceptor](ctx, registry)
+	_ = registry.Register(newMethodCallInterceptor(collector), types.LifetimeSingleton)
+	_ = registry.Register(NewGreeterProxyImpl, types.LifetimeTransient)
+	_ = registry.Register(newGreeter, types.LifetimeTransient)
+	_ = features.RegisterList[features.MethodInterceptor](ctx, registry)
 
 	resolver := resolving.NewResolver(registry)
 	resolverContext := resolving.NewScopedContext(ctx)
