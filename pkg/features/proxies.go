@@ -62,7 +62,22 @@ type ParameterInfo struct {
 
 // String returns a formatted string representation of the ParameterInfo, useful for logging and debugging purposes.
 func (p ParameterInfo) String() string {
-	return fmt.Sprintf("{%s (%s): %s}", p.name, p.parameterType, p.value)
+	return fmt.Sprintf("{%s (%s): %v}", p.name, p.parameterType, p.value)
+}
+
+// Name returns the parameter name.
+func (p ParameterInfo) Name() string {
+	return p.name
+}
+
+// Value returns the value of the parameter.
+func (p ParameterInfo) Value() interface{} {
+	return p.value
+}
+
+// ParameterType retrieves the reflected type of the parameter.
+func (p ParameterInfo) ParameterType() reflect.Type {
+	return p.parameterType
 }
 
 // ReturnValueInfo represents the value and type information of a method's return value, used in method interception.
@@ -71,12 +86,23 @@ type ReturnValueInfo struct {
 	valueType reflect.Type
 }
 
+// Value returns the value stored in the ReturnValueInfo instance.
+func (r ReturnValueInfo) Value() interface{} {
+	return r.value
+}
+
+// ValueType retrieves the return value type.
+func (r ReturnValueInfo) ValueType() reflect.Type {
+	return r.valueType
+}
+
 // String returns a string representation of ReturnValueInfo, formatting the value and its type for debugging purposes.
 func (r ReturnValueInfo) String() string {
+	valueTypeName := r.valueType.String()
 	if r.value != nil {
-		return fmt.Sprintf("{%s: %v}", r.valueType.String(), r.value)
+		return fmt.Sprintf("{%s: %v}", valueTypeName, r.value)
 	}
-	return fmt.Sprintf("{%v}", r.value)
+	return fmt.Sprintf("{%s}: nil", valueTypeName)
 }
 
 // NewMethodCallContext creates a new MethodCallContext instance with the provided method name and parameters.
@@ -89,7 +115,7 @@ func NewMethodCallContext(methodName string, parameters map[string]interface{}) 
 }
 
 // ProxyBase facilitates method interception by allowing the inclusion of multiple interceptors to target method calls.
-// Typically used to monitor, log, or modify behavior of an object's method execution.
+// Typically used to monitor, log, or modify the behavior of an object's method execution.
 type ProxyBase struct {
 	target       any
 	interceptors []MethodInterceptor
