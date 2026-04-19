@@ -28,6 +28,25 @@ func NewGreeterProxyImpl(target Greeter, interceptors []features.MethodIntercept
 	}
 }
 
+// nilParamReproProxyImpl A generated proxy service type for NilParamRepro objects.
+type nilParamReproProxyImpl struct {
+	features.ProxyBase
+	target NilParamRepro
+}
+
+// NilParamReproProxy An interface type for NilParamRepro objects. Parsley needs this to distinguish the proxy from the actual implementation.
+type NilParamReproProxy interface {
+	NilParamRepro
+}
+
+// NewNilParamReproProxyImpl Creates a new NilParamReproProxy object. Register this constructor method with the registry.
+func NewNilParamReproProxyImpl(target NilParamRepro, interceptors []features.MethodInterceptor) NilParamReproProxy {
+	return &nilParamReproProxyImpl{
+		ProxyBase: features.NewProxyBase(target, interceptors),
+		target:    target,
+	}
+}
+
 func (p *greeterProxyImpl) SayHello(name string, polite bool) (string, error) {
 
 	const methodName = "SayHello"
@@ -67,4 +86,24 @@ func (p *greeterProxyImpl) SayNothing() {
 	p.target.SayNothing()
 }
 
+func (p *nilParamReproProxyImpl) SaySomething(err error) {
+
+	const methodName = "SaySomething"
+	parameters := map[string]interface{}{
+		"err": err,
+	}
+
+	parameterNames := []string{"err"}
+	resultNames := []string{}
+
+	callContext := features.NewMethodCallContext(methodName, parameterNames, parameters, resultNames...)
+	p.InvokeEnterMethodInterceptors(callContext)
+	defer func() {
+		p.InvokeExitMethodInterceptors(callContext)
+	}()
+
+	p.target.SaySomething(err)
+}
+
 var _ Greeter = &greeterProxyImpl{}
+var _ NilParamRepro = &nilParamReproProxyImpl{}

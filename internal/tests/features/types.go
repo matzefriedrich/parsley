@@ -8,3 +8,7 @@ type Greeter interface {
 	SayHello(name string, polite bool) (string, error)
 	SayNothing()
 }
+
+type NilParamRepro interface {
+	SaySomething(err error)
+}
