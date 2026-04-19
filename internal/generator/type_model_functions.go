@@ -13,6 +13,7 @@ func RegisterTypeModelFunctions(generator GenericCodeGenerator) error {
 		NamedFunc("FormatType", FormatType),
 		NamedFunc("FormattedCallParameters", FormattedCallParameters),
 		NamedFunc("FormattedParameters", FormattedParameters),
+		NamedFunc("FormattedResultNames", FormattedResultNames),
 		NamedFunc("FormattedResultParameters", FormattedResultParameters),
 		NamedFunc("FormattedResultTypes", FormattedResultTypes),
 		NamedFunc("HasResults", HasResults),
@@ -56,6 +57,18 @@ func FormattedResultParameters(m reflection.Method) string {
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
 		formattedResults[i] = fmt.Sprintf("%s", result.Name)
+	}
+	return strings.Join(formattedResults, ", ")
+}
+
+// FormattedResultNames formats the result parameter names as a comma-separated string of quoted names.
+func FormattedResultNames(m reflection.Method) string {
+	if m.Results == nil {
+		return ""
+	}
+	formattedResults := make([]string, len(m.Results))
+	for i, result := range m.Results {
+		formattedResults[i] = fmt.Sprintf("%q", result.Name)
 	}
 	return strings.Join(formattedResults, ", ")
 }
