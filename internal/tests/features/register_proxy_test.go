@@ -66,7 +66,7 @@ func (m methodCallInterceptor) Enter(_ any, methodName string, parameters []feat
 func (m methodCallInterceptor) Exit(_ any, methodName string, returnValues []features.ReturnValueInfo) {
 	fmt.Println("Exit method: ", methodName)
 	for _, value := range returnValues {
-		fmt.Printf("\tResult: %s\n", value)
+		fmt.Printf("\tResult: %v\n", value)
 	}
 }
 
