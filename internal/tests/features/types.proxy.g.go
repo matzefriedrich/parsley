@@ -32,8 +32,7 @@ func (p *greeterProxyImpl) SayHello(name string, polite bool) (string, error) {
 
 	const methodName = "SayHello"
 	parameters := map[string]interface{}{
-		"name": name,
-
+		"name":   name,
 		"polite": polite,
 	}
 
