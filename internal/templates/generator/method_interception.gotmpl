@@ -40,16 +40,13 @@ func (p *{{$proxyTypeName}}) {{$method.Name}}({{$method | FormattedParameters}})
     parameters := map[string]interface{}{
 {{ range $p, $parameter := .Parameters -}}
         "{{ $parameter.Name }}": {{ $parameter.Name }},
-{{ end }}
+{{ end -}}
 	}
 
-	resultNames := []string{
-{{ range $r, $result := .Results -}}
-    "{{$result.Name}}",
-{{ end }}
-    }
-	
-	callContext := features.NewMethodCallContext(methodName, parameters, resultNames...)
+	parameterNames := []string{ {{ $method | FormattedParameterNames }} }
+	resultNames := []string{ {{ $method | FormattedResultNames }} }
+
+	callContext := features.NewMethodCallContext(methodName, parameterNames, parameters, resultNames...)
 	p.InvokeEnterMethodInterceptors(callContext)
 	defer func() {
 	    p.InvokeExitMethodInterceptors(callContext)
