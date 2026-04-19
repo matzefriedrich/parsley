@@ -2,8 +2,9 @@ package reflection
 
 import (
 	"fmt"
-	"github.com/matzefriedrich/parsley/internal"
 	"go/ast"
+
+	"github.com/matzefriedrich/parsley/internal"
 )
 
 type interfaceMethodsCollector struct {
@@ -119,7 +120,7 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 	}
 
 	last := typeStack.Pop()
-	result := &last
+	result := new(last)
 	for typeStack.IsEmpty() == false {
 		parameterType := typeStack.Pop()
 		parameterType.Next = result
