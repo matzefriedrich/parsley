@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.4.0] - 2026-04-20
+
+This version improves the proxy generation and method interception functionality.
+
+### Added
+
+* Extended `ParameterInfo` and `ReturnValueInfo` types; added `Name()`, `Value()`, `ParameterType()`, and `ValueType()` methods to allow interceptors to access parameter metadata.
+
+### Fixed
+
+* Fixed a bug where type information for `nil` parameters or return values was lost during method interception by using interface-based reflection in `ProxyBase`.
+
+
 ## [v1.3.3] - 2026-04-16
 
 * Bumps `golang.org/x/mod` from 0.33.0 to 0.35.0
