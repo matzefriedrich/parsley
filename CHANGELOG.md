@@ -5,13 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.4.0] - 2026-04-20
+## [v1.4.0] - 2026-04-23
 
-This version improves the proxy generation and method interception functionality.
+This version improves the proxy generation and method interception functionality. The proxy generator does now provide a more robust foundation for implementing cross-cutting concerns. The generator effectively removes the tedious work of manually creating proxy types.
 
 ### Added
 
 * Extended `ParameterInfo` and `ReturnValueInfo` types; added `Name()`, `Value()`, `ParameterType()`, and `ValueType()` methods to allow interceptors to access parameter metadata.
+* Expands proxy method interception so interceptors can see not just values, but also parameter and return-value names and their reflected types.
+* The call context and interception flow has been updated to preserve named results (generated proxies pass both parameter names and result names into that context).
+* The reflection/type-model helpers were extended to support the new formatting and introspection needs.
 
 ### Fixed
 
