@@ -48,4 +48,4 @@ go install github.com/matzefriedrich/parsley/cmd/parsley-cli
 
 --- 
 
-Copyright 2024 - 2025 by Matthias Friedrich
+Copyright 2024 - 2026 by Matthias Friedrich
