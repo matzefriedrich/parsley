@@ -12,12 +12,20 @@ func RegisterTypeModelFunctions(generator GenericCodeGenerator) error {
 	return generator.AddTemplateFunc(
 		NamedFunc("FormatType", FormatType),
 		NamedFunc("FormattedCallParameters", FormattedCallParameters),
+		NamedFunc("FormattedParameterNames", FormattedParameterNames),
 		NamedFunc("FormattedParameters", FormattedParameters),
+		NamedFunc("FormattedResultNames", FormattedResultNames),
 		NamedFunc("FormattedResultParameters", FormattedResultParameters),
 		NamedFunc("FormattedResultTypes", FormattedResultTypes),
+		NamedFunc("HasParameters", HasParameters),
 		NamedFunc("HasResults", HasResults),
 		NamedFunc("Signature", Signature),
 	)
+}
+
+// HasParameters checks if the given reflection.Method has any parameters.
+func HasParameters(m reflection.Method) bool {
+	return len(m.Parameters) > 0
 }
 
 // HasResults checks if the given reflection.Method has any result parameters.
@@ -48,6 +56,18 @@ func FormattedCallParameters(m reflection.Method) string {
 	return strings.Join(formattedParameters, ", ")
 }
 
+// FormattedParameterNames formats the parameter names as a comma-separated string of quoted names.
+func FormattedParameterNames(m reflection.Method) string {
+	if m.Parameters == nil {
+		return ""
+	}
+	formattedParameters := make([]string, len(m.Parameters))
+	for i, parameter := range m.Parameters {
+		formattedParameters[i] = fmt.Sprintf("%q", parameter.Name)
+	}
+	return strings.Join(formattedParameters, ", ")
+}
+
 // FormattedResultParameters formats the result parameters of the given reflection.Method into a comma-separated string.
 func FormattedResultParameters(m reflection.Method) string {
 	if m.Results == nil {
@@ -56,6 +76,18 @@ func FormattedResultParameters(m reflection.Method) string {
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
 		formattedResults[i] = fmt.Sprintf("%s", result.Name)
+	}
+	return strings.Join(formattedResults, ", ")
+}
+
+// FormattedResultNames formats the result parameter names as a comma-separated string of quoted names.
+func FormattedResultNames(m reflection.Method) string {
+	if m.Results == nil {
+		return ""
+	}
+	formattedResults := make([]string, len(m.Results))
+	for i, result := range m.Results {
+		formattedResults[i] = fmt.Sprintf("%q", result.Name)
 	}
 	return strings.Join(formattedResults, ", ")
 }

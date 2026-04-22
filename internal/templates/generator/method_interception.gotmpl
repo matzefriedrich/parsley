@@ -37,12 +37,16 @@ func New{{ $proxyTypeName | asPublic }}(target {{$interface.Name}}, interceptors
 func (p *{{$proxyTypeName}}) {{$method.Name}}({{$method | FormattedParameters}}) {{$method | FormattedResultTypes}} {
 
     const methodName = "{{$method.Name}}"
-    parameters := map[string]interface{}{ {{range
-        $p, $parameter := .Parameters}}
-		"{{$parameter.Name}}": {{$parameter.Name}},
-{{end}}	}
+    parameters := map[string]interface{}{
+{{ range $p, $parameter := .Parameters -}}
+        "{{ $parameter.Name }}": {{ $parameter.Name }},
+{{ end -}}
+	}
 
-	callContext := features.NewMethodCallContext(methodName, parameters)
+	parameterNames := []string{ {{ $method | FormattedParameterNames }} }
+	resultNames := []string{ {{ $method | FormattedResultNames }} }
+
+	callContext := features.NewMethodCallContext(methodName, parameterNames, parameters, resultNames...)
 	p.InvokeEnterMethodInterceptors(callContext)
 	defer func() {
 	    p.InvokeExitMethodInterceptors(callContext)

@@ -47,9 +47,11 @@ func NewInterceptorBase(name string, position int) InterceptorBase {
 
 // MethodCallContext captures the context of a method call, including method name, parameters, and return values.
 type MethodCallContext struct {
-	methodName   string
-	parameters   map[string]interface{}
-	returnValues []interface{}
+	methodName     string
+	parameterNames []string
+	parameters     map[string]interface{}
+	returnNames    []string
+	returnValues   []ReturnValueInfo
 }
 
 // ParameterInfo represents information about a method parameter, including its value, type, and name.
@@ -62,48 +64,106 @@ type ParameterInfo struct {
 
 // String returns a formatted string representation of the ParameterInfo, useful for logging and debugging purposes.
 func (p ParameterInfo) String() string {
-	return fmt.Sprintf("{%s (%s): %s}", p.name, p.parameterType, p.value)
+	return fmt.Sprintf("{%s (%s): %v}", p.name, p.parameterType, p.value)
+}
+
+// Name returns the parameter name.
+func (p ParameterInfo) Name() string {
+	return p.name
+}
+
+// Value returns the value of the parameter.
+func (p ParameterInfo) Value() interface{} {
+	return p.value
+}
+
+// ParameterType retrieves the reflected type of the parameter.
+func (p ParameterInfo) ParameterType() reflect.Type {
+	return p.parameterType
 }
 
 // ReturnValueInfo represents the value and type information of a method's return value, used in method interception.
 type ReturnValueInfo struct {
+	name      string
 	value     interface{}
 	valueType reflect.Type
 }
 
-// String returns a string representation of ReturnValueInfo, formatting the value and its type for debugging purposes.
-func (r ReturnValueInfo) String() string {
-	if r.value != nil {
-		return fmt.Sprintf("{%s: %v}", r.valueType.String(), r.value)
-	}
-	return fmt.Sprintf("{%v}", r.value)
+// Name returns the return value name.
+func (r ReturnValueInfo) Name() string {
+	return r.name
 }
 
-// NewMethodCallContext creates a new MethodCallContext instance with the provided method name and parameters.
-func NewMethodCallContext(methodName string, parameters map[string]interface{}) *MethodCallContext {
+// Value returns the value stored in the ReturnValueInfo instance.
+func (r ReturnValueInfo) Value() interface{} {
+	return r.value
+}
+
+// ValueType retrieves the return value type.
+func (r ReturnValueInfo) ValueType() reflect.Type {
+	return r.valueType
+}
+
+// String returns a string representation of ReturnValueInfo, formatting the value and its type for debugging purposes.
+func (r ReturnValueInfo) String() string {
+	valueTypeName := r.valueType.String()
+	if r.value != nil {
+		return fmt.Sprintf("{%s (%s): %v}", r.name, valueTypeName, r.value)
+	}
+	return fmt.Sprintf("{%s (%s)}: nil", r.name, valueTypeName)
+}
+
+// NewReturnValueInfo creates a new ReturnValueInfo object.
+func NewReturnValueInfo(name string, value any, valueType reflect.Type) ReturnValueInfo {
+	return ReturnValueInfo{
+		name:      name,
+		value:     value,
+		valueType: valueType,
+	}
+}
+
+// NewMethodCallContext creates a new MethodCallContext instance with the provided method name, parameters, and return value names.
+func NewMethodCallContext(methodName string, parameterNames []string, parameters map[string]interface{}, returnNames ...string) *MethodCallContext {
 	return &MethodCallContext{
-		methodName:   methodName,
-		parameters:   parameters,
-		returnValues: make([]interface{}, 0),
+		methodName:     methodName,
+		parameterNames: parameterNames,
+		parameters:     parameters,
+		returnNames:    returnNames,
+		returnValues:   make([]ReturnValueInfo, 0),
 	}
 }
 
 // ProxyBase facilitates method interception by allowing the inclusion of multiple interceptors to target method calls.
-// Typically used to monitor, log, or modify behavior of an object's method execution.
+// Typically used to monitor, log, or modify the behavior of an object's method execution.
 type ProxyBase struct {
 	target       any
+	targetType   reflect.Type
 	interceptors []MethodInterceptor
 }
 
 // InvokeMethodErrorInterceptors intercepts the return values of a method, checks for errors, and triggers OnError for registered interceptors.
-func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext, returnValues ...interface{}) {
-	for _, next := range returnValues {
-		callContext.returnValues = append(callContext.returnValues, next)
+func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext, returnValues ...any) {
+	method, ok := p.targetType.MethodByName(callContext.methodName)
+	if !ok {
+		return
+	}
+
+	for i, next := range returnValues {
+		valueType := method.Type.Out(i)
+		name := fmt.Sprintf("result%d", i)
+		if i < len(callContext.returnNames) {
+			name = callContext.returnNames[i]
+		}
+		info := NewReturnValueInfo(name, next, valueType)
+		callContext.returnValues = append(callContext.returnValues, info)
+		if next == nil {
+			continue
+		}
 		err, ok := next.(error)
 		if ok {
 			wrapped := &proxyError{err: err}
-			for _, i := range p.interceptors {
-				i.OnError(p.target, callContext.methodName, wrapped)
+			for _, interceptor := range p.interceptors {
+				interceptor.OnError(p.target, callContext.methodName, wrapped)
 			}
 		}
 	}
@@ -111,15 +171,21 @@ func (p *ProxyBase) InvokeMethodErrorInterceptors(callContext *MethodCallContext
 
 // InvokeEnterMethodInterceptors triggers the Enter method on all registered interceptors before the target method executes.
 func (p *ProxyBase) InvokeEnterMethodInterceptors(callContext *MethodCallContext) {
-	parameters := make([]ParameterInfo, 0, len(callContext.parameters))
-	for name, next := range callContext.parameters {
-		value, parameterType := reflectValueInfo(next)
-		p := ParameterInfo{
+	method, ok := p.targetType.MethodByName(callContext.methodName)
+	if !ok {
+		return
+	}
+
+	parameters := make([]ParameterInfo, 0, len(callContext.parameterNames))
+	for i, name := range callContext.parameterNames {
+		value := callContext.parameters[name]
+		parameterType := method.Type.In(i)
+		pInfo := ParameterInfo{
 			value:         value,
 			parameterType: parameterType,
 			name:          name,
 		}
-		parameters = append(parameters, p)
+		parameters = append(parameters, pInfo)
 	}
 	for _, i := range p.interceptors {
 		i.Enter(p.target, callContext.methodName, parameters)
@@ -128,16 +194,8 @@ func (p *ProxyBase) InvokeEnterMethodInterceptors(callContext *MethodCallContext
 
 // InvokeExitMethodInterceptors triggers the Exit method of all registered interceptors after the target method completes.
 func (p *ProxyBase) InvokeExitMethodInterceptors(callContext *MethodCallContext) {
-	returnValues := make([]ReturnValueInfo, 0, len(callContext.returnValues))
-	for _, next := range callContext.returnValues {
-		value, returnType := reflectValueInfo(next)
-		returnValues = append(returnValues, ReturnValueInfo{
-			value:     value,
-			valueType: returnType,
-		})
-	}
 	for _, i := range p.interceptors {
-		i.Exit(p.target, callContext.methodName, returnValues)
+		i.Exit(p.target, callContext.methodName, callContext.returnValues)
 	}
 }
 
@@ -153,20 +211,9 @@ func NewProxyBase[T any](target T, interceptors []MethodInterceptor) ProxyBase {
 	})
 	return ProxyBase{
 		target:       target,
+		targetType:   reflect.TypeOf((*T)(nil)).Elem(),
 		interceptors: sortedInterceptors,
 	}
-}
-
-func reflectValueInfo(next interface{}) (reflect.Value, reflect.Type) {
-	value := reflect.ValueOf(next)
-	var parameterType reflect.Type
-	switch value.Kind() {
-	case reflect.Invalid:
-		parameterType = nil
-	default:
-		parameterType = value.Type()
-	}
-	return value, parameterType
 }
 
 type proxyError struct {

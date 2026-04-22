@@ -2,8 +2,9 @@ package reflection
 
 import (
 	"fmt"
-	"github.com/matzefriedrich/parsley/internal"
 	"go/ast"
+
+	"github.com/matzefriedrich/parsley/internal"
 )
 
 type interfaceMethodsCollector struct {
@@ -47,12 +48,24 @@ func CollectResultFieldsFor(funcType *ast.FuncType) []Parameter {
 	if funcType.Results == nil {
 		return parameters
 	}
-	for index, field := range funcType.Results.List {
+	resultIndex := 0
+	for _, field := range funcType.Results.List {
 		typeInfo := getFieldTypeInfo(field)
-		parameters = append(parameters, Parameter{
-			Name: fmt.Sprintf("result%d", index),
-			Type: typeInfo,
-		})
+		if len(field.Names) == 0 {
+			parameters = append(parameters, Parameter{
+				Name: fmt.Sprintf("result%d", resultIndex),
+				Type: typeInfo,
+			})
+			resultIndex++
+		} else {
+			for _, name := range field.Names {
+				parameters = append(parameters, Parameter{
+					Name: name.Name,
+					Type: typeInfo,
+				})
+				resultIndex++
+			}
+		}
 	}
 	return parameters
 }
@@ -119,7 +132,7 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 	}
 
 	last := typeStack.Pop()
-	result := &last
+	result := new(last)
 	for typeStack.IsEmpty() == false {
 		parameterType := typeStack.Pop()
 		parameterType.Next = result
