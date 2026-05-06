@@ -28,7 +28,7 @@ import (
 type {{ $mockStructName }} struct {
 	features.MockBase
     {{- range .Methods }}
-    {{ .Name | asPublic }}Func {{ .Name }}Func
+    {{ .Name | asPublic }}Func {{ $interfaceName }}_{{ .Name }}Func
     {{- end }}
 }
 
@@ -36,7 +36,7 @@ type {{ $mockStructName }} struct {
 
 {{- /* Define func types for each method */ -}}
 {{- range .Methods }}
-type {{ .Name }}Func func({{ FormattedParameters . }}) {{ FormattedResultTypes . }}
+type {{ $interfaceName }}_{{ .Name }}Func func({{ FormattedParameters . }}) {{ FormattedResultTypes . }}
 {{- end }}
 
 {{- "\n" -}}
@@ -44,7 +44,7 @@ type {{ .Name }}Func func({{ FormattedParameters . }}) {{ FormattedResultTypes .
 {{- if .Methods }}
 const (
 {{- range .Methods }}
-    Function{{ .Name }} = "{{ .Name }}"
+    Function_{{ $interfaceName }}_{{ .Name }} = "{{ .Name }}"
 {{- end }}
 )
 {{ "" }}
@@ -56,7 +56,7 @@ const (
 {{- /* Define methods for each function, implementing the interface */ -}}
 {{ range .Methods }}
 func (m *{{ $mockStructName }}) {{ .Name }}({{ FormattedParameters . }}) {{ FormattedResultTypes . }} {
-    m.TraceMethodCall(Function{{ .Name }}, {{ FormattedCallParameters . }})
+    m.TraceMethodCall(Function_{{ $interfaceName }}_{{ .Name }}, {{ FormattedCallParameters . }})
     {{- if HasResults . }}
     return m.{{ .Name | asPublic }}Func({{ FormattedCallParameters . }})
     {{- else }}
@@ -91,7 +91,7 @@ func New{{ $interfaceName }}Mock() *{{ $mockStructName }} {
         {{- end }}
     }
     {{- range .Methods }}
-    mock.AddFunction(Function{{.Name}}, "{{ Signature . }}")
+    mock.AddFunction(Function_{{ $interfaceName }}_{{.Name}}, "{{ Signature . }}")
     {{- end }}
 	return mock
 }
