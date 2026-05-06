@@ -111,6 +111,21 @@ func Test_Registry_register_named_service_resolve_all_named_services_as_list(t *
 	assert.Equal(t, 2, len(actual))
 }
 
+func Test_Registry_register_named_service_invalid_registration(t *testing.T) {
+
+	// Arrange
+	registry := registration.NewServiceRegistry()
+
+	// Act
+	err := features.RegisterNamed[dataService](t.Context(), registry,
+		func() (string, any, types.LifetimeScope) {
+			return "", nil, types.LifetimeTransient
+		})
+
+	// Assert
+	assert.Error(t, err)
+}
+
 type controllerWithNamedServices struct {
 	remoteDataService dataService
 	localDataService  dataService
