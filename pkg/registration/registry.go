@@ -58,6 +58,14 @@ func (s *serviceRegistry) RegisterModule(modules ...types.ModuleFunc) error {
 	return nil
 }
 
+// RegisterModuleIf registers one or more modules with the service registry if the provided condition is true.
+func (s *serviceRegistry) RegisterModuleIf(condition bool, modules ...types.ModuleFunc) error {
+	if !condition {
+		return nil
+	}
+	return s.RegisterModule(modules...)
+}
+
 // IsRegistered checks if a service type is registered in the service registry.
 func (s *serviceRegistry) IsRegistered(serviceType types.ServiceType) bool {
 	_, found := s.registrations[serviceType.LookupKey()]

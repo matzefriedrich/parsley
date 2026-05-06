@@ -72,6 +72,9 @@ type ServiceRegistry interface {
 
 	// RegisterModule registers one or more modules, encapsulated as ModuleFunc, with the service registry. A module is a logical unit of service registrations.
 	RegisterModule(modules ...ModuleFunc) error
+
+	// RegisterModuleIf registers one or more modules with the service registry if the provided condition is true.
+	RegisterModuleIf(condition bool, modules ...ModuleFunc) error
 }
 
 // ModuleFunc defines a function used to register services with the given service registry.
