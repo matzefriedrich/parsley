@@ -2,10 +2,11 @@ package features
 
 import (
 	"context"
+	"sync"
+
 	"github.com/matzefriedrich/parsley/internal"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
-	"sync"
 )
 
 type lazy[T any] struct {
@@ -42,7 +43,7 @@ type Lazy[T any] interface {
 
 var _ Lazy[any] = &lazy[any]{}
 
-// RegisterLazy registers a lazily-activated service in the service registry using the provided activator function.
+// RegisterLazy registers a lazily activated service in the service registry using the provided activator function.
 func RegisterLazy[T any](registry types.ServiceRegistry, activatorFunc any, scope types.LifetimeScope) error {
 	return registry.Register(func(resolver types.Resolver) Lazy[T] {
 		return &lazy[T]{
