@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added the `RegisterModuleIf(condition bool, modules ...ModuleFunc) error` method to the `ServiceRegistry` interface, allowing for conditional module registration based on runtime requirements or environment settings. [#79](https://github.com/matzefriedrich/parsley/pull/79)
+* Added the `RegisterModuleIf(condition bool, modules ...ModuleFunc) error` method to the `ServiceRegistry` interface, allowing for conditional module registration based on runtime requirements or environment settings. [#77](https://github.com/matzefriedrich/parsley/issues/77)
+* Enhanced `RegisterLazy[T]` to support activator functions with dependencies, enabling full dependency injection for lazily-activated services. [#80](https://github.com/matzefriedrich/parsley/pull/80)
+
+### Changed
+
+* Updated the `Lazy[T]` interface; the `Value` method now requires a `context.Context` parameter to ensure correct dependency resolution for activator functions. [#80](https://github.com/matzefriedrich/parsley/pull/80)
 
 
 ## [v1.4.1] - 2026-05-06
