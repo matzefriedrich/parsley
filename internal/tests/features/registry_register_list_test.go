@@ -16,9 +16,9 @@ func Test_Resolver_register_list_resolver(t *testing.T) {
 	ctx := t.Context()
 
 	registry := registration.NewServiceRegistry()
-	registry.Register(newLocalDataService, types.LifetimeTransient)
-	registry.Register(newRemoteDataService, types.LifetimeTransient)
-	features.RegisterList[dataService](ctx, registry)
+	_ = registry.Register(newLocalDataService, types.LifetimeTransient)
+	_ = registry.Register(newRemoteDataService, types.LifetimeTransient)
+	_ = features.RegisterList[dataService](ctx, registry)
 
 	resolver := resolving.NewResolver(registry)
 	resolverContext := resolving.NewScopedContext(ctx)
@@ -37,10 +37,10 @@ func Test_Resolver_resolve_multiple_instances_of_type(t *testing.T) {
 	ctx := t.Context()
 
 	registry := registration.NewServiceRegistry()
-	registry.Register(newLocalDataService, types.LifetimeTransient)
-	registry.Register(newRemoteDataService, types.LifetimeTransient)
-	features.RegisterList[dataService](ctx, registry)
-	registry.Register(newControllerWithServiceList, types.LifetimeTransient)
+	_ = registry.Register(newLocalDataService, types.LifetimeTransient)
+	_ = registry.Register(newRemoteDataService, types.LifetimeTransient)
+	_ = features.RegisterList[dataService](ctx, registry)
+	_ = registry.Register(newControllerWithServiceList, types.LifetimeTransient)
 
 	resolver := resolving.NewResolver(registry)
 	resolverContext := resolving.NewScopedContext(ctx)

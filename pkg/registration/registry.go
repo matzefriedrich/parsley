@@ -74,11 +74,11 @@ func (s *serviceRegistry) IsRegistered(serviceType types.ServiceType) bool {
 
 // TryGetServiceRegistrations Tries to find all available service registrations for the given service type.
 func (s *serviceRegistry) TryGetServiceRegistrations(serviceType types.ServiceType) (types.ServiceRegistrationList, bool) {
-	if s.IsRegistered(serviceType) == false {
+	if !s.IsRegistered(serviceType) {
 		return nil, false
 	}
 	list, found := s.registrations[serviceType.LookupKey()]
-	if found && list.IsEmpty() == false {
+	if found && !list.IsEmpty() {
 		return list, true
 	}
 	return nil, false
@@ -87,7 +87,7 @@ func (s *serviceRegistry) TryGetServiceRegistrations(serviceType types.ServiceTy
 // TryGetSingleServiceRegistration Tries to find a single service registration for the given service type.
 func (s *serviceRegistry) TryGetSingleServiceRegistration(serviceType types.ServiceType) (types.ServiceRegistration, bool) {
 	list, found := s.TryGetServiceRegistrations(serviceType)
-	if found && list.IsEmpty() == false {
+	if found && !list.IsEmpty() {
 		registrations := list.Registrations()
 		const exactlyOne = 1
 		if len(registrations) == exactlyOne {

@@ -14,7 +14,7 @@ func MakeStack[TValue any](initialValues ...TValue) Stack[TValue] {
 
 // Any determines if the stack contains at least one element, indicating it is not empty.
 func (s *Stack[TValue]) Any() bool {
-	return s.IsEmpty() == false
+	return !s.IsEmpty()
 }
 
 // IsEmpty checks whether the stack is empty, which can help determine if there are any elements left to process.

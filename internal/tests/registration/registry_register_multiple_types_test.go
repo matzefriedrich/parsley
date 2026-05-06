@@ -33,11 +33,11 @@ func Test_Registry_register_multiple_transient_types(t *testing.T) {
 
 	var foo3Instance, foo4Instance multiFoo
 	for _, service := range resolvedServices {
-		switch service.(type) {
+		switch service := service.(type) {
 		case *foo3:
-			foo3Instance = service.(*foo3)
+			foo3Instance = service
 		case *foo4:
-			foo4Instance = service.(*foo4)
+			foo4Instance = service
 		}
 	}
 
@@ -70,11 +70,11 @@ func Test_Registry_register_multiple_types_mixed_lifetime_scopes(t *testing.T) {
 
 	var foo3Instance1, foo4Instance1 multiFoo
 	for _, service := range resolvedServices1 {
-		switch service.(type) {
+		switch service := service.(type) {
 		case *foo3:
-			foo3Instance1 = service.(*foo3)
+			foo3Instance1 = service
 		case *foo4:
-			foo4Instance1 = service.(*foo4)
+			foo4Instance1 = service
 		}
 	}
 
@@ -86,11 +86,11 @@ func Test_Registry_register_multiple_types_mixed_lifetime_scopes(t *testing.T) {
 
 	var foo3Instance2, foo4Instance2 multiFoo
 	for _, service := range resolvedServices2 {
-		switch service.(type) {
+		switch service := service.(type) {
 		case *foo3:
-			foo3Instance2 = service.(*foo3)
+			foo3Instance2 = service
 		case *foo4:
-			foo4Instance2 = service.(*foo4)
+			foo4Instance2 = service
 		}
 	}
 
@@ -124,11 +124,11 @@ func Test_Registry_register_multiple_types_mixed_lifetime_scopes_2(t *testing.T)
 
 	var foo3Instance1, foo4Instance1 multiFoo
 	for _, service := range resolvedServices1 {
-		switch service.(type) {
+		switch service := service.(type) {
 		case *foo3:
-			foo3Instance1 = service.(*foo3)
+			foo3Instance1 = service
 		case *foo4:
-			foo4Instance1 = service.(*foo4)
+			foo4Instance1 = service
 		}
 	}
 
@@ -140,11 +140,11 @@ func Test_Registry_register_multiple_types_mixed_lifetime_scopes_2(t *testing.T)
 
 	var foo3Instance2, foo4Instance2 multiFoo
 	for _, service := range resolvedServices2 {
-		switch service.(type) {
+		switch service := service.(type) {
 		case *foo3:
-			foo3Instance2 = service.(*foo3)
+			foo3Instance2 = service
 		case *foo4:
-			foo4Instance2 = service.(*foo4)
+			foo4Instance2 = service
 		}
 	}
 

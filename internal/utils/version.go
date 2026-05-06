@@ -87,7 +87,7 @@ func isEqual(v VersionInfo, other VersionInfo) bool {
 
 func tryParseVersionInfo(version string) (*VersionInfo, error) {
 
-	re := regexp.MustCompile("(?:[vV])?(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)")
+	re := regexp.MustCompile(`(?:[vV])?(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)`)
 	match := re.FindStringSubmatch(version)
 	if match == nil {
 		return nil, errors.New("invalid version")

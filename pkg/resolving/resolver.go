@@ -136,14 +136,14 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.Ser
 			requiredServices := next.RequiredServiceTypes()
 			for _, requiredService := range requiredServices {
 				requiredServiceRegistration, isRegistered := registry.TryGetSingleServiceRegistration(requiredService)
-				if isRegistered == false {
+				if !isRegistered {
 					return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(requiredService.Name()))
 				}
 				child, err := makeDependencyInfo(requiredServiceRegistration, next)
 				if err != nil {
 					return nil, types.NewResolverError(types.ErrorCannotBuildDependencyGraph, types.WithCause(err), types.ForServiceType(requiredService.Name()))
 				}
-				if child.HasInstance() { // skip traversal, if instance is already present
+				if child.HasInstance() { // skip traversal if instance is already present
 					continue
 				}
 				next.AddRequiredServiceInfo(child)

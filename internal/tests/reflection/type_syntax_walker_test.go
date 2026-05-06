@@ -1,10 +1,11 @@
 package reflection
 
 import (
-	"github.com/matzefriedrich/parsley/internal/reflection"
-	"github.com/matzefriedrich/parsley/pkg/features"
 	"go/ast"
 	"testing"
+
+	"github.com/matzefriedrich/parsley/internal/reflection"
+	"github.com/matzefriedrich/parsley/pkg/features"
 )
 
 func Test_typeWalker_WalkInterface_skips_unnamed_methods(t *testing.T) {
@@ -68,7 +69,7 @@ type astTypeVisitorMock struct {
 }
 
 func (a *astTypeVisitorMock) VisitMethod(name string, funcType *ast.FuncType) {
-	a.MockBase.TraceMethodCall(functionVisitMethodName, name, funcType)
+	a.TraceMethodCall(functionVisitMethodName, name, funcType)
 	a.visitMethodFunc(name, funcType)
 }
 

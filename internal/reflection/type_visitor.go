@@ -80,18 +80,18 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 	expressionStack := internal.MakeStack[ast.Expr]()
 	expressionStack.Push(paramType)
 
-	for expressionStack.IsEmpty() == false {
+	for !expressionStack.IsEmpty() {
 
 		next := expressionStack.Pop()
 
 		switch next.(type) {
 		case *ast.Ellipsis:
-			ellipsis, _ := next.(*ast.Ellipsis)
+			ellipsis := next.(*ast.Ellipsis)
 			typeStack.Push(ParameterType{IsEllipsis: true})
 			expressionStack.Push(ellipsis.Elt)
 
 		case *ast.Ident:
-			ident, _ := next.(*ast.Ident)
+			ident := next.(*ast.Ident)
 			paramTypeName = ident.Name
 			typeStack.Push(ParameterType{Name: paramTypeName})
 
@@ -99,7 +99,7 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 			typeStack.Push(ParameterType{IsInterface: true})
 
 		case *ast.SelectorExpr:
-			selector, _ := next.(*ast.SelectorExpr)
+			selector := next.(*ast.SelectorExpr)
 			ident, _ := selector.X.(*ast.Ident)
 			typeStack.Push(ParameterType{SelectorName: ident.Name, Name: selector.Sel.Name})
 
@@ -133,7 +133,7 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 
 	last := typeStack.Pop()
 	result := new(last)
-	for typeStack.IsEmpty() == false {
+	for !typeStack.IsEmpty() {
 		parameterType := typeStack.Pop()
 		parameterType.Next = result
 		result = &parameterType

@@ -97,7 +97,7 @@ func Test_Registry_register_named_service_resolve_all_named_services_as_list(t *
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
-	features.RegisterList[dataService](ctx, registry)
+	_ = features.RegisterList[dataService](ctx, registry)
 
 	resolver := resolving.NewResolver(registry)
 	scopedContext := resolving.NewScopedContext(ctx)

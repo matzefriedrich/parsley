@@ -61,7 +61,7 @@ func (s *serviceRegistrationsValidator) Validate(registry types.ServiceRegistry)
 		dependencies := next.RequiredServiceTypes()
 		for _, dependency := range dependencies {
 			list, found := registry.TryGetServiceRegistrations(dependency)
-			if found == false {
+			if !found {
 				missingRegistrations = append(missingRegistrations, dependency)
 				continue
 			}
@@ -101,7 +101,7 @@ func detectCircularDependency(sr types.ServiceRegistration, registry types.Servi
 		requiredServices := r.RequiredServiceTypes()
 		for _, serviceType := range requiredServices {
 			list, found := registry.TryGetServiceRegistrations(serviceType)
-			if found == false {
+			if !found {
 				continue
 			}
 			for _, item := range list.Registrations() {

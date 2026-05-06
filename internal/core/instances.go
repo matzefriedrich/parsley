@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+
 	"github.com/matzefriedrich/parsley/pkg/types"
 )
 
@@ -11,8 +12,10 @@ type InstanceBag struct {
 	scope     types.LifetimeScope
 }
 
+type ContextKey string
+
 const (
-	ParsleyContext = "__parsley"
+	ParsleyContext ContextKey = "__parsley"
 )
 
 // NewGlobalInstanceBag Creates a new InstanceBag object with global scope.

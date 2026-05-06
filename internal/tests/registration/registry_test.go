@@ -43,10 +43,6 @@ func Test_Registry_NewResolver_resolve_type_with_dependencies(t *testing.T) {
 	parsleyContext := resolving.NewScopedContext(t.Context())
 	resolved, _ := resolving.ResolveRequiredService[FooConsumer](parsleyContext, r)
 	assert.NotNil(t, resolved)
-
-	actual, ok := resolved.(FooConsumer)
-	assert.True(t, ok)
-	assert.NotNil(t, actual)
 }
 
 func Test_Registry_NewResolver_resolve_scoped_from_same_context_must_be_return_same_instance(t *testing.T) {
@@ -67,9 +63,6 @@ func Test_Registry_NewResolver_resolve_scoped_from_same_context_must_be_return_s
 	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](parsleyContext, r)
 	assert.NotNil(t, consumer2)
 
-	actual, ok := consumer1.(FooConsumer)
-	assert.True(t, ok)
-	assert.NotNil(t, actual)
 	assert.Equal(t, reflect.ValueOf(consumer1).Pointer(), reflect.ValueOf(consumer2).Pointer())
 }
 
@@ -96,9 +89,7 @@ func Test_Registry_NewResolver_resolve_scoped_from_different_context_must_be_ret
 	consumer2, _ := resolving.ResolveRequiredService[FooConsumer](parsleyContext2, r)
 	assert.NotNil(t, consumer2)
 
-	actual, ok := consumer1.(FooConsumer)
-	assert.True(t, ok)
-	assert.NotNil(t, actual)
+	assert.NotNil(t, consumer1)
 	assert.NotEqual(t, reflect.ValueOf(consumer1).Pointer(), reflect.ValueOf(consumer2).Pointer())
 }
 
@@ -179,11 +170,8 @@ func Test_Registry_RegisterInstance_registers_singleton_service_from_object(t *t
 	// Arrange
 	assert.True(t, fooRegistered)
 
-	resolved, _ := resolving.ResolveRequiredService[Foo](t.Context(), r)
-	assert.NotNil(t, resolved)
+	actual, _ := resolving.ResolveRequiredService[Foo](t.Context(), r)
 
-	actual, ok := resolved.(Foo)
-	assert.True(t, ok)
 	assert.NotNil(t, actual)
 	assert.Equal(t, reflect.ValueOf(instance).Pointer(), reflect.ValueOf(actual).Pointer())
 }
