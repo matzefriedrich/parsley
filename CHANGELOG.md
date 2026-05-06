@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.4.1] - 2026-05-06
+
+### Fixed
+
+* Updated mock generation to include interface-specific prefixes for generated function types and method identifiers, preventing naming collisions when multiple interfaces define methods with the same name. [#78](https://github.com/matzefriedrich/parsley/pull/78)
+
+
 ## [v1.4.0] - 2026-04-23
 
 This version improves the proxy generation and method interception functionality. The proxy generator does now provide a more robust foundation for implementing cross-cutting concerns. The generator effectively removes the tedious work of manually creating proxy types.

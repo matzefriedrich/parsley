@@ -10,25 +10,25 @@ import (
 
 type greeterMock struct {
 	features.MockBase
-	SayHelloFunc   SayHelloFunc
-	SayNothingFunc SayNothingFunc
+	SayHelloFunc   Greeter_SayHelloFunc
+	SayNothingFunc Greeter_SayNothingFunc
 }
 
-type SayHelloFunc func(name string, polite bool) (string, error)
-type SayNothingFunc func()
+type Greeter_SayHelloFunc func(name string, polite bool) (string, error)
+type Greeter_SayNothingFunc func()
 
 const (
-	FunctionSayHello   = "SayHello"
-	FunctionSayNothing = "SayNothing"
+	Function_Greeter_SayHello   = "SayHello"
+	Function_Greeter_SayNothing = "SayNothing"
 )
 
 func (m *greeterMock) SayHello(name string, polite bool) (string, error) {
-	m.TraceMethodCall(FunctionSayHello, name, polite)
+	m.TraceMethodCall(Function_Greeter_SayHello, name, polite)
 	return m.SayHelloFunc(name, polite)
 }
 
 func (m *greeterMock) SayNothing() {
-	m.TraceMethodCall(FunctionSayNothing)
+	m.TraceMethodCall(Function_Greeter_SayNothing)
 	m.SayNothingFunc()
 }
 
@@ -45,7 +45,7 @@ func NewGreeterMock() *greeterMock {
 		},
 		SayNothingFunc: func() {},
 	}
-	mock.AddFunction(FunctionSayHello, "SayHello(name string, polite bool) (string, error)")
-	mock.AddFunction(FunctionSayNothing, "SayNothing()")
+	mock.AddFunction(Function_Greeter_SayHello, "SayHello(name string, polite bool) (string, error)")
+	mock.AddFunction(Function_Greeter_SayNothing, "SayNothing()")
 	return mock
 }

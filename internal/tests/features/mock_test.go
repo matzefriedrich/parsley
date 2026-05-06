@@ -2,9 +2,10 @@ package features
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/matzefriedrich/parsley/pkg/features"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_GreeterMock_SayHello(t *testing.T) {
@@ -26,19 +27,19 @@ func Test_GreeterMock_SayHello(t *testing.T) {
 	assert.Equal(t, "Hi, John", actual)
 
 	// Verify that John has been greeted, regardless of the politeness flag
-	assert.True(t, mock.Verify(FunctionSayHello, features.TimesOnce(), features.Exact(expectedName)))
+	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesOnce(), features.Exact(expectedName)))
 
 	// Verify that John has not been greeted non-politely
-	assert.True(t, mock.Verify(FunctionSayHello, features.TimesNever(), features.Exact(expectedName), features.Exact(false)))
+	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesNever(), features.Exact(expectedName), features.Exact(false)))
 
 	// Verify that somebody was greeted politely
-	assert.True(t, mock.Verify(FunctionSayHello, features.TimesOnce(), features.IsAny(), features.Exact(true)))
+	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesOnce(), features.IsAny(), features.Exact(true)))
 
 	// Verify that Jane was not greeted
-	assert.True(t, mock.Verify(FunctionSayHello, features.TimesNever(), features.Exact("Jane")))
+	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesNever(), features.Exact("Jane")))
 
 	// Verify that SayHello was called twice in total, regardless of the call parameters
-	assert.True(t, mock.Verify(FunctionSayHello, features.TimesExactly(2)))
-	assert.True(t, mock.Verify(FunctionSayHello, features.TimesExactly(2), features.IsAny()))
-	assert.True(t, mock.Verify(FunctionSayHello, features.TimesExactly(2), features.IsAny(), features.IsAny()))
+	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesExactly(2)))
+	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesExactly(2), features.IsAny()))
+	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesExactly(2), features.IsAny(), features.IsAny()))
 }
