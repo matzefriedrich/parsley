@@ -124,6 +124,44 @@ func Test_Registry_RegisterModule_registers_collection_of_services(t *testing.T)
 	assert.True(t, fooConsumerRegistered)
 }
 
+func Test_Registry_RegisterModuleIf_registers_module_if_condition_is_true(t *testing.T) {
+
+	// Arrange
+	sut := registration.NewServiceRegistry()
+
+	// Act
+	fooModule := func(r types.ServiceRegistry) error {
+		_ = registration.RegisterSingleton(r, newFoo)
+		return nil
+	}
+
+	_ = sut.RegisterModuleIf(true, fooModule)
+
+	fooRegistered := sut.IsRegistered(types.MakeServiceType[Foo]())
+
+	// Assert
+	assert.True(t, fooRegistered)
+}
+
+func Test_Registry_RegisterModuleIf_does_not_register_module_if_condition_is_false(t *testing.T) {
+
+	// Arrange
+	sut := registration.NewServiceRegistry()
+
+	// Act
+	fooModule := func(r types.ServiceRegistry) error {
+		_ = registration.RegisterSingleton(r, newFoo)
+		return nil
+	}
+
+	_ = sut.RegisterModuleIf(false, fooModule)
+
+	fooRegistered := sut.IsRegistered(types.MakeServiceType[Foo]())
+
+	// Assert
+	assert.False(t, fooRegistered)
+}
+
 func Test_Registry_RegisterInstance_registers_singleton_service_from_object(t *testing.T) {
 
 	// Arrange
