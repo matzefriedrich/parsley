@@ -1,6 +1,7 @@
 package registration
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -11,11 +12,13 @@ import (
 )
 
 type serviceRegistration struct {
-	id            uint64
-	serviceType   typeInfo
-	activatorFunc reflect.Value
-	parameters    []typeInfo
-	lifetimeScope types.LifetimeScope
+	id                  uint64
+	serviceType         typeInfo
+	activatorFunc       reflect.Value
+	parameters          []typeInfo
+	lifetimeScope       types.LifetimeScope
+	hasErrorReturn      bool
+	hasContextParameter bool
 }
 
 type typeInfo struct {
@@ -31,23 +34,39 @@ func newTypeInfo(t types.ServiceType) typeInfo {
 }
 
 // InvokeActivator calls the activator function stored in the service registration with the provided parameters.
-func (s *serviceRegistration) InvokeActivator(params ...interface{}) (interface{}, error) {
+func (s *serviceRegistration) InvokeActivator(ctx context.Context, params ...interface{}) (interface{}, error) {
 	var values []reflect.Value
-	if len(params) > 0 {
-		values = make([]reflect.Value, len(params))
-		for i, p := range params {
-			values[i] = reflect.ValueOf(p)
-		}
+	offset := 0
+	if s.hasContextParameter {
+		offset = 1
+	}
+	values = make([]reflect.Value, len(params)+offset)
+	if s.hasContextParameter {
+		values[0] = reflect.ValueOf(ctx)
+	}
+	for i, p := range params {
+		values[i+offset] = reflect.ValueOf(p)
 	}
 	result := s.activatorFunc.Call(values)
-	if len(result) != 1 {
-		return nil, fmt.Errorf("activator function returned %d values", len(result))
+	if s.hasErrorReturn {
+		if len(result) != 2 {
+			return nil, fmt.Errorf("activator function returned %d values, expected 2", len(result))
+		}
+		errValue := result[1].Interface()
+		if errValue != nil {
+			activationErr := errValue.(error)
+			return nil, fmt.Errorf("service activation failed: %w", activationErr)
+		}
+	} else {
+		if len(result) != 1 {
+			return nil, fmt.Errorf("activator function returned %d values, expected 1", len(result))
+		}
 	}
 	serviceInstance := result[0]
 	return serviceInstance.Interface(), nil
 }
 
-// Id returns the unique identifier of this service registration.
+// Id Returns the unique identifier of this service registration.
 func (s *serviceRegistration) Id() uint64 {
 	return s.id
 }
@@ -83,9 +102,13 @@ func (s *serviceRegistration) LifetimeScope() types.LifetimeScope {
 
 // RequiredServiceTypes returns a slice of ServiceType representing the service dependencies.
 func (s *serviceRegistration) RequiredServiceTypes() []types.ServiceType {
-	requiredTypes := make([]types.ServiceType, len(s.parameters))
-	for i, p := range s.parameters {
-		requiredTypes[i] = p.t
+	offset := 0
+	if s.hasContextParameter {
+		offset = 1
+	}
+	requiredTypes := make([]types.ServiceType, len(s.parameters)-offset)
+	for i := offset; i < len(s.parameters); i++ {
+		requiredTypes[i-offset] = s.parameters[i].t
 	}
 	return requiredTypes
 }
@@ -127,7 +150,10 @@ func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeSc
 		fallthrough
 	case reflect.Interface:
 		requiredTypes := info.ParameterTypes()
-		return newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...), nil
+		reg := newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...)
+		reg.hasErrorReturn = info.HasErrorReturn()
+		reg.hasContextParameter = info.ExpectsContextParameter()
+		return reg, nil
 	default:
 		return nil, types.NewRegistryError(types.ErrorActivatorFunctionInvalidReturnType)
 	}

@@ -5,20 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v1.5.0-alpha1] - 2026-05-07
 
 ### Added
 
 * Added the `RegisterModuleIf(condition bool, modules ...ModuleFunc) error` method to the `ServiceRegistry` interface, allowing for conditional module registration based on runtime requirements or environment settings. [#77](https://github.com/matzefriedrich/parsley/issues/77)
 * Enhanced `RegisterLazy[T]` to support activator functions with dependencies, enabling full dependency injection for lazily-activated services. [#80](https://github.com/matzefriedrich/parsley/pull/80)
+* Support for `context.Context` as the first parameter in activator functions, allowing services to access the resolution context. [#82](https://github.com/matzefriedrich/parsley/pull/82)
+* Support for an optional `error` return value (second position) in activator functions, enabling proper error propagation during service activation. [#82](https://github.com/matzefriedrich/parsley/pull/82)
 
 * Adds `Makefile` to the reposiory [#81](https://github.com/matzefriedrich/parsley/pull/81)
 
 ### Changed
 
 * Updated the `Lazy[T]` interface; the `Value` method now requires a `context.Context` parameter to ensure correct dependency resolution for activator functions. [#80](https://github.com/matzefriedrich/parsley/pull/80)
+* Updated internal activation interfaces `ServiceRegistration.InvokeActivator` and `DependencyInfo.CreateInstance` to accept `context.Context` for propagation to activators. [#82](https://github.com/matzefriedrich/parsley/pull/82)
+* Removes the `context.Context` parameter from `RegisterList`; the registered list activator function does now user the resolver context. * Fixes linter issues and adds new tests [#81](https://github.com/matzefriedrich/parsley/pull/81)
 
+### Fixed
+
+* Fixed test coverage detection for tests located in `internal/tests` by using `-coverpkg=./...` in the `test-coverage` make target. [#82](https://github.com/matzefriedrich/parsley/pull/82)
+* Fixed a bug in `FunctionInfo.String()` where function signature parameters were not correctly formatted in the output string. [#82](https://github.com/matzefriedrich/parsley/pull/82)
 * Fixes linter issues and adds new tests [#81](https://github.com/matzefriedrich/parsley/pull/81)
+
+## [v1.4.2] - 2026-05-06
+
+### Changed
+
+* Bumps application version to 1.4.2 and update `Makefile` to include dynamic versioning via git tags.
 
 
 ## [v1.4.1] - 2026-05-06

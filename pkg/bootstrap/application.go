@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -24,8 +25,6 @@ var (
 	ErrCannotRegisterAppFactory = errors.New(ErrorCannotRegisterAppFactory)
 )
 
-var parsley infrastructure
-
 // RunParsleyApplication initializes and runs the Parsley application lifecycle.
 // It registers the application factory, configures additional modules, resolves the main application instance, and invokes its Run method.
 func RunParsleyApplication(cxt context.Context, appFactoryFunc any, configure ...types.ModuleFunc) error {
@@ -45,11 +44,13 @@ func RunParsleyApplication(cxt context.Context, appFactoryFunc any, configure ..
 	ctx := resolving.NewScopedContext(cxt)
 	app, _ := resolving.ResolveRequiredService[Application](ctx, resolver)
 
-	parsley = infrastructure{
+	parsley := infrastructure{
 		registry: registry,
 		resolver: resolver,
 		app:      app,
 	}
 
-	return app.Run(ctx)
+	appContext := context.WithValue(ctx, core.ContextKey("__parsley-infrastructure"), parsley)
+
+	return app.Run(appContext)
 }

@@ -1,8 +1,10 @@
 package registration
 
 import (
-	"github.com/matzefriedrich/parsley/pkg/types"
+	"context"
 	"sync"
+
+	"github.com/matzefriedrich/parsley/pkg/types"
 )
 
 type dependencyInfo struct {
@@ -61,12 +63,12 @@ func (d *dependencyInfo) RequiredServices() ([]interface{}, error) {
 
 // CreateInstance initializes and returns the service instance for this dependency.
 // It resolves required services and uses the activator to create the instance.
-func (d *dependencyInfo) CreateInstance() (interface{}, error) {
+func (d *dependencyInfo) CreateInstance(ctx context.Context) (interface{}, error) {
 	if d.instance != nil {
 		return d.instance, nil
 	}
 	resolvedDependencies, _ := d.RequiredServices()
-	instance, err := d.registration.InvokeActivator(resolvedDependencies...)
+	instance, err := d.registration.InvokeActivator(ctx, resolvedDependencies...)
 	if err != nil {
 		return nil, err
 	}

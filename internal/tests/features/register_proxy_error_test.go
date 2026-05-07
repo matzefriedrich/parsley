@@ -52,7 +52,7 @@ func Test_Register_generated_proxy_type_handles_error(t *testing.T) {
 	_ = registry.Register(newMethodErrorInterceptor(collector), types.LifetimeSingleton)
 	_ = registry.Register(NewGreeterProxyImpl, types.LifetimeTransient)
 	_ = registry.Register(newJohnGreeter, types.LifetimeTransient)
-	_ = features.RegisterList[features.MethodInterceptor](ctx, registry)
+	_ = features.RegisterList[features.MethodInterceptor](registry)
 
 	resolver := resolving.NewResolver(registry)
 	resolverContext := resolving.NewScopedContext(ctx)
