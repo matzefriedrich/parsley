@@ -21,7 +21,7 @@ func Test_Proxy_reflect_parameter_type_nil_value(t *testing.T) {
 	_ = registry.Register(newNilParamInterceptor(collector), types.LifetimeSingleton)
 	_ = registry.Register(NewNilParamReproProxyImpl, types.LifetimeTransient)
 	_ = registry.Register(newNilParamReproImpl, types.LifetimeTransient)
-	_ = features.RegisterList[features.MethodInterceptor](ctx, registry)
+	_ = features.RegisterList[features.MethodInterceptor](registry)
 
 	resolver := resolving.NewResolver(registry)
 	resolverContext := resolving.NewScopedContext(ctx)
