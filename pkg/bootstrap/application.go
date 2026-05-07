@@ -42,7 +42,12 @@ func RunParsleyApplication(cxt context.Context, appFactoryFunc any, configure ..
 
 	resolver := resolving.NewResolver(registry)
 	ctx := resolving.NewScopedContext(cxt)
-	app, _ := resolving.ResolveRequiredService[Application](ctx, resolver)
+	app, appErr := resolving.ResolveRequiredService[Application](ctx, resolver)
+	if appErr != nil {
+		activationErr := &types.ParsleyError{Msg: "failed to activate application"}
+		types.WithCause(appErr)(activationErr)
+		return activationErr
+	}
 
 	parsley := infrastructure{
 		registry: registry,
