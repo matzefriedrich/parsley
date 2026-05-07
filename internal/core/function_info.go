@@ -1,17 +1,20 @@
 package core
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"github.com/matzefriedrich/parsley/pkg/types"
 	"reflect"
 	"runtime"
 	"strings"
+
+	"github.com/matzefriedrich/parsley/pkg/types"
 )
 
 const (
 	ErrorNotAFunction                            = "not a function"
 	ErrorReturnTypeHasToHaveExactlyOnReturnValue = "return type has to have exactly one return value"
+	ErrorSecondReturnTypeIsNotErr                = "second return type is not an error type"
 )
 
 var (
@@ -24,6 +27,8 @@ type functionInfo struct {
 	funcType               reflect.Type
 	returnType             types.ServiceType
 	parameters             []types.FunctionParameterInfo
+	hasErrorReturn         bool
+	hasContextParameter    bool
 }
 
 var _ types.FunctionInfo = &functionInfo{}
@@ -53,16 +58,26 @@ func ReflectFunctionInfoFrom(value reflect.Value) (types.FunctionInfo, error) {
 	if funcType.Kind() != reflect.Func {
 		return nil, types.NewReflectionError(ErrorNotAFunction)
 	}
-	rt, err := returnType(funcType)
+	rt, hasError, err := returnType(funcType)
 	if err != nil {
 		return nil, err
 	}
 	parameters := parameterInfos(funcType)
+	hasContext := false
+	if len(parameters) > 0 {
+		firstParamType := parameters[0].Type().ReflectedType()
+		contextType := reflect.TypeOf((*context.Context)(nil)).Elem()
+		if firstParamType.Implements(contextType) {
+			hasContext = true
+		}
+	}
 	return &functionInfo{
 		reflectedFunctionValue: value,
 		funcType:               funcType,
 		returnType:             rt,
 		parameters:             parameters,
+		hasErrorReturn:         hasError,
+		hasContextParameter:    hasContext,
 	}, nil
 }
 
@@ -76,7 +91,7 @@ func (f functionInfo) Name() string {
 	return ""
 }
 
-// Parameters returns a slice of FunctionParameterInfo representing the parameters of the function.
+// Parameters Returns a slice of FunctionParameterInfo representing the parameters of the function.
 func (f functionInfo) Parameters() []types.FunctionParameterInfo {
 	return f.parameters
 }
@@ -89,6 +104,14 @@ func (f functionInfo) ParameterTypes() []types.ServiceType {
 	return parameterTypes
 }
 
+func (f functionInfo) HasErrorReturn() bool {
+	return f.hasErrorReturn
+}
+
+func (f functionInfo) ExpectsContextParameter() bool {
+	return f.hasContextParameter
+}
+
 // ReturnType returns the type of the service returned by the function.
 func (f functionInfo) ReturnType() types.ServiceType {
 	return f.returnType
@@ -97,21 +120,33 @@ func (f functionInfo) ReturnType() types.ServiceType {
 // String returns a string representation of the function's signature, including its name, parameters, and return type.
 func (f functionInfo) String() string {
 	parameterTypeNames := make([]string, len(f.parameters))
-	for _, t := range f.parameters {
-		parameterTypeNames[0] = t.String()
+	for i, t := range f.parameters {
+		parameterTypeNames[i] = t.String()
 	}
 	reflectedReturnType := f.returnType.ReflectedType()
 	funcTypeName := reflectedReturnType.String()
 	return fmt.Sprintf("%s(%s) %s", f.Name(), strings.Join(parameterTypeNames, ","), funcTypeName)
 }
 
-func returnType(funcType reflect.Type) (types.ServiceType, error) {
+func returnType(funcType reflect.Type) (types.ServiceType, bool, error) {
 	numReturnValues := funcType.NumOut()
-	if numReturnValues != 1 {
-		return nil, types.NewReflectionError(ErrorReturnTypeHasToHaveExactlyOnReturnValue)
+	const (
+		serviceTypeIndex = 0
+		errorTypeIndex   = 1
+	)
+	if numReturnValues == 1 {
+		serviceType := funcType.Out(serviceTypeIndex)
+		return types.ServiceTypeFrom(serviceType), false, nil
 	}
-	serviceType := funcType.Out(0)
-	return types.ServiceTypeFrom(serviceType), nil
+	if numReturnValues == 2 {
+		serviceType := funcType.Out(serviceTypeIndex)
+		errorType := funcType.Out(errorTypeIndex)
+		if isErrorType(errorType) {
+			return types.ServiceTypeFrom(serviceType), true, nil
+		}
+		return nil, false, types.NewReflectionError(ErrorSecondReturnTypeIsNotErr)
+	}
+	return nil, false, types.NewReflectionError(ErrorReturnTypeHasToHaveExactlyOnReturnValue)
 }
 
 func parameterInfos(funcType reflect.Type) []types.FunctionParameterInfo {
@@ -126,4 +161,9 @@ func parameterInfos(funcType reflect.Type) []types.FunctionParameterInfo {
 		parameters = append(parameters, p)
 	}
 	return parameters
+}
+
+func isErrorType(t reflect.Type) bool {
+	errorType := reflect.TypeOf((*error)(nil))
+	return t.Implements(errorType.Elem())
 }

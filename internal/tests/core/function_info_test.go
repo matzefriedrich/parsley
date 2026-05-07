@@ -125,7 +125,7 @@ func Test_ReflectFunctionInfoFrom_verify_activator_function_parameters_and_retur
 		// Assert
 		assert.NoError(t, err)
 		assert.False(t, info.HasErrorReturn())
-		assert.False(t, info.HasContextParameter())
+		assert.False(t, info.ExpectsContextParameter())
 		assert.Equal(t, "dummy", info.ReturnType().Name())
 		assert.Len(t, info.Parameters(), 2)
 		assert.Contains(t, info.String(), "(core.dummy,core.dummy) core.dummy")
@@ -154,7 +154,7 @@ func Test_ReflectFunctionInfoFrom_verify_activator_function_parameters_and_retur
 
 		// Assert
 		assert.NoError(t, err)
-		assert.True(t, info.HasContextParameter())
+		assert.True(t, info.ExpectsContextParameter())
 		assert.Len(t, info.Parameters(), 2)
 		assert.Contains(t, info.String(), "(context.Context,core.dummy) core.dummy")
 	})
@@ -168,7 +168,7 @@ func Test_ReflectFunctionInfoFrom_verify_activator_function_parameters_and_retur
 
 		// Arrange
 		assert.NoError(t, err)
-		assert.True(t, info.HasContextParameter())
+		assert.True(t, info.ExpectsContextParameter())
 		assert.True(t, info.HasErrorReturn())
 		assert.Contains(t, info.String(), "(context.Context) core.dummy")
 	})
