@@ -176,6 +176,60 @@ func Test_Registry_RegisterInstance_registers_singleton_service_from_object(t *t
 	assert.Equal(t, reflect.ValueOf(instance).Pointer(), reflect.ValueOf(actual).Pointer())
 }
 
+func Test_Registry_CreateLinkedRegistry_returns_new_registry_with_same_id_sequence(t *testing.T) {
+
+	// Arrange
+	sut := registration.NewServiceRegistry()
+
+	// Act
+	actual := sut.CreateLinkedRegistry()
+
+	// Assert
+	assert.NotNil(t, actual)
+	assert.NotSame(t, sut, actual)
+}
+
+func Test_Registry_TryGetSingleServiceRegistration_returns_false_if_multiple_registrations_exist(t *testing.T) {
+
+	// Arrange
+	sut := registration.NewServiceRegistry()
+	_ = registration.RegisterTransient(sut, func() Foo { return &foo{} })
+	_ = registration.RegisterTransient(sut, func() Foo { return &foo{} })
+
+	// Act
+	_, found := sut.TryGetSingleServiceRegistration(types.MakeServiceType[Foo]())
+
+	// Assert
+	assert.False(t, found)
+}
+
+func Test_Registry_GetServiceRegistrations_returns_all_registrations(t *testing.T) {
+
+	// Arrange
+	sut := registration.NewServiceRegistry()
+	_ = registration.RegisterTransient(sut, newFoo)
+	_ = registration.RegisterTransient(sut, newFooConsumer)
+
+	// Act
+	actual, err := sut.GetServiceRegistrations()
+
+	// Assert
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(actual))
+}
+
+func Test_Registry_IsRegistered_returns_false_if_not_registered(t *testing.T) {
+
+	// Arrange
+	sut := registration.NewServiceRegistry()
+
+	// Act
+	actual := sut.IsRegistered(types.MakeServiceType[Foo]())
+
+	// Assert
+	assert.False(t, actual)
+}
+
 type Foo interface {
 	Bar()
 }
