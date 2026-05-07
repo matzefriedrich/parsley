@@ -3,5 +3,6 @@
 .vscode/
 
 build/
+concepts/
 
 covprofile
