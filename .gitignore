@@ -4,5 +4,7 @@
 
 build/
 concepts/
+mikado/
 
 covprofile
+coverage.out
