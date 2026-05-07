@@ -16,7 +16,7 @@ func Test_register_factory_for_type_returns_transient_instance(t *testing.T) {
 
 	// Arrange
 	registry := registration.NewServiceRegistry()
-	registry.Register(newGreeterWithState, types.LifetimeTransient)
+	_ = registry.Register(newGreeterWithState, types.LifetimeTransient)
 	_ = features.RegisterFactory[Greeter](registry, types.LifetimeSingleton)
 
 	resolver := resolving.NewResolver(registry)
@@ -47,7 +47,7 @@ func Test_register_factory_for_type_returns_same_instance_per_scope(t *testing.T
 
 	// Arrange
 	registry := registration.NewServiceRegistry()
-	registry.Register(newGreeterWithState, types.LifetimeScoped)
+	_ = registry.Register(newGreeterWithState, types.LifetimeScoped)
 	_ = features.RegisterFactory[Greeter](registry, types.LifetimeSingleton)
 
 	resolver := resolving.NewResolver(registry)

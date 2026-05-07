@@ -27,7 +27,7 @@ func GetGoFilePath() (string, error) {
 	goFileName := os.Getenv(goFileVariableName)
 
 	if goFileName == "" {
-		return "", errors.New(fmt.Sprintf("%s environment variable not set", goFileVariableName))
+		return "", fmt.Errorf("%s environment variable not set", goFileVariableName)
 	}
 
 	cwd, err := os.Getwd()

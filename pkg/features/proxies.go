@@ -203,9 +203,7 @@ func (p *ProxyBase) InvokeExitMethodInterceptors(callContext *MethodCallContext)
 // Useful for setting up method interception on the target object.
 func NewProxyBase[T any](target T, interceptors []MethodInterceptor) ProxyBase {
 	sortedInterceptors := make([]MethodInterceptor, 0, len(interceptors))
-	for _, interceptor := range interceptors {
-		sortedInterceptors = append(sortedInterceptors, interceptor)
-	}
+	sortedInterceptors = append(sortedInterceptors, interceptors...)
 	sort.Slice(sortedInterceptors, func(i, j int) bool {
 		return sortedInterceptors[i].Position() < sortedInterceptors[j].Position()
 	})

@@ -35,7 +35,7 @@ type functionParameterInfo struct {
 // String returns the string representation of the reflected type of the function parameter.
 func (f functionParameterInfo) String() string {
 	reflectedType := f.Type().ReflectedType()
-	return fmt.Sprintf("%s", reflectedType.String())
+	return reflectedType.String()
 }
 
 // Type returns the ServiceType of the function parameter, which provides meta information like name, package path, and reflect type.

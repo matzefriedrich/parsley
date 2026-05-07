@@ -97,7 +97,7 @@ func Test_Registry_register_named_service_resolve_all_named_services_as_list(t *
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
-	features.RegisterList[dataService](ctx, registry)
+	_ = features.RegisterList[dataService](ctx, registry)
 
 	resolver := resolving.NewResolver(registry)
 	scopedContext := resolving.NewScopedContext(ctx)
@@ -109,6 +109,21 @@ func Test_Registry_register_named_service_resolve_all_named_services_as_list(t *
 	assert.NoError(t, err)
 	assert.NotNil(t, actual)
 	assert.Equal(t, 2, len(actual))
+}
+
+func Test_Registry_register_named_service_invalid_registration(t *testing.T) {
+
+	// Arrange
+	registry := registration.NewServiceRegistry()
+
+	// Act
+	err := features.RegisterNamed[dataService](t.Context(), registry,
+		func() (string, any, types.LifetimeScope) {
+			return "", nil, types.LifetimeTransient
+		})
+
+	// Assert
+	assert.Error(t, err)
 }
 
 type controllerWithNamedServices struct {

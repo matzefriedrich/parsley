@@ -42,4 +42,10 @@ func Test_GreeterMock_SayHello(t *testing.T) {
 	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesExactly(2)))
 	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesExactly(2), features.IsAny()))
 	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesExactly(2), features.IsAny(), features.IsAny()))
+
+	// Verify that SayHello was called at least once
+	assert.True(t, mock.Verify(Function_Greeter_SayHello, features.TimesAtLeastOnce()))
+
+	// Verify that a non-existent function returns false
+	assert.False(t, mock.Verify("NonExistent", features.TimesOnce()))
 }

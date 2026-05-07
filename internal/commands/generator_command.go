@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//nolint:unused // The use field is used by the cobra-extensions package
 type generatorCommand struct {
 	use types.CommandName `flag:"generate" short:"Generate boilerplate code for advanced DI features" long:"A command group providing tools for creating boilerplate code to support advanced dependency injection (DI) features. It serves as a hub for related subcommands, such as generating mocks, proxies, or other utility types, streamlining the setup of DI patterns and improving developer productivity in complex Go projects."`
 }

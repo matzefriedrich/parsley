@@ -38,19 +38,16 @@ func NewFileVisitor() AstFileVisitor {
 }
 
 func (t *fileVisitor) VisitNode(n ast.Node) bool {
-	switch n.(type) {
+	switch n := n.(type) {
 	case *ast.CommentGroup:
-		commentsGroup, _ := n.(*ast.CommentGroup)
-		t.walkComments(commentsGroup)
+		t.walkComments(n)
 	case *ast.File:
-		f := n.(*ast.File)
+		f := n
 		t.VisitFile(f)
 	case *ast.ImportSpec:
-		spec, _ := n.(*ast.ImportSpec)
-		t.VisitImport(spec)
+		t.VisitImport(n)
 	case *ast.TypeSpec:
-		spec, _ := n.(*ast.TypeSpec)
-		t.walkTypeSpecNode(spec)
+		t.walkTypeSpecNode(n)
 	}
 	return true
 }

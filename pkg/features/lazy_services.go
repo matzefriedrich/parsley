@@ -19,7 +19,7 @@ type lazy[T any] struct {
 // Value returns the instance of the lazy-initialized type, generating it if not already created. Ensures thread-safety.
 func (l *lazy[T]) Value(ctx context.Context) T {
 	l.m.RLock()
-	if internal.IsNil(l.instance) == false {
+	if !internal.IsNil(l.instance) {
 		defer l.m.RUnlock()
 	} else {
 		l.m.RUnlock()

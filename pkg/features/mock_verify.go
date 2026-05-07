@@ -63,7 +63,7 @@ func (m *MockBase) Verify(name string, times TimesFunc, matches ...ArgMatch) boo
 				for i, arg := range call.args {
 					if i < len(matches) {
 						match := matches[i]
-						if match(arg) == false {
+						if !match(arg) {
 							continue callsLoop
 						}
 					} else {

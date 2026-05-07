@@ -80,49 +80,40 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 	expressionStack := internal.MakeStack[ast.Expr]()
 	expressionStack.Push(paramType)
 
-	for expressionStack.IsEmpty() == false {
+	for !expressionStack.IsEmpty() {
 
 		next := expressionStack.Pop()
 
-		switch next.(type) {
+		switch expr := next.(type) {
 		case *ast.Ellipsis:
-			ellipsis, _ := next.(*ast.Ellipsis)
 			typeStack.Push(ParameterType{IsEllipsis: true})
-			expressionStack.Push(ellipsis.Elt)
+			expressionStack.Push(expr.Elt)
 
 		case *ast.Ident:
-			ident, _ := next.(*ast.Ident)
-			paramTypeName = ident.Name
+			paramTypeName = expr.Name
 			typeStack.Push(ParameterType{Name: paramTypeName})
 
 		case *ast.InterfaceType:
 			typeStack.Push(ParameterType{IsInterface: true})
 
 		case *ast.SelectorExpr:
-			selector, _ := next.(*ast.SelectorExpr)
-			ident, _ := selector.X.(*ast.Ident)
-			typeStack.Push(ParameterType{SelectorName: ident.Name, Name: selector.Sel.Name})
+			ident, _ := expr.X.(*ast.Ident)
+			typeStack.Push(ParameterType{SelectorName: ident.Name, Name: expr.Sel.Name})
 
 		case *ast.ArrayType:
-			arrayType := next.(*ast.ArrayType)
-			t := arrayType.Elt
+			t := expr.Elt
 			typeStack.Push(ParameterType{IsArray: true})
 			expressionStack.Push(t)
 
 		case *ast.StarExpr:
-			starExpr := next.(*ast.StarExpr)
 			typeStack.Push(ParameterType{IsPointer: true})
-			switch starExpr.X.(type) {
+			switch starExpr := expr.X.(type) {
 			case *ast.Ident:
-				expressionStack.Push(starExpr.X)
-
+				expressionStack.Push(starExpr)
 			case *ast.SelectorExpr:
-				selectorExpr, _ := starExpr.X.(*ast.SelectorExpr)
-				expressionStack.Push(selectorExpr)
-
+				expressionStack.Push(starExpr)
 			case *ast.ArrayType:
-				arrayType := starExpr.X.(*ast.ArrayType)
-				expressionStack.Push(arrayType)
+				expressionStack.Push(starExpr)
 			}
 		}
 	}
@@ -133,7 +124,7 @@ func getFieldTypeInfo(param *ast.Field) *ParameterType {
 
 	last := typeStack.Pop()
 	result := new(last)
-	for typeStack.IsEmpty() == false {
+	for !typeStack.IsEmpty() {
 		parameterType := typeStack.Pop()
 		parameterType.Next = result
 		result = &parameterType

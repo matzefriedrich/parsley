@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+//nolint:unused // The use field is used by the cobra-extensions package
 type versionCommand struct {
 	use            types.CommandName `flag:"version" short:"Show the current Parsley CLI version"`
 	CheckForUpdate bool              `flag:"check-update" usage:"Checks for available updates and prints the update command"`
@@ -24,7 +25,7 @@ func (v *versionCommand) Execute(ctx context.Context) {
 		fmt.Printf("Parsley CLI v%s\n", appVersion.String())
 	}
 
-	if v.CheckForUpdate == false {
+	if !v.CheckForUpdate {
 		return
 	}
 

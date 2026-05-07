@@ -3,10 +3,11 @@ package registration
 import (
 	"errors"
 	"fmt"
-	"github.com/matzefriedrich/parsley/internal/core"
-	"github.com/matzefriedrich/parsley/pkg/types"
 	"reflect"
 	"strings"
+
+	"github.com/matzefriedrich/parsley/internal/core"
+	"github.com/matzefriedrich/parsley/pkg/types"
 )
 
 type serviceRegistration struct {
@@ -103,7 +104,7 @@ func (s *serviceRegistration) String() string {
 		parameterTypesNames = append(parameterTypesNames, parameterType.name)
 	}
 
-	buffer.WriteString(fmt.Sprintf("%s(%s)", s.serviceType.name, strings.Join(parameterTypesNames, ", ")))
+	_, _ = fmt.Fprintf(&buffer, "%s(%s)", s.serviceType.name, strings.Join(parameterTypesNames, ", "))
 	return buffer.String()
 }
 

@@ -21,6 +21,7 @@ type ScaffoldingFileWriterFactoryFunc func(projectFolder string) (generator.Scaf
 // ProjectLoaderFunc is a function type that loads a Go project given a project folder path.
 type ProjectLoaderFunc func(projectFolderPath string) (generator.GoProject, error)
 
+//nolint:unused // The use field is used by the cobra-extensions package
 type initCommand struct {
 	use                   types.CommandName `flag:"init" short:"Add Parsley to an application" long:"Integrates Parsley into an existing application by setting up the necessary scaffolding for dependency injection and code generation. It initializes project configurations, generates essential files, and prepares the application for using Parsley's advanced features."`
 	fileWriterFactoryFunc ScaffoldingFileWriterFactoryFunc

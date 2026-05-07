@@ -33,7 +33,7 @@ func Test_Register_service_with_struct_dependency(t *testing.T) {
 
 	// Arrange
 	registry := registration.NewServiceRegistry()
-	registry.Register(newAppWithStructDependency, types.LifetimeTransient)
+	_ = registry.Register(newAppWithStructDependency, types.LifetimeTransient)
 
 	config := someConfig{b: true}
 	registryErr := registration.RegisterInstance[someConfig](registry, config)
@@ -55,7 +55,7 @@ func Test_Register_immutable_service_with_struct_dependency(t *testing.T) {
 
 	// Arrange
 	registry := registration.NewServiceRegistry()
-	registry.Register(newImmutableAppWithStructDependency, types.LifetimeTransient)
+	_ = registry.Register(newImmutableAppWithStructDependency, types.LifetimeTransient)
 
 	config := someConfig{b: true}
 	registryErr := registration.RegisterInstance[someConfig](registry, config)
