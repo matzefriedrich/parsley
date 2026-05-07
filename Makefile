@@ -9,7 +9,7 @@ LDFLAGS=-ldflags "-X github.com/matzefriedrich/parsley/internal/utils.VersionStr
 all: build
 
 # Phony targets
-.PHONY: all build install test lint lint-fix help clean
+.PHONY: all build install test test-coverage lint lint-fix help clean
 
 build: ## Build the parsley-cli binary
 	mkdir -p $(BUILD_DIR)
@@ -21,6 +21,10 @@ install: ## Install the parsley-cli from source
 test: ## Run all tests
 	go test ./...
 
+test-coverage: ## Run tests and compute coverage
+	go test -coverpkg=./... ./... -coverprofile=coverage.out
+	go tool cover -func=coverage.out
+
 lint: ## Run golangci-lint
 	golangci-lint run
 
@@ -29,6 +33,7 @@ lint-fix: ## Run golangci-lint and apply fixes
 
 clean: ## Clean build artifacts
 	rm -rf $(BUILD_DIR)
+	rm -f coverage.out
 
 help: ## Show this help message
 	@echo "Usage: make [target]"
