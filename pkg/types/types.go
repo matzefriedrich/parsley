@@ -13,6 +13,8 @@ type FunctionInfo interface {
 	Parameters() []FunctionParameterInfo
 	ReturnType() ServiceType
 	ParameterTypes() []ServiceType
+	HasErrorReturn() bool
+	ExpectsContextParameter() bool
 }
 
 type FunctionParameterInfo interface {
@@ -99,7 +101,7 @@ type ServiceRegistration interface {
 	Id() uint64
 
 	// InvokeActivator calls the activator function with the provided parameters and returns the resulting instance and any error.
-	InvokeActivator(params ...interface{}) (interface{}, error)
+	InvokeActivator(ctx context.Context, params ...interface{}) (interface{}, error)
 
 	// IsSame checks if the provided ServiceRegistration equals the current ServiceRegistration.
 	IsSame(other ServiceRegistration) bool
@@ -164,7 +166,7 @@ type DependencyInfo interface {
 	AddRequiredServiceInfo(child DependencyInfo)
 
 	// CreateInstance creates an instance of the service associated with this dependency info.
-	CreateInstance() (interface{}, error)
+	CreateInstance(ctx context.Context) (interface{}, error)
 
 	// Consumer returns the parent dependency for the current dependency info.
 	Consumer() DependencyInfo

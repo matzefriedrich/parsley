@@ -163,7 +163,7 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.Ser
 				continue
 			}
 
-			instance, err := next.CreateInstance()
+			instance, err := next.CreateInstance(ctx)
 			if err != nil {
 				return nil, types.NewResolverError(types.ErrorCannotResolveService, types.WithCause(err), types.ForServiceType(next.ServiceTypeName()))
 			}
