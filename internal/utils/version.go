@@ -7,8 +7,8 @@ import (
 	"strconv"
 )
 
-const (
-	VersionString string = "1.0.3"
+var (
+	VersionString string = "1.4.2"
 )
 
 // VersionInfo represents the version details using semantic versioning.

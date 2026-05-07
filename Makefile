@@ -2,6 +2,8 @@
 BINARY_NAME=parsley-cli
 CMD_DIR=./cmd/$(BINARY_NAME)
 BUILD_DIR=build
+VERSION=$(shell git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+LDFLAGS=-ldflags "-X github.com/matzefriedrich/parsley/internal/utils.VersionString=$(VERSION)"
 
 # Default target
 all: build
@@ -11,10 +13,10 @@ all: build
 
 build: ## Build the parsley-cli binary
 	mkdir -p $(BUILD_DIR)
-	go build -o $(BUILD_DIR)/$(BINARY_NAME) $(CMD_DIR)
+	go build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME) $(CMD_DIR)
 
 install: ## Install the parsley-cli from source
-	go install $(CMD_DIR)
+	go install $(LDFLAGS) $(CMD_DIR)
 
 test: ## Run all tests
 	go test ./...
