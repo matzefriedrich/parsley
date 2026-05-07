@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/matzefriedrich/parsley/internal/core"
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -53,14 +54,15 @@ func Test_Resolver_verify_different_activator_function_signatures(t *testing.T) 
 	t.Run("Support (context.Context, ...) T", func(t *testing.T) {
 		// Arrange
 		registry := registration.NewServiceRegistry()
+		contextKey := core.ContextKey("test-key")
 		activatorFuncWithContext := func(activatorCtx context.Context) ServiceA {
-			val := activatorCtx.Value("test-key").(string)
+			val := activatorCtx.Value(contextKey).(string)
 			return &serviceA{val: val}
 		}
 		_ = registry.Register(activatorFuncWithContext, types.LifetimeTransient)
 		resolver := resolving.NewResolver(registry)
 
-		ctx := context.WithValue(t.Context(), "test-key", "context-A")
+		ctx := context.WithValue(t.Context(), contextKey, "context-A")
 
 		// Act
 		actual, err := resolving.ResolveRequiredService[ServiceA](ctx, resolver)
@@ -73,14 +75,15 @@ func Test_Resolver_verify_different_activator_function_signatures(t *testing.T) 
 	t.Run("Support (context.Context, ...) (T, error)", func(t *testing.T) {
 		// Arrange
 		registry := registration.NewServiceRegistry()
+		contextKey := core.ContextKey("test-key")
 		failingActivatorFuncWithContext := func(ctx context.Context) (ServiceA, error) {
-			val := ctx.Value("test-key").(string)
+			val := ctx.Value(contextKey).(string)
 			return &serviceA{val: val}, nil
 		}
 		_ = registry.Register(failingActivatorFuncWithContext, types.LifetimeTransient)
 		resolver := resolving.NewResolver(registry)
 
-		ctx := context.WithValue(t.Context(), "test-key", "context-A-error")
+		ctx := context.WithValue(t.Context(), contextKey, "context-A-error")
 
 		// Act
 		actual, err := resolving.ResolveRequiredService[ServiceA](ctx, resolver)
