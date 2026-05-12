@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Changed
+
+* Bumps `golang.org/x/mod` from 0.35.0 to 0.36.0 [#84](https://github.com/matzefriedrich/parsley/pull/84)
+
 ### Fixed
 
 * The `bootstap.RunParsleyApplication` method does now handle activation errors and returns them [#83](https://github.com/matzefriedrich/parsley/pull/83)
