@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Bumps `golang.org/x/mod` from 0.35.0 to 0.36.0 [#84](https://github.com/matzefriedrich/parsley/pull/84)
+* Upgrades Go version to 1.26.3
 
 ### Fixed
 
