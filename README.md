@@ -17,17 +17,19 @@ Parsley is a reflection-based dependency injection (DI) package for Go that stre
 
 ### Why use dependency injection in Go?
 
-Dependency injection in Go typically relies on constructor functions, which are idiomatic and foundational for creating and managing dependencies. While this approach is powerful, it can lead to boilerplate code as projects become more complex, requiring explicit instantiation and manual wiring. Addionally, more sophisticated ramp-up code is needed, if not all instances shall be created at application start. Parsley eliminates much of this repetitive code by automating the creation and wiring of dependencies, enabling developers to focus on application logic. It aims to enhance modularity and make managing dependencies easier.
+Dependency injection in Go typically relies on constructor functions, which are idiomatic and foundational for creating and managing dependencies. While this approach is powerful, it can lead to boilerplate code as projects become more complex, requiring explicit instantiation and manual wiring. Additionally, more sophisticated ramp-up code is needed, if not all instances shall be created at application start. Parsley eliminates much of this repetitive code by automating the creation and wiring of dependencies, enabling developers to focus on application logic. It aims to enhance modularity and make managing dependencies easier.
 
 ## Key Features
 
-- **Type Registration**: Supports constructor functions, lifetime management (singleton, scoped, transient), and safe casts.  
-- **Modular and Lazy Loading**: Register types as modules, resolve dependencies on-demand, and inject lazily with `Lazy[T]`.  
+- **Type Registration**: Supports constructor functions, lifetime management (singleton, scoped, transient), and safe casts.
+- **Conditional Registration**: Dynamically register modules based on runtime conditions with `RegisterModuleIf`.
+- **Modular and Lazy Loading**: Register types as modules, resolve dependencies on-demand, and inject lazily with `Lazy[T]`.
+- **Unregistered Type Activation**: Instantiate types not explicitly registered while still resolving their dependencies using `Activate[T]`.
 - **Registration Validation**: Ensures early detection of missing registrations or circular dependencies.
-- **Advanced Registrations**: Register multiple implementations for the same interface using named services or lists.  
-- **Proxy and Mock Support**: Generate extensible proxy types and configurable mocks to streamline testing workflows.  
+- **Advanced Registrations**: Register multiple implementations for the same interface using named services or lists.
+- **Proxy and Mock Support**: Generate extensible proxy types and configurable mocks to streamline testing workflows.
 
-For a complete overview of features and capabilities, refer to the [Parsley documentation](https://matzefriedrich.github.io/parsley-docs/).  
+For a complete overview of features and capabilities, refer to the [Parsley documentation](https://matzefriedrich.github.io/parsley-docs/).
 
 
 ## Usage
