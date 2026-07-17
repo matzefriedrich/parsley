@@ -2,9 +2,10 @@ package generator
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/matzefriedrich/parsley/internal"
 	"github.com/matzefriedrich/parsley/internal/reflection"
-	"strings"
 )
 
 // RegisterTypeModelFunctions registers a series of functions for type model processing in the given code generator.
@@ -51,7 +52,7 @@ func FormattedCallParameters(m reflection.Method) string {
 		if parameter.IsEllipsis() {
 			name = fmt.Sprintf("%s...", name)
 		}
-		formattedParameters[i] = fmt.Sprintf("%s", name)
+		formattedParameters[i] = name
 	}
 	return strings.Join(formattedParameters, ", ")
 }
@@ -75,7 +76,7 @@ func FormattedResultParameters(m reflection.Method) string {
 	}
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
-		formattedResults[i] = fmt.Sprintf("%s", result.Name)
+		formattedResults[i] = result.Name
 	}
 	return strings.Join(formattedResults, ", ")
 }
@@ -100,7 +101,7 @@ func FormattedResultTypes(m reflection.Method) string {
 	formattedResults := make([]string, len(m.Results))
 	for i, result := range m.Results {
 		typeName := FormatType(result)
-		formattedResults[i] = fmt.Sprintf("%s", typeName)
+		formattedResults[i] = typeName
 	}
 	if len(formattedResults) == 0 {
 		return ""
@@ -111,10 +112,10 @@ func FormattedResultTypes(m reflection.Method) string {
 // Signature generates the signature string of a given method.
 func Signature(m reflection.Method) string {
 	buffer := strings.Builder{}
-	buffer.WriteString(fmt.Sprintf("%s", m.Name))
-	buffer.WriteString(fmt.Sprintf("(%s)", FormattedParameters(m)))
+	buffer.WriteString(m.Name)
+	_, _ = fmt.Fprintf(&buffer, "(%s)", FormattedParameters(m))
 	if len(m.Results) > 0 {
-		buffer.WriteString(fmt.Sprintf(" %s", FormattedResultTypes(m)))
+		_, _ = fmt.Fprintf(&buffer, " %s", FormattedResultTypes(m))
 	}
 	return buffer.String()
 }
@@ -137,7 +138,7 @@ func FormatType(parameter reflection.Parameter) string {
 	s := internal.MakeStack[*reflection.ParameterType]()
 	s.Push(parameter.Type)
 
-	for s.IsEmpty() == false {
+	for !s.IsEmpty() {
 
 		t := s.Pop()
 
@@ -147,7 +148,7 @@ func FormatType(parameter reflection.Parameter) string {
 		}
 
 		if t.IsInterface {
-			typeName = fmt.Sprintf("interface{}")
+			typeName = "interface{}"
 		}
 
 		if t.IsEllipsis {
