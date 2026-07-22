@@ -1,8 +1,6 @@
 package features
 
 import (
-	"context"
-
 	"github.com/matzefriedrich/parsley/pkg/registration"
 	"github.com/matzefriedrich/parsley/pkg/resolving"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -25,7 +23,7 @@ func (n namedService) Name() string {
 
 // RegisterNamed registers named services with their respective activator functions and lifetime scopes.
 // It supports dependency injection by associating names with service instances.
-func RegisterNamed[T any](ctx context.Context, registry types.ServiceRegistry, services ...registration.NamedServiceRegistrationFunc) error {
+func RegisterNamed[T any](registry types.ServiceRegistry, services ...registration.NamedServiceRegistrationFunc) error {
 
 	registrationErrors := make([]error, 0)
 
@@ -42,7 +40,7 @@ func RegisterNamed[T any](ctx context.Context, registry types.ServiceRegistry, s
 		}
 	}
 
-	nameServiceResolver := resolving.CreateNamedServiceResolverActivatorFunc[T](ctx)
+	nameServiceResolver := resolving.CreateNamedServiceResolverActivatorFunc[T]()
 	err := registration.RegisterTransient(registry, nameServiceResolver)
 	if err != nil {
 		registrationErrors = append(registrationErrors, err)
