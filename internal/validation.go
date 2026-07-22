@@ -7,7 +7,7 @@ func IsNil[T any](instance T) bool {
 	// Use reflection to check if instance is nil
 	val := reflect.ValueOf(instance)
 	switch val.Kind() {
-	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
 		return val.IsNil()
 	case reflect.Invalid:
 		return true

@@ -52,7 +52,7 @@ func ServiceTypeFrom(t reflect.Type) ServiceType {
 	isList := false
 	elemType := t
 	switch t.Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		elemType = t.Elem()
 	case reflect.Interface:
 		break

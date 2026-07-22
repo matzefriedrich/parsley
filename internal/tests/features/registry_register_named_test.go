@@ -16,7 +16,7 @@ func Test_Registry_register_named_service_resolve_factory(t *testing.T) {
 	registry := registration.NewServiceRegistry()
 
 	// Act
-	err := features.RegisterNamed[dataService](t.Context(), registry,
+	err := features.RegisterNamed[dataService](registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
@@ -41,7 +41,7 @@ func Test_Registry_register_named_service_consume_factory(t *testing.T) {
 
 	registry := registration.NewServiceRegistry()
 	_ = registration.RegisterSingleton(registry, newControllerWithNamedServiceFactory)
-	_ = features.RegisterNamed[dataService](ctx, registry,
+	_ = features.RegisterNamed[dataService](registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
@@ -64,7 +64,7 @@ func Test_Registry_register_named_service_resolve_all_named_services(t *testing.
 	ctx := t.Context()
 
 	registry := registration.NewServiceRegistry()
-	_ = features.RegisterNamed[dataService](ctx, registry,
+	_ = features.RegisterNamed[dataService](registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
@@ -93,7 +93,7 @@ func Test_Registry_register_named_service_resolve_all_named_services_as_list(t *
 	ctx := t.Context()
 
 	registry := registration.NewServiceRegistry()
-	_ = features.RegisterNamed[dataService](ctx, registry,
+	_ = features.RegisterNamed[dataService](registry,
 		registration.NamedServiceRegistration("remote", newRemoteDataService, types.LifetimeSingleton),
 		registration.NamedServiceRegistration("local", newLocalDataService, types.LifetimeTransient))
 
@@ -117,7 +117,7 @@ func Test_Registry_register_named_service_invalid_registration(t *testing.T) {
 	registry := registration.NewServiceRegistry()
 
 	// Act
-	err := features.RegisterNamed[dataService](t.Context(), registry,
+	err := features.RegisterNamed[dataService](registry,
 		func() (string, any, types.LifetimeScope) {
 			return "", nil, types.LifetimeTransient
 		})
