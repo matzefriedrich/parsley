@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [v1.5.2] - 2026-07-22
 
 ### Changed
 
+* Removes the `context.Context` parameter from `RegisterNamed`; the registered named service activator function does now use the resolver context.
+* Updates internal reflection calls to use `reflect.Pointer` instead of the deprecated `reflect.Ptr` (modern Go idiom).
 * Bumps `golang.org/x/mod` from 0.37.0 to 0.38.0 [#86](https://github.com/matzefriedrich/parsley/pull/86)
 
 
