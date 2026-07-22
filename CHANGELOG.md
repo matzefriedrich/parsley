@@ -9,8 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Removes the `context.Context` parameter from `RegisterNamed`; the registered named service activator function does now use the resolver context.
-* Updates internal reflection calls to use `reflect.Pointer` instead of the deprecated `reflect.Ptr` (modern Go idiom).
+* Upgrades Go version to 1.26.4
+* Removes the `context.Context` parameter from `RegisterNamed`; the registered named service activator function does now use the resolver context. [#87](https://github.com/matzefriedrich/parsley/pull/87)
+* Updates internal reflection calls to use `reflect.Pointer` instead of the deprecated `reflect.Ptr` (modern Go idiom). [#87](https://github.com/matzefriedrich/parsley/pull/87
 * Bumps `golang.org/x/mod` from 0.37.0 to 0.38.0 [#86](https://github.com/matzefriedrich/parsley/pull/86)
 
 
