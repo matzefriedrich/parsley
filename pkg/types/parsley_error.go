@@ -13,7 +13,7 @@ func (f ParsleyError) Error() string {
 	return f.Msg
 }
 
-// Unwrap returns the underlying cause of the ParsleyError, allowing for error unwrapping functionality.
+// Unwrap returns the underlying cause of the ParsleyError, allowing for error-unwrapping functionality.
 func (f ParsleyError) Unwrap() error {
 	return f.cause
 }
@@ -37,17 +37,32 @@ func WithCause(err error) ParsleyErrorFunc {
 	}
 }
 
-// ParsleyErrorWithServiceTypeName defines an interface for setting the service type name on errors.
+// ParsleyErrorWithServiceTypeName defines an interface for retrieving the service type name from errors.
 type ParsleyErrorWithServiceTypeName interface {
-	ServiceTypeName(name string)
+	ServiceTypeName() string
 }
 
-// ForServiceType creates a ParsleyErrorFunc that sets the service type name on errors that implement the ParsleyErrorWithServiceTypeName interface.
-func ForServiceType(serviceType string) ParsleyErrorFunc {
+type parsleyErrorWithServiceTypeNameSetter interface {
+	setServiceTypeName(name string)
+}
+
+// ForServiceType returns a ParsleyErrorFunc that sets the service type name on errors implementing ParsleyErrorWithServiceTypeName.
+func ForServiceType[T any]() ParsleyErrorFunc {
 	return func(e error) {
-		withServiceTypeErr, ok := e.(ParsleyErrorWithServiceTypeName)
+		withServiceTypeErr, ok := e.(parsleyErrorWithServiceTypeNameSetter)
 		if ok {
-			withServiceTypeErr.ServiceTypeName(serviceType)
+			serviceType := MakeServiceType[T]()
+			withServiceTypeErr.setServiceTypeName(serviceType.Name())
+		}
+	}
+}
+
+// ForServiceTypeByName returns a ParsleyErrorFunc that sets the service type name on errors implementing a specific interface.
+func ForServiceTypeByName(serviceType string) ParsleyErrorFunc {
+	return func(e error) {
+		withServiceTypeErr, ok := e.(parsleyErrorWithServiceTypeNameSetter)
+		if ok {
+			withServiceTypeErr.setServiceTypeName(serviceType)
 		}
 	}
 }

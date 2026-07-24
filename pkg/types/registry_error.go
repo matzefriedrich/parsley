@@ -1,6 +1,9 @@
 package types
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	ErrorRequiresFunctionValue               = "the given value is not function"
@@ -34,18 +37,29 @@ type RegistryError struct {
 // _ ensures that RegistryError implements the ParsleyErrorWithServiceTypeName interface.
 var _ ParsleyErrorWithServiceTypeName = &RegistryError{}
 
-// ServiceTypeName sets the service type name of the RegistryError.
-func (r *RegistryError) ServiceTypeName(name string) {
+func (r *RegistryError) setServiceTypeName(name string) {
 	r.serviceTypeName = name
+}
+
+// ServiceTypeName returns the service type name associated with the RegistryError.
+func (r *RegistryError) ServiceTypeName() string {
+	return r.serviceTypeName
+}
+
+// Error returns the message associated with the RegistryError.
+func (r *RegistryError) Error() string {
+	return r.Msg
+}
+
+// Format implements the fmt.Formatter interface.
+func (r *RegistryError) Format(s fmt.State, verb rune) {
+	formatError(r.Msg, r.serviceTypeName, r.cause, s, verb)
 }
 
 // MatchesServiceType checks if the service type name of the RegistryError matches the specified name.
 func (r *RegistryError) MatchesServiceType(name string) bool {
 	return r.serviceTypeName == name
 }
-
-// _ ensures that RegistryError implements the ParsleyErrorWithServiceTypeName interface.
-var _ ParsleyErrorWithServiceTypeName = &RegistryError{}
 
 // NewRegistryError creates a new RegistryError with the given message and initializers to modify the error.
 func NewRegistryError(msg string, initializers ...ParsleyErrorFunc) error {
