@@ -2,6 +2,7 @@ package registration
 
 import (
 	"fmt"
+
 	"github.com/matzefriedrich/parsley/internal"
 	"github.com/matzefriedrich/parsley/internal/utils"
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -116,7 +117,7 @@ func detectCircularDependency(sr types.ServiceRegistration, registry types.Servi
 		next := stack.Pop()
 		if next.Id() == sr.Id() {
 			serviceType := sr.ServiceType()
-			return types.NewRegistryError(ErrorCircularServiceRegistrationDetected, types.ForServiceType(serviceType.Name()))
+			return types.NewRegistryError(ErrorCircularServiceRegistrationDetected, types.ForServiceTypeByName(serviceType.Name()))
 		}
 		pushRequiredServices(next)
 	}

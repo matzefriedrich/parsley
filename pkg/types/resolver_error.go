@@ -1,6 +1,9 @@
 package types
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	ErrorServiceTypeNotRegistered               = "service type is not registered"
@@ -55,9 +58,23 @@ type ResolverError struct {
 // _ ensures that the ResolverError implements the ParsleyErrorWithServiceTypeName interface.
 var _ ParsleyErrorWithServiceTypeName = &ResolverError{}
 
-// ServiceTypeName sets the service type name for the ResolverError instance.
-func (r *ResolverError) ServiceTypeName(name string) {
+func (r *ResolverError) setServiceTypeName(name string) {
 	r.serviceTypeName = name
+}
+
+// ServiceTypeName returns the name of the service type associated with the ResolverError instance.
+func (r *ResolverError) ServiceTypeName() string {
+	return r.serviceTypeName
+}
+
+// Error returns the message associated with the ResolverError.
+func (r *ResolverError) Error() string {
+	return r.Msg
+}
+
+// Format implements the fmt.Formatter interface.
+func (r *ResolverError) Format(s fmt.State, verb rune) {
+	formatError(r.Msg, r.serviceTypeName, r.cause, s, verb)
 }
 
 // NewResolverError creates a new ResolverError with the provided message and applies optional ParsleyErrorFunc initializers.
@@ -73,4 +90,9 @@ func NewResolverError(msg string, initializers ...ParsleyErrorFunc) error {
 	}
 
 	return err
+}
+
+// NewResolverErrorForType creates a new ResolverError with the specified message and service type information for type T.
+func NewResolverErrorForType[T any](msg string) error {
+	return NewResolverError(msg, ForServiceType[T]())
 }

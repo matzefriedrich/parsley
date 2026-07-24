@@ -25,7 +25,7 @@ func ResolveRequiredServices[T any](ctx context.Context, resolver types.Resolver
 	case reflect.Slice:
 	case reflect.Struct:
 	default:
-		return []T{}, types.NewResolverError(types.ErrorActivatorFunctionInvalidReturnType)
+		return []T{}, types.NewResolverErrorForType[T](types.ErrorActivatorFunctionInvalidReturnType)
 	}
 	resolvedInstances, err := resolver.Resolve(ctx, types.MakeServiceType[T]())
 	if err != nil {
@@ -50,9 +50,9 @@ func ResolveRequiredService[T any](ctx context.Context, resolver types.Resolver)
 	if len(services) == 1 {
 		return services[0], nil
 	} else if len(services) > 1 {
-		return nilInstance, types.NewResolverError(types.ErrorAmbiguousServiceInstancesResolved)
+		return nilInstance, types.NewResolverErrorForType[T](types.ErrorAmbiguousServiceInstancesResolved)
 	}
-	return nilInstance, types.NewResolverError(types.ErrorCannotResolveService)
+	return nilInstance, types.NewResolverErrorForType[T](types.ErrorCannotResolveService)
 }
 
 // NewResolver creates and returns a new Resolver instance based on the provided ServiceRegistry.
@@ -72,7 +72,7 @@ func detectCircularDependency(sr types.ServiceRegistration, consumer types.Depen
 		for stack.Any() {
 			next := stack.Pop()
 			if next.Registration().Id() == sr.Id() {
-				return types.NewResolverError(types.ErrorCircularDependencyDetected, types.ForServiceType(next.ServiceTypeName()))
+				return types.NewResolverError(types.ErrorCircularDependencyDetected, types.ForServiceTypeByName(next.ServiceTypeName()))
 			}
 			parent := next.Consumer()
 			if parent != nil {
@@ -101,7 +101,7 @@ func (r *resolver) Resolve(ctx context.Context, serviceType types.ServiceType) (
 }
 
 // ResolveWithOptions resolves instances for the given service type with the provided resolver options.
-func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.ServiceType, resolverOptions ...types.ResolverOptionsFunc) ([]interface{}, error) {
+func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.ServiceType, resolverOptions ...types.ResolverOptionsFunc) ([]any, error) {
 
 	registry, registryErr := r.createResolverRegistryAccessor(resolverOptions...)
 	if registryErr != nil {
@@ -110,10 +110,10 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.Ser
 
 	serviceRegistrationList, found := registry.TryGetServiceRegistrations(serviceType)
 	if !found {
-		return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(serviceType.Name()))
+		return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceTypeByName(serviceType.Name()))
 	}
 
-	resolvedInstances := make([]interface{}, 0)
+	resolvedInstances := make([]any, 0)
 
 	for _, serviceRegistration := range serviceRegistrationList.Registrations() {
 
@@ -137,11 +137,11 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.Ser
 			for _, requiredService := range requiredServices {
 				requiredServiceRegistration, isRegistered := registry.TryGetSingleServiceRegistration(requiredService)
 				if !isRegistered {
-					return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceType(requiredService.Name()))
+					return nil, types.NewResolverError(types.ErrorServiceTypeNotRegistered, types.ForServiceTypeByName(requiredService.Name()))
 				}
 				child, err := makeDependencyInfo(requiredServiceRegistration, next)
 				if err != nil {
-					return nil, types.NewResolverError(types.ErrorCannotBuildDependencyGraph, types.WithCause(err), types.ForServiceType(requiredService.Name()))
+					return nil, types.NewResolverError(types.ErrorCannotBuildDependencyGraph, types.WithCause(err), types.ForServiceTypeByName(requiredService.Name()))
 				}
 				if child.HasInstance() { // skip traversal if instance is already present
 					continue
@@ -165,7 +165,7 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.Ser
 
 			instance, err := next.CreateInstance(ctx)
 			if err != nil {
-				return nil, types.NewResolverError(types.ErrorCannotResolveService, types.WithCause(err), types.ForServiceType(next.ServiceTypeName()))
+				return nil, types.NewResolverError(types.ErrorCannotResolveService, types.WithCause(err), types.ForServiceTypeByName(next.ServiceTypeName()))
 			}
 
 			instances.KeepInstance(ctx, nextRegistration, instance)

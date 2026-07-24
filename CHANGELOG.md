@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.6.0] - 2026-07-25
+
+### Added
+
+* Introduced `ParsleyErrorWithServiceTypeName` interface and `ServiceTypeName()` getter for `ResolverError` and `RegistryError` to provide access to the affected service type. [#88](https://github.com/matzefriedrich/parsley/pull/88)
+* Added `ForServiceType[T]` and `ForServiceTypeByName` error initializers to enrich errors with service type information. [#88](https://github.com/matzefriedrich/parsley/pull/88)
+* Added `NewResolverErrorForType[T]` utility function for creating resolver errors with type context. [#88](https://github.com/matzefriedrich/parsley/pull/88)
+
+### Changed
+
+* Refactored `ResolverError` and `RegistryError` to implement `fmt.Formatter`. Formatted output (e.g., via `%v` or `%+v`) now includes the service type name while `Error()` returns the base message, preserving compatibility with `errors.Is` and sentinel errors. [#88](https://github.com/matzefriedrich/parsley/pull/88)
+
+### Fixed
+
+* `ResolveRequiredService` and `ResolveRequiredServices` now include the missing service type name in the returned error when resolution fails. [#88](https://github.com/matzefriedrich/parsley/pull/88)
+
+
 ## [v1.5.2] - 2026-07-22
 
 ### Changed
