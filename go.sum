@@ -9,6 +9,8 @@ github.com/matzefriedrich/cobra-extensions v0.6.0 h1:3h43Mm7u+olDmDFZ94ZJ/wCnyX3
 github.com/matzefriedrich/cobra-extensions v0.6.0/go.mod h1:VnrT96yZPT4E/JxzXCLCoYKllq0cmZvmRYSNQAKISRM=
 github.com/matzefriedrich/cobra-extensions v0.6.2 h1:dZqT2ihdx/zp1kR/WOf4dYLWbluSPZ0r5JfCiHO54yk=
 github.com/matzefriedrich/cobra-extensions v0.6.2/go.mod h1:Nrotndw9ManAbqsF/1LMIUHw5eXthyEDYpBzjCQqPgk=
+github.com/matzefriedrich/cobra-extensions v0.7.0 h1:dcenl6raGISUaeVx7JUdgzog+473Y6VI6LT5CnzIR0g=
+github.com/matzefriedrich/cobra-extensions v0.7.0/go.mod h1:Nrotndw9ManAbqsF/1LMIUHw5eXthyEDYpBzjCQqPgk=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

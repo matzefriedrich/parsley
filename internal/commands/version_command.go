@@ -10,11 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//nolint:unused // The use field is used by the cobra-extensions package
 type versionCommand struct {
-	use            types.CommandName `flag:"version" short:"Show the current Parsley CLI version"`
-	CheckForUpdate bool              `flag:"check-update" usage:"Checks for available updates and prints the update command"`
-	httpClient     utils.HttpClient
+	types.BaseCommand `cobra-x:"version, help='Show the current Parsley CLI version'"`
+	CheckForUpdate    bool `cobra-x:"-u|--check-update, help='Checks for available updates and prints the update command'"`
+	httpClient        utils.HttpClient
 }
 
 // Execute displays the current Parsley CLI version and checks for updates if enabled. Shows update instructions if a new version exists.
