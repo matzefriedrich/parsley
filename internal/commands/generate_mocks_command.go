@@ -15,9 +15,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//nolint:unused // The use field is used by the cobra-extensions package
 type mocksGeneratorCommand struct {
-	use                 types.CommandName `flag:"mocks" short:"Generate configurable mocks for interface types." long:"Generates fully configurable mock implementations for Go interface types. It simplifies the process of creating mocks by analyzing the source code and automatically generating mock structs that adhere to the defined interfaces."`
+	types.BaseCommand   `cobra-x:"mocks, help='Generate configurable mocks for interface types.', description='Generates fully configurable mock implementations for Go interface types. It simplifies the process of creating mocks by analyzing the source code and automatically generating mock structs that adhere to the defined interfaces.'"`
 	fileAccessor        reflection.AstFileAccessor
 	outputWriterFactory generator.OutputWriterFactory
 }

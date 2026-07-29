@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+
+### Changed
+
+* Migrates all command structs to use `types.BaseCommand` and the new `cobra-x` tag format, following breaking changes in `github.com/matzefriedrich/cobra-extensions` v0.7.0. [#89](https://github.com/matzefriedrich/parsley/pull/89)
+* Updates `github.com/matzefriedrich/cobra-extensions` dependency from v0.6.0 to v0.7.0, and removed `//nolint:unused` comments from command structs as they are no longer required with the new `cobra-extensions` version. [#89](https://github.com/matzefriedrich/parsley/pull/89)
+
+
 ## [v1.6.0] - 2026-07-25
 
 ### Added
