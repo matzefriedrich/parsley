@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [v1.6.1] - 2026-07-30
 
 ### Added
 
@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Migrates all command structs (`init`, `version`, `generate`, `mocks`, `proxy`) to use `types.BaseCommand` and the new unified `cobra-x` tag format for metadata and flags. This follows breaking changes in `github.com/matzefriedrich/cobra-extensions` v0.7.0. [#89](https://github.com/matzefriedrich/parsley/pull/89)
-* Updates `github.com/matzefriedrich/cobra-extensions` dependency from v0.6.0 to v0.7.0. [#89](https://github.com/matzefriedrich/parsley/pull/89)
+* Updates `github.com/matzefriedrich/cobra-extensions` dependency from v0.6.2 to v0.7.0. [#89](https://github.com/matzefriedrich/parsley/pull/89)
 * Removes obsolete `//nolint:unused` comments from command structs as the new `BaseCommand` embedding handles command metadata discovery. [#89](https://github.com/matzefriedrich/parsley/pull/89)
 * Bumps `go.yaml.in/yaml/v3` from v3.0.4 to v3.0.5.
 
