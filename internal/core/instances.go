@@ -117,6 +117,9 @@ func (b *InstanceBag) Dispose(ctx context.Context) error {
 	var errs []error
 	for i := len(b.disposables) - 1; i >= 0; i-- {
 		ref := b.disposables[i]
+		if ref.disposed {
+			continue
+		}
 		if disposable, ok := b.instances[ref.id].(types.Disposable); ok {
 			err := disposable.Dispose(ctx)
 			if err != nil {
@@ -126,7 +129,7 @@ func (b *InstanceBag) Dispose(ctx context.Context) error {
 		}
 	}
 	if len(errs) > 0 {
-		return types.NewAggregateError("failed to dispose one or more services", errs)
+		return types.NewResolverError("failed to dispose one or more services", types.WithAggregatedCause(errs...))
 	}
 	return nil
 }
