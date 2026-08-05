@@ -78,14 +78,6 @@ func (f ParsleyAggregateError) Errors() []error {
 	return f.errors
 }
 
-// NewAggregateError creates a new ParsleyAggregateError with the provided message and slice of errors.
-func NewAggregateError(msg string, errs []error) error {
-	return &ParsleyAggregateError{
-		Msg:    msg,
-		errors: errs,
-	}
-}
-
 // Error returns the message associated with the ParsleyAggregateError.
 func (f ParsleyAggregateError) Error() string {
 	return f.Msg
