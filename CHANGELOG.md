@@ -9,16 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Introduced `Disposable` interface with a `Dispose(context.Context) error` method to support explicit cleanup of services. [#90](https://github.com/matzefriedrich/parsley/issues/90)
-* Added `Shutdown(context.Context) error` to the `Resolver` interface to facilitate the disposal of singleton services. [#90](https://github.com/matzefriedrich/parsley/issues/90)
-* Added `DisposeScope(context.Context) error` to `pkg/resolving` for disposing of scoped services associated with a context. [#90](https://github.com/matzefriedrich/parsley/issues/90)
-* Added `NewAggregateError` utility to `pkg/types` for grouping multiple disposal errors. [#90](https://github.com/matzefriedrich/parsley/issues/90)
+* Introduced `Disposable` interface with a `Dispose(context.Context) error` method to support explicit cleanup of services. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
+* Added `Shutdown(context.Context) error` to the `Resolver` interface to facilitate the disposal of singleton services. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
+* Added `DisposeScope(context.Context) error` to `pkg/resolving` for disposing of scoped services associated with a context. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
+* Added `NewAggregateError` utility to `pkg/types` for grouping multiple disposal errors. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
 
 ### Changed
  
 * Upgrades Go version to 1.26.5
-* The `bootstrap.RunParsleyApplication` function now automatically handles the disposal of singleton and scoped services upon application exit. [#90](https://github.com/matzefriedrich/parsley/issues/90)
-* Refactored `internal/core.InstanceBag` to track `Disposable` instances and provide thread-safe disposal in reverse order of creation. [#90](https://github.com/matzefriedrich/parsley/issues/90)
+* The `bootstrap.RunParsleyApplication` function now automatically handles the disposal of singleton and scoped services upon application exit. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
+* Refactored `internal/core.InstanceBag` to track `Disposable` instances and provide thread-safe disposal in reverse order of creation. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
  
  
 ## [v1.6.1] - 2026-07-30
