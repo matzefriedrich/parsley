@@ -177,4 +177,8 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.Ser
 	return resolvedInstances, nil
 }
 
+func (r *resolver) Shutdown(ctx context.Context) error {
+	return r.globalInstances.Dispose(ctx)
+}
+
 var _ types.Resolver = &resolver{}
