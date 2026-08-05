@@ -147,6 +147,11 @@ type NamedService[T any] interface {
 	ActivatorFunc() any
 }
 
+// Disposable represents a service that requires explicit cleanup when it is no longer needed.
+type Disposable interface {
+	Dispose(ctx context.Context) error
+}
+
 // ResolverOptionsFunc represents a function that configures a service registry used by the resolver.
 type ResolverOptionsFunc func(registry ServiceRegistry) error
 
@@ -158,6 +163,9 @@ type Resolver interface {
 
 	// ResolveWithOptions resolves services of the specified type using additional options and returns a list of resolved services or an error.
 	ResolveWithOptions(ctx context.Context, serviceType ServiceType, options ...ResolverOptionsFunc) ([]interface{}, error)
+
+	// Shutdown disposes all registered singleton services that implement the Disposable interface.
+	Shutdown(ctx context.Context) error
 }
 
 // DependencyInfo provides functionality to manage dependency information.

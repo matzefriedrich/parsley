@@ -1,7 +1,6 @@
 [![CI](https://github.com/matzefriedrich/parsley/actions/workflows/go.yml/badge.svg)](https://github.com/matzefriedrich/parsley/actions/workflows/go.yml)
 [![Coverage Status](https://coveralls.io/repos/github/matzefriedrich/parsley/badge.svg)](https://coveralls.io/github/matzefriedrich/parsley)
 [![Go Reference](https://pkg.go.dev/badge/github.com/matzefriedrich/parsley.svg)](https://pkg.go.dev/github.com/matzefriedrich/parsley)
-[![Go Report Card](https://goreportcard.com/badge/github.com/matzefriedrich/parsley)](https://goreportcard.com/report/github.com/matzefriedrich/parsley)
 ![License](https://img.shields.io/github/license/matzefriedrich/parsley)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/matzefriedrich/parsley)
 ![GitHub Release](https://img.shields.io/github/v/release/matzefriedrich/parsley?include_prereleases)
@@ -28,6 +27,7 @@ Dependency injection in Go typically relies on constructor functions, which are 
 - **Registration Validation**: Ensures early detection of missing registrations or circular dependencies.
 - **Advanced Registrations**: Register multiple implementations for the same interface using named services or lists.
 - **Proxy and Mock Support**: Generate extensible proxy types and configurable mocks to streamline testing workflows.
+- **Resource Cleanup**: Automatically dispose singleton and scoped service instances implementing `Disposable` during application shutdown.
 
 For a complete overview of features and capabilities, refer to the [Parsley documentation](https://matzefriedrich.github.io/parsley-docs/).
 
