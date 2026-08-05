@@ -84,7 +84,7 @@ type orderedDisposableService struct {
 	history *[]int
 }
 
-func (s *orderedDisposableService) Dispose(ctx context.Context) error {
+func (s *orderedDisposableService) Dispose(_ context.Context) error {
 	*s.history = append(*s.history, s.id)
 	return nil
 }
