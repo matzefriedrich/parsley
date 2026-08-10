@@ -5,14 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
  
-## [unreleased]
+## [v1.7.0] - 2026-08-05
 
 ### Added
 
 * Introduced `Disposable` interface with a `Dispose(context.Context) error` method to support explicit cleanup of services. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
 * Added `Shutdown(context.Context) error` to the `Resolver` interface to facilitate the disposal of singleton services. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
 * Added `DisposeScope(context.Context) error` to `pkg/resolving` for disposing of scoped services associated with a context. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
-* Added `NewAggregateError` utility to `pkg/types` for grouping multiple disposal errors. [#93](https://github.com/matzefriedrich/parsley/pull/93), [#90](https://github.com/matzefriedrich/parsley/issues/90)
 
 ### Changed
  
