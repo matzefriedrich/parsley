@@ -64,18 +64,7 @@ func (s *serviceRegistry) GetTeardownOrder() []string {
 // takes effect when a resolver is created (singleton services) or a scoped context is created (scoped services). Empty
 // group names are ignored and duplicate group names keep their first occurrence position.
 func (s *serviceRegistry) SetTeardownOrder(groups ...string) {
-	s.teardownOrder = make([]string, 0, len(groups))
-	seen := make(map[string]struct{}, len(groups))
-	for _, group := range groups {
-		if group == "" {
-			continue
-		}
-		if _, exists := seen[group]; exists {
-			continue
-		}
-		seen[group] = struct{}{}
-		s.teardownOrder = append(s.teardownOrder, group)
-	}
+	s.teardownOrder = core.NormalizeTeardownOrder(groups)
 }
 
 // RegisterModule registers one or more modules with the service registry.

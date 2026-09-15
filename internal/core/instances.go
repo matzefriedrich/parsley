@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"maps"
+	"slices"
 	"sync"
 
 	"github.com/matzefriedrich/parsley/pkg/types"
@@ -60,6 +61,25 @@ func copyTeardownOrder(order []string) []string {
 	copied := make([]string, len(order))
 	copy(copied, order)
 	return copied
+}
+
+// NormalizeTeardownOrder strips empty group names and removes duplicates, keeping each group at its first occurrence
+// position. Teardown orders are normalized at the point they are declared so that the disposal logic can rely on
+// well-formed input.
+func NormalizeTeardownOrder(groups []string) []string {
+	order := make([]string, 0, len(groups))
+	seen := make(map[string]struct{}, len(groups))
+	for _, group := range groups {
+		if group == "" {
+			continue
+		}
+		if _, exists := seen[group]; exists {
+			continue
+		}
+		seen[group] = struct{}{}
+		order = append(order, group)
+	}
+	return order
 }
 
 // TryResolveInstance attempts to locate an instance of a service identified by the given registration.
@@ -149,12 +169,12 @@ func (b *InstanceBag) Dispose(ctx context.Context) error {
 	return nil
 }
 
-// disposalOrder computes the disposal order over the given disposables. Without a declared teardown order the
-// disposables are returned in reverse resolution order (the default behaviour). With a declared order, each listed
-// group is visited once in declaration order (deduplicated, empty names skipped) and its members are appended in
-// reverse resolution order; a "default" pass collects explicit DefaultLifecycleGroup members together with members of
-// any group not listed in the order, and is placed at the "default" position (its declared position, or last when
-// "default" is not listed).
+// disposalOrder computes the disposal order over the given disposables, assuming teardownOrder is normalized (see
+// NormalizeTeardownOrder). Without a declared teardown order the disposables are returned in reverse resolution order
+// (the default behaviour). With a declared order, each listed group is visited once in declaration order and its
+// members are appended in reverse resolution order; a "default" pass collects explicit DefaultLifecycleGroup members
+// together with members of any group not listed in the order, and is placed at the "default" position (its declared
+// position, or last when "default" is not listed).
 func disposalOrder(teardownOrder []string, disposables []*disposableRef) []*disposableRef {
 	if len(teardownOrder) == 0 {
 		order := make([]*disposableRef, 0, len(disposables))
@@ -163,30 +183,15 @@ func disposalOrder(teardownOrder []string, disposables []*disposableRef) []*disp
 		}
 		return order
 	}
-	listed := make(map[string]struct{}, len(teardownOrder))
-	sequence := make([]string, 0, len(teardownOrder)+1)
-	for _, group := range teardownOrder {
-		if group == "" {
-			continue
-		}
-		if _, exists := listed[group]; exists {
-			continue
-		}
-		listed[group] = struct{}{}
-		sequence = append(sequence, group)
-	}
-	if needsDefaultPass(disposables, sequence, listed) {
+	sequence := append([]string(nil), teardownOrder...)
+	if needsDefaultPass(disposables, sequence) {
 		sequence = append(sequence, types.DefaultLifecycleGroup)
 	}
 	order := make([]*disposableRef, 0, len(disposables))
 	for _, group := range sequence {
 		for i := len(disposables) - 1; i >= 0; i-- {
 			ref := disposables[i]
-			if group == types.DefaultLifecycleGroup {
-				if isDefaultMatch(ref.group, listed) {
-					order = append(order, ref)
-				}
-			} else if ref.group == group {
+			if matchesGroup(ref, group, sequence) {
 				order = append(order, ref)
 			}
 		}
@@ -194,29 +199,35 @@ func disposalOrder(teardownOrder []string, disposables []*disposableRef) []*disp
 	return order
 }
 
+// matchesGroup reports whether the given disposable ref is disposed during the pass for group: explicit members of
+// the group, or — during the "default" pass — members of the explicit DefaultLifecycleGroup and of any unlisted group.
+func matchesGroup(ref *disposableRef, group string, sequence []string) bool {
+	if group == types.DefaultLifecycleGroup {
+		return isDefaultMatch(ref.group, sequence)
+	}
+	return ref.group == group
+}
+
 // isDefaultMatch reports whether the given group is handled by the "default" pass: the explicit
 // DefaultLifecycleGroup or any group not listed in the declared teardown order.
-func isDefaultMatch(group string, listed map[string]struct{}) bool {
+func isDefaultMatch(group string, sequence []string) bool {
 	if group == "" {
 		group = types.DefaultLifecycleGroup
 	}
 	if group == types.DefaultLifecycleGroup {
 		return true
 	}
-	_, ok := listed[group]
-	return !ok
+	return !slices.Contains(sequence, group)
 }
 
 // needsDefaultPass reports whether a "default" pass has to be appended to the disposal sequence: a ref whose group is
 // handled by the "default" pass exists while "default" is not yet part of the sequence.
-func needsDefaultPass(disposables []*disposableRef, sequence []string, listed map[string]struct{}) bool {
-	for _, group := range sequence {
-		if group == types.DefaultLifecycleGroup {
-			return false
-		}
+func needsDefaultPass(disposables []*disposableRef, sequence []string) bool {
+	if slices.Contains(sequence, types.DefaultLifecycleGroup) {
+		return false
 	}
 	for _, ref := range disposables {
-		if isDefaultMatch(ref.group, listed) {
+		if isDefaultMatch(ref.group, sequence) {
 			return true
 		}
 	}
