@@ -241,3 +241,49 @@ func Test_Resolver_Shutdown_skips_empty_listed_group(t *testing.T) {
 	// Assert
 	assert.Equal(t, []string{"http", "db"}, history)
 }
+
+func registerGroupedScopedDisposablePair(registry types.ServiceRegistry, history *[]string) {
+	_ = registration.RegisterScopedWithOptions(registry, func() *groupOrderedDisposable {
+		return &groupOrderedDisposable{id: "http", history: history}
+	}, types.InLifecycleGroup("transport"))
+	_ = registration.RegisterScopedWithOptions(registry, func() *groupOrderedDisposable {
+		return &groupOrderedDisposable{id: "db", history: history}
+	}, types.InLifecycleGroup("infrastructure"))
+}
+
+func Test_DisposeScope_disposes_scoped_services_in_declared_group_order(t *testing.T) {
+
+	// Arrange
+	history := make([]string, 0)
+	registry := registration.NewServiceRegistry()
+	registry.SetTeardownOrder("transport", "infrastructure")
+	registerGroupedScopedDisposablePair(registry, &history)
+
+	r := resolving.NewResolver(registry)
+	ctx := resolving.NewScopedContextWithOptions(t.Context(), resolving.WithTeardownOrder(registry.GetTeardownOrder()...))
+
+	// Act
+	_, _ = resolving.ResolveRequiredServices[*groupOrderedDisposable](ctx, r)
+	_ = resolving.DisposeScope(ctx)
+
+	// Assert
+	assert.Equal(t, []string{"http", "db"}, history)
+}
+
+func Test_DisposeScope_without_options_disposes_in_reverse_resolution_order(t *testing.T) {
+
+	// Arrange
+	history := make([]string, 0)
+	registry := registration.NewServiceRegistry()
+	registerGroupedScopedDisposablePair(registry, &history)
+
+	r := resolving.NewResolver(registry)
+	ctx := resolving.NewScopedContext(t.Context())
+
+	// Act
+	_, _ = resolving.ResolveRequiredServices[*groupOrderedDisposable](ctx, r)
+	_ = resolving.DisposeScope(ctx)
+
+	// Assert
+	assert.Equal(t, []string{"db", "http"}, history)
+}
