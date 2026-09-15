@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Bumps `golang.org/x/mod` from 0.38.0 to 0.40.0 [#96](https://github.com/matzefriedrich/parsley/pull/96)
 * Bumps `github.com/stretchr/testify` from 1.11.1 to 1.12.1 [#97](https://github.com/matzefriedrich/parsley/pull/97)
 * Bumps `golang.org/x/mod` from 0.40.0 to 0.41.0- [#98](https://github.com/matzefriedrich/parsley/pull/98)
+* Bumps `github.com/matzefriedrich/cobra-extensions` from 0.8.0 to 0.9.0- [#99](https://github.com/matzefriedrich/parsley/pull/99)
 
 
 ## [v1.7.0] - 2026-08-05
