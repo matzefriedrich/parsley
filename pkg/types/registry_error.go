@@ -11,6 +11,8 @@ const (
 	ErrorTypeAlreadyRegistered               = "type already registered"
 	ErrorServiceAlreadyLinkedWithAnotherList = "service already linked with another list"
 	ErrorFailedToRegisterType                = "failed to register type"
+	ErrorEmptyLifecycleGroupName             = "lifecycle group name must not be empty"
+	ErrorMultipleLifecycleGroups             = "service registered in multiple lifecycle groups"
 )
 
 var (
@@ -26,6 +28,12 @@ var (
 
 	// ErrFailedToRegisterType indicates that the attempt to register a type has failed.
 	ErrFailedToRegisterType = errors.New(ErrorFailedToRegisterType)
+
+	// ErrEmptyLifecycleGroupName indicates that a lifecycle group name must not be empty.
+	ErrEmptyLifecycleGroupName = errors.New(ErrorEmptyLifecycleGroupName)
+
+	// ErrMultipleLifecycleGroups indicates that a service was assigned to multiple lifecycle groups.
+	ErrMultipleLifecycleGroups = errors.New(ErrorMultipleLifecycleGroups)
 )
 
 // RegistryError represents an error that gets returned for failing registry operations.
