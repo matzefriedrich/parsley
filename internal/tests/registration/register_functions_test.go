@@ -82,6 +82,10 @@ func Test_RegisterSingletonWithOptions_forwards_scope_and_options(t *testing.T) 
 	assert.NoError(t, err)
 	assert.Equal(t, types.LifetimeSingleton, capturedScope)
 	assert.Equal(t, 1, len(capturedOptions))
+
+	group, applyErr := types.ApplyLifecycleOptions(capturedOptions...)
+	assert.NoError(t, applyErr)
+	assert.Equal(t, "transport", group)
 }
 
 func Test_RegisterTransientWithOptions_forwards_scope_and_options(t *testing.T) {
