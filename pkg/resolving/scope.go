@@ -13,17 +13,11 @@ type scopedContextOptions struct {
 // ScopeOptionsFunc configures a scoped context created by NewScopedContextWithOptions.
 type ScopeOptionsFunc func(*scopedContextOptions)
 
-// WithTeardownOrder declares the lifecycle group teardown order for a scoped context. Empty group names are ignored.
+// WithTeardownOrder declares the lifecycle group teardown order for a scoped context. Empty group names are ignored
+// and duplicate group names keep their first occurrence position.
 func WithTeardownOrder(groups ...string) ScopeOptionsFunc {
 	return func(o *scopedContextOptions) {
-		order := make([]string, 0, len(groups))
-		for _, group := range groups {
-			if group == "" {
-				continue
-			}
-			order = append(order, group)
-		}
-		o.teardownOrder = order
+		o.teardownOrder = core.NormalizeTeardownOrder(groups)
 	}
 }
 
