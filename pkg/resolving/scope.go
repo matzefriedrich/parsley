@@ -8,7 +8,7 @@ import (
 
 // NewScopedContext creates a new context with an associated service instance map, useful for managing service lifetimes within scope.
 func NewScopedContext(ctx context.Context) context.Context {
-	bag := core.NewInstancesBag(nil, types.LifetimeScoped)
+	bag := core.NewInstancesBag(nil, types.LifetimeScoped, nil)
 	return context.WithValue(ctx, core.ParsleyContext, bag)
 }
 
