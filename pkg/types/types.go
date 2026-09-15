@@ -100,6 +100,9 @@ type ServiceRegistration interface {
 	// Id Returns the unique identifier of the service registration.
 	Id() uint64
 
+	// LifecycleGroup returns the lifecycle group this service registration belongs to.
+	LifecycleGroup() string
+
 	// InvokeActivator calls the activator function with the provided parameters and returns the resulting instance and any error.
 	InvokeActivator(ctx context.Context, params ...interface{}) (interface{}, error)
 
