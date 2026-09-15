@@ -84,7 +84,8 @@ type ServiceRegistry interface {
 	// RegisterWithOptions registers a service with its activator function, lifetime scope, and lifecycle options.
 	RegisterWithOptions(activatorFunc any, scope LifetimeScope, options ...LifecycleOption) error
 
-	// SetTeardownOrder declares the lifecycle group teardown order, replacing any previously declared order.
+	// SetTeardownOrder declares the lifecycle group teardown order, replacing any previously declared order. The order
+	// takes effect when a resolver is created (singleton services) or a scoped context is created (scoped services).
 	SetTeardownOrder(groups ...string)
 }
 

@@ -60,8 +60,9 @@ func (s *serviceRegistry) GetTeardownOrder() []string {
 	return order
 }
 
-// SetTeardownOrder declares the lifecycle group teardown order, replacing any previously declared order. Empty group
-// names are ignored and duplicate group names keep their first occurrence position.
+// SetTeardownOrder declares the lifecycle group teardown order, replacing any previously declared order. The order
+// takes effect when a resolver is created (singleton services) or a scoped context is created (scoped services). Empty
+// group names are ignored and duplicate group names keep their first occurrence position.
 func (s *serviceRegistry) SetTeardownOrder(groups ...string) {
 	s.teardownOrder = make([]string, 0, len(groups))
 	seen := make(map[string]struct{}, len(groups))
