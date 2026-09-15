@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  
 ## [unrelease]
 
+### Added
+
+* Added lifecycle groups for explicit teardown ordering, independent of resolution order. New `types.InLifecycleGroup`,
+  `types.LifecycleOption`, `ServiceRegistry.SetTeardownOrder`, `ServiceRegistry.RegisterWithOptions`,
+  `RegisterTransientWithOptions`, `RegisterScopedWithOptions`, and `RegisterSingletonWithOptions` functions allow
+  grouping services and declaring their teardown order. [#91](https://github.com/matzefriedrich/parsley/issues/91)
+* Added `resolving.NewScopedContextWithOptions` with `resolving.WithTeardownOrder` to apply lifecycle group teardown
+  ordering to scoped services. [#91](https://github.com/matzefriedrich/parsley/issues/91)
+
 ### Changed
  
 * Bumps `github.com/matzefriedrich/cobra-extensions` from 0.7.0 to 0.8.0 [#94](https://github.com/matzefriedrich/parsley/pull/94)

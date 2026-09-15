@@ -66,6 +66,9 @@ type ServiceRegistry interface {
 	// GetServiceRegistrations retrieves all service registrations.
 	GetServiceRegistrations() ([]ServiceRegistration, error)
 
+	// GetTeardownOrder returns the declared lifecycle group teardown order. An empty result means no teardown order is declared.
+	GetTeardownOrder() []string
+
 	// IsRegistered checks if a service of the specified ServiceType is registered in the service registry.
 	IsRegistered(serviceType ServiceType) bool
 
@@ -77,6 +80,13 @@ type ServiceRegistry interface {
 
 	// RegisterModuleIf registers one or more modules with the service registry if the provided condition is true.
 	RegisterModuleIf(condition bool, modules ...ModuleFunc) error
+
+	// RegisterWithOptions registers a service with its activator function, lifetime scope, and lifecycle options.
+	RegisterWithOptions(activatorFunc any, scope LifetimeScope, options ...LifecycleOption) error
+
+	// SetTeardownOrder declares the lifecycle group teardown order, replacing any previously declared order. The order
+	// takes effect when a resolver is created (singleton services) or a scoped context is created (scoped services).
+	SetTeardownOrder(groups ...string)
 }
 
 // ModuleFunc defines a function used to register services with the given service registry.
@@ -99,6 +109,9 @@ type ServiceRegistration interface {
 
 	// Id Returns the unique identifier of the service registration.
 	Id() uint64
+
+	// LifecycleGroup returns the lifecycle group this service registration belongs to.
+	LifecycleGroup() string
 
 	// InvokeActivator calls the activator function with the provided parameters and returns the resulting instance and any error.
 	InvokeActivator(ctx context.Context, params ...interface{}) (interface{}, error)
