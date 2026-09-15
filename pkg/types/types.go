@@ -66,6 +66,9 @@ type ServiceRegistry interface {
 	// GetServiceRegistrations retrieves all service registrations.
 	GetServiceRegistrations() ([]ServiceRegistration, error)
 
+	// GetTeardownOrder returns the declared lifecycle group teardown order. An empty result means no teardown order is declared.
+	GetTeardownOrder() []string
+
 	// IsRegistered checks if a service of the specified ServiceType is registered in the service registry.
 	IsRegistered(serviceType ServiceType) bool
 
@@ -77,6 +80,12 @@ type ServiceRegistry interface {
 
 	// RegisterModuleIf registers one or more modules with the service registry if the provided condition is true.
 	RegisterModuleIf(condition bool, modules ...ModuleFunc) error
+
+	// RegisterWithOptions registers a service with its activator function, lifetime scope, and lifecycle options.
+	RegisterWithOptions(activatorFunc any, scope LifetimeScope, options ...LifecycleOption) error
+
+	// SetTeardownOrder declares the lifecycle group teardown order, replacing any previously declared order.
+	SetTeardownOrder(groups ...string)
 }
 
 // ModuleFunc defines a function used to register services with the given service registry.

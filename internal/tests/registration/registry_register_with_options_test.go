@@ -37,3 +37,29 @@ func Test_CreateServiceRegistrationWithOptions_multiple_groups_returns_error(t *
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "multiple lifecycle groups")
 }
+
+func Test_RegisterSingletonWithOptions_assigns_the_lifecycle_group(t *testing.T) {
+	// Arrange
+	registry := registration.NewServiceRegistry()
+
+	// Act
+	err := registration.RegisterSingletonWithOptions(registry, newGroupableService, types.InLifecycleGroup("infrastructure"))
+
+	// Assert
+	assert.NoError(t, err)
+	registrations, _ := registry.GetServiceRegistrations()
+	assert.Equal(t, 1, len(registrations))
+	assert.Equal(t, "infrastructure", registrations[0].LifecycleGroup())
+}
+
+func Test_RegisterSingletonWithOptions_empty_group_name_returns_error(t *testing.T) {
+	// Arrange
+	registry := registration.NewServiceRegistry()
+
+	// Act
+	err := registration.RegisterSingletonWithOptions(registry, newGroupableService, types.InLifecycleGroup(""))
+
+	// Assert
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "must not be empty")
+}
