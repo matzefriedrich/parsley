@@ -8,6 +8,7 @@ import (
 type serviceRegistry struct {
 	identifierSource core.ServiceIdSequence
 	registrations    map[types.ServiceKey]types.ServiceRegistrationList
+	teardownOrder    []string
 }
 
 func (s *serviceRegistry) addOrUpdateServiceRegistrationListFor(serviceType types.ServiceType) types.ServiceRegistrationList {
@@ -31,8 +32,13 @@ func (s *serviceRegistry) GetServiceRegistrations() ([]types.ServiceRegistration
 
 // Register adds a service registration with the provided activator function and lifetime scope.
 func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.LifetimeScope) error {
+	return s.RegisterWithOptions(activatorFunc, lifetimeScope)
+}
 
-	registration, err := CreateServiceRegistration(activatorFunc, lifetimeScope)
+// RegisterWithOptions adds a service registration with the provided activator function, lifetime scope, and lifecycle options.
+func (s *serviceRegistry) RegisterWithOptions(activatorFunc any, lifetimeScope types.LifetimeScope, options ...types.LifecycleOption) error {
+
+	registration, err := CreateServiceRegistrationWithOptions(activatorFunc, lifetimeScope, options...)
 	if err != nil {
 		return err
 	}
@@ -45,6 +51,20 @@ func (s *serviceRegistry) Register(activatorFunc any, lifetimeScope types.Lifeti
 	}
 
 	return nil
+}
+
+// GetTeardownOrder returns a copy of the declared lifecycle group teardown order.
+func (s *serviceRegistry) GetTeardownOrder() []string {
+	order := make([]string, len(s.teardownOrder))
+	copy(order, s.teardownOrder)
+	return order
+}
+
+// SetTeardownOrder declares the lifecycle group teardown order, replacing any previously declared order. The order
+// takes effect when a resolver is created (singleton services) or a scoped context is created (scoped services). Empty
+// group names are ignored and duplicate group names keep their first occurrence position.
+func (s *serviceRegistry) SetTeardownOrder(groups ...string) {
+	s.teardownOrder = core.NormalizeTeardownOrder(groups)
 }
 
 // RegisterModule registers one or more modules with the service registry.
@@ -112,6 +132,7 @@ func (s *serviceRegistry) CreateLinkedRegistry() types.ServiceRegistry {
 	return &serviceRegistry{
 		identifierSource: s.identifierSource,
 		registrations:    registrations,
+		teardownOrder:    s.teardownOrder,
 	}
 }
 
@@ -124,6 +145,7 @@ func (s *serviceRegistry) CreateScope() types.ServiceRegistry {
 	return &serviceRegistry{
 		identifierSource: s.identifierSource,
 		registrations:    registrations,
+		teardownOrder:    s.teardownOrder,
 	}
 }
 
