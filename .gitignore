@@ -1,5 +1,6 @@
 .idea/
-.junie/
+.junie/memory/
+.junie/plans/
 .vscode/
 
 build/
