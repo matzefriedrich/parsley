@@ -13,7 +13,7 @@ package {{ .PackageName }}
 {{- if .Imports }}
 import (
     {{- range .Imports }}
-    "{{ . }}"
+    {{- with index $.ImportAliases . }}{{ . }} {{ end }}"{{ . }}"
     {{- end }}
 )
 {{ "" }}
