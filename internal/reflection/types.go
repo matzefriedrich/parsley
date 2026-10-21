@@ -77,11 +77,12 @@ type Comment struct {
 
 // Model is the generator root model type.
 type Model struct {
-	Comments    []Comment
-	Interfaces  []Interface
-	FuncTypes   []FuncType
-	PackageName string
-	Imports     []string
+	Comments      []Comment
+	Interfaces    []Interface
+	FuncTypes     []FuncType
+	PackageName   string
+	Imports       []string
+	ImportAliases map[string]string
 }
 
 type ModelConfigurationFunc func(m *Model)

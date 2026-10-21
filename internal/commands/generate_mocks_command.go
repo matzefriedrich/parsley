@@ -63,8 +63,8 @@ func (m *mocksGeneratorCommand) Execute(_ context.Context) {
 		config.TemplateLoader = templateLoader
 		config.OutputWriterFactory = m.outputWriterFactory
 		config.ConfigureModelCallback = func(m *reflection.Model) {
-			m.AddImport("github.com/matzefriedrich/parsley/pkg/features")
 			m.Interfaces = filterInterfaces(m)
+			m.Imports = mockImports(m)
 		}
 	})
 
@@ -111,6 +111,64 @@ func filterInterfaces(m *reflection.Model) []reflection.Interface {
 	default:
 		return m.Interfaces
 	}
+}
+
+func mockImports(model *reflection.Model) []string {
+	if len(model.Interfaces) == 0 {
+		return nil
+	}
+	usedPaths := referencedImportPaths(model)
+	usedPaths["github.com/matzefriedrich/parsley/pkg/features"] = struct{}{}
+	return importsInSourceOrder(model.Imports, usedPaths)
+}
+
+func referencedImportPaths(model *reflection.Model) map[string]struct{} {
+	pathsByQualifier := importPathsByQualifier(model)
+	usedPaths := make(map[string]struct{})
+	for _, interfaceModel := range model.Interfaces {
+		for _, method := range interfaceModel.Methods {
+			addParameterImports(method.Parameters, pathsByQualifier, usedPaths)
+			addParameterImports(method.Results, pathsByQualifier, usedPaths)
+		}
+	}
+	return usedPaths
+}
+
+func importPathsByQualifier(model *reflection.Model) map[string]string {
+	pathsByQualifier := make(map[string]string, len(model.Imports))
+	for _, importPath := range model.Imports {
+		qualifier := model.ImportAliases[importPath]
+		if qualifier == "" {
+			parts := strings.Split(importPath, "/")
+			qualifier = parts[len(parts)-1]
+		}
+		pathsByQualifier[qualifier] = importPath
+	}
+	return pathsByQualifier
+}
+
+func addParameterImports(parameters []reflection.Parameter, pathsByQualifier map[string]string, usedPaths map[string]struct{}) {
+	for _, parameter := range parameters {
+		for typePart := parameter.Type; typePart != nil; typePart = typePart.Next {
+			if importPath, found := pathsByQualifier[typePart.SelectorName]; found {
+				usedPaths[importPath] = struct{}{}
+			}
+		}
+	}
+}
+
+func importsInSourceOrder(sourceImports []string, usedPaths map[string]struct{}) []string {
+	imports := make([]string, 0, len(usedPaths))
+	for _, importPath := range sourceImports {
+		if _, used := usedPaths[importPath]; used {
+			imports = append(imports, importPath)
+		}
+	}
+	featuresPath := "github.com/matzefriedrich/parsley/pkg/features"
+	if !slices.Contains(imports, featuresPath) {
+		imports = append(imports, featuresPath)
+	}
+	return imports
 }
 
 var _ types.TypedCommand = (*mocksGeneratorCommand)(nil)

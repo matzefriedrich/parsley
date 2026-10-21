@@ -6,21 +6,23 @@ import (
 )
 
 type fileVisitor struct {
-	idSequence  uint64
-	packageName string
-	imports     []string
-	interfaces  []Interface
-	funcTypes   []FuncType
-	comments    []Comment
+	idSequence    uint64
+	packageName   string
+	imports       []string
+	importAliases map[string]string
+	interfaces    []Interface
+	funcTypes     []FuncType
+	comments      []Comment
 }
 
 func (t *fileVisitor) Model() (*Model, error) {
 	return &Model{
-		PackageName: t.packageName,
-		Imports:     t.imports,
-		Interfaces:  t.interfaces,
-		FuncTypes:   t.funcTypes,
-		Comments:    t.comments,
+		PackageName:   t.packageName,
+		Imports:       t.imports,
+		ImportAliases: t.importAliases,
+		Interfaces:    t.interfaces,
+		FuncTypes:     t.funcTypes,
+		Comments:      t.comments,
 	}, nil
 }
 
@@ -29,11 +31,12 @@ var _ AstFileVisitor = (*fileVisitor)(nil)
 func NewFileVisitor() AstFileVisitor {
 	idSeed := 1
 	return &fileVisitor{
-		idSequence: uint64(idSeed),
-		imports:    make([]string, 0),
-		interfaces: make([]Interface, 0),
-		funcTypes:  make([]FuncType, 0),
-		comments:   make([]Comment, 0),
+		idSequence:    uint64(idSeed),
+		imports:       make([]string, 0),
+		importAliases: make(map[string]string),
+		interfaces:    make([]Interface, 0),
+		funcTypes:     make([]FuncType, 0),
+		comments:      make([]Comment, 0),
 	}
 }
 
@@ -54,10 +57,8 @@ func (t *fileVisitor) VisitNode(n ast.Node) bool {
 
 func (t *fileVisitor) VisitComment(comment *ast.Comment) {
 	model := Comment{
-		SymbolInfo: SymbolInfo{
-			Pos: comment.Pos(),
-			End: comment.End(),
-		},
+		Pos:  comment.Pos(),
+		End:  comment.End(),
 		Text: comment.Text,
 	}
 	t.comments = append(t.comments, model)
@@ -72,6 +73,9 @@ func (t *fileVisitor) VisitImport(importSpec *ast.ImportSpec) {
 	name := importSpec.Path.Value
 	name = strings.TrimSuffix(strings.TrimPrefix(name, "\""), "\"")
 	t.imports = append(t.imports, name)
+	if importSpec.Name != nil {
+		t.importAliases[name] = importSpec.Name.Name
+	}
 }
 
 func (t *fileVisitor) VisitInterfaceType(name string, interfaceType *ast.InterfaceType) {
@@ -87,11 +91,9 @@ func (t *fileVisitor) VisitFuncType(name string, funcType *ast.FuncType) {
 	parameters := CollectParametersFor(funcType)
 	results := CollectResultFieldsFor(funcType)
 	model := FuncType{
-		SymbolInfo: SymbolInfo{
-			Id:  t.newSymbolId(),
-			Pos: funcType.Pos(),
-			End: funcType.End(),
-		},
+		Id:         t.newSymbolId(),
+		Pos:        funcType.Pos(),
+		End:        funcType.End(),
 		Name:       name,
 		Parameters: parameters,
 		Results:    results,
