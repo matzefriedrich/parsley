@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  
 ## [unreleased]
 
+## [v1.7.2] - 2026-10-21
+
+### Fixed
+
+* Mock generation now preserves line breaks between imports in generated mock files.
+
 ### Changed
 
 * Updates `golang.org/x/mod` from 0.41.0 to 0.42.0. [#102](https://github.com/matzefriedrich/parsley/pull/102)

@@ -12,9 +12,7 @@ package {{ .PackageName }}
 {{- /* Import statements */ -}}
 {{- if .Imports }}
 import (
-    {{- range .Imports }}
-    {{- with index $.ImportAliases . }}{{ . }} {{ end }}"{{ . }}"
-    {{- end }}
+{{- range .Imports }}{{ "\n\t" }}{{ with index $.ImportAliases . }}{{ . }} {{ end }}"{{ . }}"{{ end }}{{ "\n" }}
 )
 {{ "" }}
 {{- end }}

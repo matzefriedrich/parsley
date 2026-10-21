@@ -55,6 +55,7 @@ func Test_GenerateMocksCommand_Execute_uses_only_required_imports_and_aliases(t 
 	assert.NoError(t, err)
 	assert.Contains(t, generated, `widgets "example.org/widgets"`)
 	assert.Contains(t, generated, "widgets.Widget")
+	assert.Regexp(t, `import \(\n(?:\t[^\n]+\n)+\)`, generated)
 	assert.NotContains(t, generated, "example.org/unused")
 }
 
