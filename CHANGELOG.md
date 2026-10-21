@@ -12,12 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Updates `golang.org/x/mod` from 0.41.0 to 0.42.0. [#102](https://github.com/matzefriedrich/parsley/pull/102)
 * Updates `github.com/matzefriedrich/cobra-extensions` from 0.9.0 to 0.10.0. [#101](https://github.com/matzefriedrich/parsley/pull/101)
 
-## [v1.7.1] - 2026-10-21
-
-### Fixed
-
-* Mock generation now includes only required imports and preserves explicit import aliases in generated mock files.
-
 ### Added
 
 * Added lifecycle groups for explicit teardown ordering, independent of resolution order. New `types.InLifecycleGroup`,
@@ -26,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   grouping services and declaring their teardown order. [#91](https://github.com/matzefriedrich/parsley/issues/91)
 * Added `resolving.NewScopedContextWithOptions` with `resolving.WithTeardownOrder` to apply lifecycle group teardown
   ordering to scoped services. [#91](https://github.com/matzefriedrich/parsley/issues/91)
+
+
+## [v1.7.1] - 2026-10-21
+
+### Fixed
+
+* Mock generation now includes only required imports and preserves explicit import aliases in generated mock files.
 
 ### Changed
  
