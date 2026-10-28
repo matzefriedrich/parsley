@@ -41,7 +41,7 @@ func RunParsleyApplication(cxt context.Context, appFactoryFunc any, configure ..
 	}
 
 	resolver := resolving.NewResolver(registry)
-	ctx := resolving.NewScopedContext(cxt)
+	ctx := resolving.NewScopedContextWithOptions(cxt, resolving.WithTeardownOrder(registry.GetTeardownOrder()...))
 
 	defer func() {
 		_ = resolver.Shutdown(ctx)

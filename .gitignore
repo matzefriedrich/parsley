@@ -3,9 +3,11 @@
 .junie/plans/
 .vscode/
 
-build/
+/build/
 concepts/
+docs/superpowers/
 mikado/
+
 
 covprofile
 coverage.out
