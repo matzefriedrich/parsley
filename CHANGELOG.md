@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Updates `github.com/matzefriedrich/cobra-extensions` from 0.10.0 to 0.11.0. [#105](https://github.com/matzefriedrich/parsley/pull/105)
+* Updates `golang.org/x/mod` from 0.42.0 to 0.43.0. [#106](https://github.com/matzefriedrich/parsley/pull/106)
 
 ## [v1.7.2] - 2026-10-21
 
