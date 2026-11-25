@@ -59,7 +59,7 @@ func ResolveRequiredService[T any](ctx context.Context, resolver types.Resolver)
 func NewResolver(registry types.ServiceRegistry) types.Resolver {
 	r := &resolver{
 		registry:        registry,
-		globalInstances: core.NewGlobalInstanceBag(),
+		globalInstances: core.NewGlobalInstanceBag(registry.GetTeardownOrder()),
 	}
 	_ = registration.RegisterInstance[types.Resolver](registry, r)
 	return r
@@ -151,7 +151,7 @@ func (r *resolver) ResolveWithOptions(ctx context.Context, serviceType types.Ser
 			}
 		}
 
-		instances := core.NewInstancesBag(r.globalInstances, types.LifetimeTransient)
+		instances := core.NewInstancesBag(r.globalInstances, types.LifetimeTransient, nil)
 
 		for resolverStack.Any() {
 

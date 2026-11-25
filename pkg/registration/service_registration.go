@@ -17,6 +17,7 @@ type serviceRegistration struct {
 	activatorFunc       reflect.Value
 	parameters          []typeInfo
 	lifetimeScope       types.LifetimeScope
+	lifecycleGroup      string
 	hasErrorReturn      bool
 	hasContextParameter bool
 }
@@ -95,6 +96,15 @@ func (s *serviceRegistration) IsSame(other types.ServiceRegistration) bool {
 	return false
 }
 
+// LifecycleGroup returns the lifecycle group this service registration belongs to. Services registered without an
+// explicit group belong to the DefaultLifecycleGroup.
+func (s *serviceRegistration) LifecycleGroup() string {
+	if s.lifecycleGroup == "" {
+		return types.DefaultLifecycleGroup
+	}
+	return s.lifecycleGroup
+}
+
 // LifetimeScope returns the lifetime scope of the service registration.
 func (s *serviceRegistration) LifetimeScope() types.LifetimeScope {
 	return s.lifetimeScope
@@ -133,6 +143,19 @@ func (s *serviceRegistration) String() string {
 
 // CreateServiceRegistration creates a service registration instance from the given activator function and lifetime scope.
 func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeScope) (types.ServiceRegistrationSetup, error) {
+	return createServiceRegistration(activatorFunc, lifetimeScope, types.DefaultLifecycleGroup)
+}
+
+// CreateServiceRegistrationWithOptions creates a service registration instance applying the given lifecycle options.
+func CreateServiceRegistrationWithOptions(activatorFunc any, lifetimeScope types.LifetimeScope, options ...types.LifecycleOption) (types.ServiceRegistrationSetup, error) {
+	lifecycleGroup, err := types.ApplyLifecycleOptions(options...)
+	if err != nil {
+		return nil, err
+	}
+	return createServiceRegistration(activatorFunc, lifetimeScope, lifecycleGroup)
+}
+
+func createServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeScope, lifecycleGroup string) (types.ServiceRegistrationSetup, error) {
 	value := reflect.ValueOf(activatorFunc)
 
 	info, err := core.ReflectFunctionInfoFrom(value)
@@ -151,6 +174,7 @@ func CreateServiceRegistration(activatorFunc any, lifetimeScope types.LifetimeSc
 	case reflect.Interface:
 		requiredTypes := info.ParameterTypes()
 		reg := newServiceRegistration(serviceType, lifetimeScope, value, requiredTypes...)
+		reg.lifecycleGroup = lifecycleGroup
 		reg.hasErrorReturn = info.HasErrorReturn()
 		reg.hasContextParameter = info.ExpectsContextParameter()
 		return reg, nil
