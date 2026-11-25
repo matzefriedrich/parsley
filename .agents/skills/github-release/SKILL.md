@@ -1,6 +1,6 @@
 ---
 name: github-release
-description: Prepare and, when explicitly requested, draft a GitHub release for this repository using its published release conventions.
+description: Use when preparing release notes or drafting a GitHub release for this repository (tags, CHANGELOG.md sections, gh release). Drafts only when explicitly requested and never publishes without explicit approval.
 ---
 
 # GitHub Release Workflow

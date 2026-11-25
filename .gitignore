@@ -1,6 +1,11 @@
 .idea/
 .junie/memory/
 .junie/plans/
+
+# Agent skills are installed from .agents/skills via `make install-<agent>`
+.claude/skills/
+.junie/skills/
+.opencode/skills/
 .vscode/
 
 build/
