@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  
 ## [unreleased]
 
+### Changed
+
+* Updates `github.com/matzefriedrich/cobra-extensions` from 0.10.0 to 0.11.0. [#105](https://github.com/matzefriedrich/parsley/pull/105)
+
 ## [v1.7.2] - 2026-10-21
 
 ### Fixed
