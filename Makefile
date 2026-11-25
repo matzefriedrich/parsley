@@ -4,12 +4,21 @@ CMD_DIR=./cmd/$(BINARY_NAME)
 BUILD_DIR=build
 VERSION=$(shell git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
 LDFLAGS=-ldflags "-X github.com/matzefriedrich/parsley/internal/utils.VersionString=$(VERSION)"
+SKILLS_DIR=.agents/skills
+
+# Copies the shared agent skills into .<agent>/skills, replacing any previous copy
+define install_skills
+	rm -rf .$(1)/skills
+	mkdir -p .$(1)
+	cp -R $(SKILLS_DIR) .$(1)/skills
+endef
 
 # Default target
 all: build
 
 # Phony targets
-.PHONY: all build install test test-coverage lint lint-fix help clean
+.PHONY: all build install test test-coverage lint lint-fix help clean \
+	install-agents install-claude install-junie install-opencode
 
 build: ## Build the parsley-cli binary
 	mkdir -p $(BUILD_DIR)
@@ -30,6 +39,17 @@ lint: ## Run golangci-lint
 
 lint-fix: ## Run golangci-lint and apply fixes
 	golangci-lint run --fix
+
+install-claude: ## Install shared agent skills into .claude/skills
+	$(call install_skills,claude)
+
+install-junie: ## Install shared agent skills into .junie/skills
+	$(call install_skills,junie)
+
+install-opencode: ## Install shared agent skills into .opencode/skills
+	$(call install_skills,opencode)
+
+install-agents: install-claude install-junie install-opencode ## Install shared agent skills for all agents
 
 clean: ## Clean build artifacts
 	rm -rf $(BUILD_DIR)

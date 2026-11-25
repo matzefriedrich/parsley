@@ -53,6 +53,11 @@ fix/<issue-number>
 The goal is to keep the development setup lightweight and accessible. Use the **standard Go SDK** tooling. Please don't just introduce new linting frameworks or build dependencies unless they have been previously discussed and justified.
 
 
+#### Coding-agent skills
+
+Shared skills for coding agents live in `.agents/skills/`, which is the only place to edit them. Install them for your agent with `make install-claude`, `make install-junie`, or `make install-opencode` (or `make install-agents` for all of them). Each target replaces `.<agent>/skills/` with a fresh copy, so re-run it after skills change. The installed copies are gitignored.
+
+
 ## Changelog requirements
 
 Every pull request must update the `CHANGELOG.md` file:
